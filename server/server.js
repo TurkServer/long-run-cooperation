@@ -1,5 +1,4 @@
 Meteor.startup(function () {
-    console.log(process.env.MONGO_URL);
     Meteor.publish("users", function() {
 	return Meteor.users.find({}, {
 	    fields: {username: 1,
