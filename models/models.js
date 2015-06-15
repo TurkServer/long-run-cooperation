@@ -70,6 +70,10 @@ Meteor.methods({
 		       $push: score_obj};
 	if (round == 5) {
 	    update['$set'] = {status: 'over'};
+	    Meteor.users.update({_id: pid1},
+				{$push: {games: game_id}});
+	    Meteor.users.update({_id: pid2},
+				{$push: {games: game_id}});
 	} else {
 	    var obj = {};
 	    obj['state.' + pid1] = 'pending';
@@ -84,8 +88,7 @@ Meteor.methods({
     },
     end_game: function(pid, gid) {
 	Meteor.users.update({_id: pid},
-			    {$set: {state: 'lobby'},
-			     $push: {games: gid}});
+			    {$set: {state: 'lobby'}});
     },
     abandon_game: function(game_id, pid, oid) {
 	Meteor.users.update({_id: pid},

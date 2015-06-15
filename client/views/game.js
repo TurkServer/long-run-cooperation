@@ -5,7 +5,8 @@ Template.game.helpers({
     },
     opponent_offline: function() {
 	var o = opponent();
-	return o && !opponent().status.online;
+	var g = game();
+	return g && o && !opponent().status.online && g.status=='playing';
     },
     round: function() {
 	var g = game();
