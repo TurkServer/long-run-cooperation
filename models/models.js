@@ -25,12 +25,14 @@ Meteor.methods({
 			    {$set: {state: 'game',
 				    'game.game_id': game_id,
 				    'game.opponent_id': pid2,
-				    'game.score': 0}});
+				    'game.score': 0,
+				    'game.invited': false}});
 	Meteor.users.update({_id: pid2},
 			    {$set: {state: 'game',
 				    'game.game_id': game_id,
 				    'game.opponent_id': pid1,
-				    'game.score': 0}});
+				    'game.score': 0,
+				    'game.invited': true}});
 
     },
     complete_move: function(game_id, pid, action) {

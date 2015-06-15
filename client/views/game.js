@@ -1,4 +1,8 @@
 Template.game.helpers({
+    invited: function() {
+	var u = Meteor.user();
+	return u && u.game.invited;
+    },
     opponent_offline: function() {
 	var o = opponent();
 	return o && !opponent().status.online;

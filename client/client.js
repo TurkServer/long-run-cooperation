@@ -15,8 +15,7 @@ Accounts.ui.config({
 });
 
 Meteor.startup(function () {
-
+    $('.alert').alert()
     Meteor.subscribe('users');
     Meteor.subscribe('games');
-
 });

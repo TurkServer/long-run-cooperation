@@ -1,8 +1,7 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-#client = MongoClient('mongodb://127.0.0.1:3001/meteor')
-client = MongoClient('mongodb://lilidworkin_meteor_com:853d8541-7756-67fe-c0b0-1dd696703f8a@production-db-c3.meteor.io/lilidworkin_meteor_com')
+client = MongoClient('mongodb://lilidworkin:lad1295@ds047592.mongolab.com:47592/meteor')
 
 db = client.meteor
 
