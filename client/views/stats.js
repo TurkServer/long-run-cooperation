@@ -12,6 +12,9 @@ Template.stats.helpers({
 	objects = [];
 	for (i=0; i<games.length; i++) {
 	    var game = Games.findOne(games[i]);
+	    if (!game) {
+		return;
+	    }
 	    var players = game.players;
 	    var name1 = Meteor.users.findOne(players[0]).username;
 	    var name2 = Meteor.users.findOne(players[1]).username;
