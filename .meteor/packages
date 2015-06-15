@@ -5,3 +5,11 @@
 # but you can also edit it by hand.
 
 meteor-platform
+accounts-ui
+accounts-password
+benjaminrh:event-hooks
+accounts-base
+mizzao:user-status
+sgi:sprintfjs
+momentjs:moment
+npm-bcrypt
