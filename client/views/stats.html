@@ -1,16 +1,18 @@
 <template name="stats">
-  <div class="row marketing">
-    <div class="col-lg-12">
-      <h4> Previous Games </h4>
-      {{#if games}}
-      <ul class="list-unstyled">
-	{{#each games}}
-	<li> {{date}} (Payoff = {{score}})</li>
-	{{/each}}
-      </ul>
-      {{else}}
-      You have not played any games yet.
-      {{/if}}
-    </div>
-  </div>  
+  <h4> Personal Statistics</h4>
+  Number of games played: {{numGames}}<br/>
+  Average payoff: {{meanScore}}<br/>
+  {{#if numGames}}
+  Details:
+  <ul>
+    {{#each games}}
+    <li> {{date}} (Payoff = {{score}})</li>
+    {{/each}}
+  </ul>
+  {{/if}}
+
+  {{#if playing}}
+  <h4> Opponent Statistics </h4>
+  Number of games played: {{numOpponentGames}}
+  {{/if}}
 </template>

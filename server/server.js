@@ -5,7 +5,8 @@ Meteor.startup(function () {
 		     status: 1,
 		     state: 1,
 		     game: 1,
-		     games: 1}});
+		     games: 1,
+		     treatment: 1}});
     });
     Meteor.publish('games', function () {
       return Games.find();
@@ -16,6 +17,7 @@ Accounts.onCreateUser(function(options, user) {
     user.state = 'lobby';
     user.game = {};
     user.games = [];
+    user.treatment = 1;
     return user;
 });
 

@@ -17,7 +17,8 @@ gid = function() {
 online = function() {
     return {_id: {$ne: pid()},
 	    "status.online": true,
-	    state: 'lobby'};
+	    state: 'lobby',
+	    treatment: Meteor.user().treatment};
 };
 
 players = function() {
@@ -38,10 +39,48 @@ game = function() {
     return p && Games.findOne(p.game.game_id);
 };
 
-player_state = function() {
+playerState = function() {
     var p = player();
     return p.state;
 };
+
+playerGames = function() {
+    var user = Meteor.user();
+    if (!user) {
+	return;
+    }
+    var games = user.games;
+    if (!games) {
+	return;
+    }
+    objects = [];
+    for (i=0; i<games.length; i++) {
+	var game = Games.findOne(games[i]);
+	if (!game) {
+	    return;
+	}
+	var players = game.players;
+	var name1 = Meteor.users.findOne(players[0]).username;
+	var name2 = Meteor.users.findOne(players[1]).username;
+	var score1 = sum(game.scores[players[0]])
+	var score2 = sum(game.scores[players[1]])
+	var format_date = function(date) {
+	    //return moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a");
+	    return moment(date).format("MMMM Do YYYY");
+	};
+	if (name1 == user.username) {
+	    var object = {date: format_date(game.date),
+			  opponent: name2,
+			  score: score1};
+	} else {
+	    var object = {date: format_date(game.date),
+			  opponent: name1,
+			  score: score2};
+	}
+	objects.push(object);
+    }
+    return objects;
+}
 
 sum = function(array) {
     var total = 0;
@@ -50,3 +89,4 @@ sum = function(array) {
     }
     return total;
 }
+

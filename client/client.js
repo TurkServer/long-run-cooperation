@@ -4,10 +4,10 @@ Template.main.helpers({
 	    return 'loading';
 	}
 	if (Meteor.user()) {
-	    return player_state();
+	    return playerState();
 	}
 	return 'loggedout';
-    }
+    },
 });
 
 Accounts.ui.config({

@@ -11,12 +11,22 @@
 
 <body>
   <div class="container">
-    <div class="header clearfix">
-      {{> loginButtons}}
-      <h3 class="text-muted">Prisoner's Dilemma</h3>
+    <div class="row header">
+      <div class="col-md-12">
+	{{> loginButtons}}
+	<h3 class="text-muted">Prisoner's Dilemma</h3>
+      </div>
     </div>
-
-    {{> main}}
+    <div class="row">
+      <div class="col-md-9">
+	{{> main}}
+      </div>
+      {{#if currentUser}}
+      <div class="col-md-3">
+	{{> stats}}
+      </div>
+      {{/if}}
+    </div>
   </div>
 </body>
 

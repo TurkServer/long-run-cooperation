@@ -1,39 +1,28 @@
 Template.stats.helpers({
-    num_games: function() {
+    numGames: function() {
 	var user = Meteor.user();
-	return user && user.games.length;
+	return user && user.games && user.games.length;
     },
-    games: function() {
-	var user = Meteor.user();
-	if (!user) {
+    meanScore: function() {
+	var allGames = playerGames();
+	if (!allGames) {
 	    return;
 	}
-	var games = user.games;
-	objects = [];
-	for (i=0; i<games.length; i++) {
-	    var game = Games.findOne(games[i]);
-	    if (!game) {
-		return;
-	    }
-	    var players = game.players;
-	    var name1 = Meteor.users.findOne(players[0]).username;
-	    var name2 = Meteor.users.findOne(players[1]).username;
-	    var score1 = sum(game.scores[players[0]])
-	    var score2 = sum(game.scores[players[1]])
-	    var format_date = function(date) {
-		return moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a");
-	    };
-	    if (name1 == user.username) {
-		var object = {date: format_date(game.date),
-			      opponent: name2,
-			      score: score1};
-	    } else {
-		var object = {date: format_date(game.date),
-			      opponent: name1,
-			      score: score2};
-	    }
-	    objects.push(object);
+	var allScores = [];
+	for (var i=0; i<allGames.length; i++) {
+	    allScores.push(allGames[i].score);
 	}
-	return objects;
+	return (sum(allScores)/allScores.length).toFixed(2);
+    },
+    playing: function() {
+	var user = Meteor.user();
+	return user && user.state == 'game';
+    },
+    numOpponentGames: function() {
+	var o = opponent();
+	return o && o.games.length;
+    },
+    games: function() {
+	return playerGames();
     }
 });

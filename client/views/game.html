@@ -36,19 +36,19 @@
       {{/if}}
 
       {{#each results}}
-      <h4>Round {{round_}}</h4>
-      You chose <span class="{{pchoice_color}}">{{pchoice}}</span> and your opponent chose <span class="{{ochoice_color}}">{{ochoice}}</span>.<br/>
-      You received {{pscore}} payoff and your opponent received {{oscore}} payoff.
+      <strong>Round {{round_}}</strong>:
+      You chose <span class="{{pchoice_color}}">{{pchoice}}</span> and your opponent chose <span class="{{ochoice_color}}">{{ochoice}}</span>.
+      You received {{pscore}} payoff and your opponent received {{oscore}} payoff.<br/>
       {{/each}}
 
       {{#if playing}}
-      <h4>Round {{round}}</h4>
+      <strong>Round {{round}}</strong>:
       {{state}} <br/>
       <button type="button" class="btn btn-success cooperate {{#if turn_over}}disabled{{/if}}">Cooperate</button>
       <button type="button" class="btn btn-danger defect {{#if turn_over}}disabled{{/if}}">Defect</button>
       {{else}}
-      <h4>Results</h4>
-      Your total payoff is {{payoffs.you}} and your opponent's total payoff is {{payoffs.opponent}}. <br/>
+      <br/><strong>Results</strong>:
+      Your total payoff is {{payoffs.you}} and your opponent's total payoff is {{payoffs.opponent}}. <br/><br/>
       <button type="button" class="btn btn-default return">Return to Lobby</button>
       {{/if}}
     </div>

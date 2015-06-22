@@ -36,3 +36,7 @@ def print_users():
             score2 = sum(game['scores'][players[1]])
             print '%s: %d, %s: %d' % (name1, score1, name2, score2)
     
+def status():
+    for i in db.users.find():
+        print i['username'], i['status']['online']
+        
