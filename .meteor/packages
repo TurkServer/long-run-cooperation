@@ -13,3 +13,4 @@ mizzao:user-status
 sgi:sprintfjs
 momentjs:moment
 npm-bcrypt
+iron:router

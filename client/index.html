@@ -9,7 +9,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 </head>
 
-<body>
+<template name="wrapper">
   <div class="container">
     <div class="row header">
       <div class="col-md-12">
@@ -28,7 +28,7 @@
       {{/if}}
     </div>
   </div>
-</body>
+</template>
 
 <template name="main">
   {{> Template.dynamic template=active}}
