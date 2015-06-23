@@ -1,6 +1,7 @@
 Template.lobby.helpers({
     empty: function() {
-	return players().count() == 0;
+	var p = players();
+	return p && players().count() == 0;
 	
     },
     waiting: function() {

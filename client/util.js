@@ -22,7 +22,7 @@ online = function() {
 };
 
 players = function() {
-    return Meteor.users.find(online());
+    return Meteor.user() && Meteor.users.find(online());
 };
 
 player = function() {

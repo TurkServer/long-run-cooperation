@@ -1,3 +1,9 @@
+Template.wrapper.helpers({
+    isTurk: function() {
+	return this.params.workerId;
+    }
+});
+
 Template.main.helpers({
     active: function() {
 	if (Meteor.loggingIn()) {
