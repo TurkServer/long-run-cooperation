@@ -18,7 +18,6 @@
     </div>
     <div class="row">
       <div class="col-md-9">
-	{{> instructions}}
 	{{> main}}
       </div>
       {{#if currentUser}}
@@ -35,7 +34,7 @@
 </template>
 
 <template name="loggedout">
-<p>Once you accept the HIT, you will be taken to a waiting room. If there are other players currently online, a "Play Game" button will appear. Click this button to begin a game with a randomly chosen opponent.</p>
+<p>Please accept the HIT to continue.</p>
 </template>
 
 <template name="loading">

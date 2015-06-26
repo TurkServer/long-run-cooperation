@@ -1,4 +1,13 @@
+var start = new Date();
 Template.game.helpers({
+    timeSpent: function(){
+	var now = new Date();
+	return Chronos.liveMoment(now).diff(start, 'seconds');
+    },
+    gameNum: function() {
+	var user = Meteor.user();
+	return user && user.games && user.games.length + 1;
+    },
     notDone: function() {
 	var u = Meteor.user();
 	return u && u.games && u.games.length < 2;
@@ -16,13 +25,13 @@ Template.game.helpers({
 	var g = game();
 	return g && game().round;
     },
-    state: function() {
+    showPrevious: function() {
 	var g = game();
-	if (g.state[pid()] == 'pending') {
-	    return 'Make a choice:';
-	} else {
-	    return 'Waiting on other player.';
-	}
+	return g && game().round > 1;   
+    },
+    pending: function() {
+	var g = game();
+	return g && g.state[pid()] == 'pending';
     },
     turn_over: function() {
 	var g = game();
@@ -83,9 +92,11 @@ Template.game.helpers({
 Template.game.events({
     "click .cooperate": function () {
 	Meteor.call('complete_move', gid(), pid(), '1');	
+	start = new Date();
     },
     "click .defect": function () {
 	Meteor.call('complete_move', gid(), pid(), '2');
+	start = new Date();
     },
     "click .return": function () {
 	Meteor.call('end_game', pid(), gid());

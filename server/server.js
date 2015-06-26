@@ -14,7 +14,7 @@ Meteor.startup(function () {
 });
 
 Accounts.onCreateUser(function(options, user) {
-    user.state = 'lobby';
+    user.state = 'instructions';
     user.game = {};
     user.games = [];
     user.treatment = 1;

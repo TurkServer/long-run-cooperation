@@ -31,3 +31,12 @@ body {
 .btn {
     margin: 5px 0px;
 }
+
+.table {
+    margin-top: 10px;
+    width: 500px;
+}
+
+.align-right {
+    text-align: right;
+}

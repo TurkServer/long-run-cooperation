@@ -1,0 +1,21 @@
+<template name="payoffTable">
+  <table class="table table-bordered payoffs">
+    <tbody>
+      <tr>
+	<td></td>
+	<td><span class="green"><strong>Choice 1</strong></span> (Opponent)</td>
+	<td><span class="red"><strong>Choice 2</strong></span> (Opponent)</td>
+      </tr>
+      <tr>
+	<td><span class="green"><strong>Choice 1</strong></span> (You)</td>
+	<td>{{payoffs.R}}, {{payoffs.R}}</td>
+	<td>{{payoffs.S}}, {{payoffs.T}}</td>
+      </tr>
+      <tr>
+	<td><span class="red"><strong>Choice 2</strong></span> (You)</td>
+	<td>{{payoffs.T}}, {{payoffs.S}}</td>
+	<td>{{payoffs.P}}, {{payoffs.P}}</td>
+      </tr>
+    </tbody>
+  </table>
+</template>

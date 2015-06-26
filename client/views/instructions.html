@@ -1,25 +1,16 @@
 <template name="instructions">
 <h4>Welcome.</h4>
-<p>In this HIT, you will participate in an experiment on decision-making. What you earn depends on your decisions and on the decisions of others. You will play a sequence of 20 games. In each game, you will be randomly paired with another Turker. A game consists of a sequence of 10 rounds, and you will make a decision in each round.</p>
+<p>In this HIT, you will participate in an experiment on decision-making. What you earn depends on your decisions and on the decisions of others. You will play a sequence of {{numgames}} games. In each game, you will be randomly paired with a opponent (another Turker). A game consists of a sequence of {{numrounds}} rounds. In each round, you will make a decision. After both you and your opponent have made a decision, you will each receive payoff. After the game is over, you will be randomly matched with another opponent for the next game. When you have completed {{numgames}} games, you will be able to submit the HIT. </p>
+<p>Your total payoff for each game is the sum of your payoffs from each round. Your total payoff for the HIT is the sum of your payoffs from each game. We will convert this payoff to dollars at the rate of $0.003 per point. The amount you earn will be the bonus for the HIT. Regardless of what decisions you make, you will earn a base rate of 0.25 cents.</p>
 <p> The choices and payoffs in each round of a match are as follows:
-  <table class="table table-bordered">
-    <tbody>
-      <tr>
-	<td></td>
-	<td class="green"><strong>Choice 1</strong></td>
-	<td class="red"><strong>Choice 2</strong></td>
-      </tr>
-      <tr>
-	<td class="green"><strong>Choice 1</strong></td>
-	<td>2,2</td>
-	<td>0,3</td>
-      </tr>
-      <tr>
-	<td class="red"><strong>Choice 2</strong></td>
-	<td>3,0</td>
-	<td>1,1</td>
-      </tr>
-    </tbody>
-  </table>
-</p>
+{{> payoffTable}}
+The table shows the payoffs associated with each combination of your choice and the choice of your opponent. The first entry in each cell represents your payoff, while the second entry represents the payoff of your opponent. In particular:</p>
+<ul>
+<li> If both you and your opponent select <span class="green">Choice 1</span>, you each make {{payoffs.R}}.</li>
+<li> If you select <span class="green">Choice 1</span> and your opponent selects <span class="red">Choice 2</span>, you make {{payoffs.S}} and your opponent makes {{payoffs.T}}.</li>
+<li> If you select <span class="red">Choice 2</span> and your opponent selects <span class="green">Choice 1</span>, you make {{payoffs.T}} and your opponent makes {{payoffs.S}}.</li>
+<li> If both you and your opponent select <span class="red">Choice 2</span>, you each make {{payoffs.P}}.</li>
+</ul>
+<button type="button" class="btn btn-default lobby">Waiting Room</button>
+
 </template>

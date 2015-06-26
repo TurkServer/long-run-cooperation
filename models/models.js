@@ -58,14 +58,14 @@ Meteor.methods({
 	var pid2 = game.players[1];
 	var choice1 = game.moves[pid1][round-1];
 	var choice2 = game.moves[pid2][round-1];
-	var payoffs_map = {'1': {'1': [2,2],
-				 '2': [0,3]},
-			   '2': {'1': [3,0],
-				 '2': [1,1]}}
-	var payoffs = payoffs_map[choice1][choice2]
+	var payoffs_map = {'1': {'1': [payoffs.R, payoffs.R],
+				 '2': [payoffs.S, payoffs.T]},
+			   '2': {'1': [payoffs.T, payoffs.S],
+				 '2': [payoffs.P, payoffs.P]}}
+	var payoff = payoffs_map[choice1][choice2]
 	var score_obj = {};
-	score_obj['scores.' + pid1] = payoffs[0];
-	score_obj['scores.' + pid2] = payoffs[1];
+	score_obj['scores.' + pid1] = payoff[0];
+	score_obj['scores.' + pid2] = payoff[1];
 	var update =  {$inc: {round: 1},
 		       $push: score_obj};
 	if (round == 5) {
@@ -82,12 +82,16 @@ Meteor.methods({
 	}
 	Games.update({_id: game_id}, update);
 	Meteor.users.update({_id: pid1},
-			    {$inc: {'game.score': payoffs[0]}});
+			    {$inc: {'game.score': payoff[0]}});
 	Meteor.users.update({_id: pid2},
-			    {$inc: {'game.score': payoffs[1]}});
+			    {$inc: {'game.score': payoff[1]}});
     },
     end_game: function(pid, gid) {
 	Meteor.users.update({_id: pid},
+			    {$set: {state: 'lobby'}});
+    },
+    to_lobby: function() {
+	Meteor.users.update({_id: Meteor.userId()},
 			    {$set: {state: 'lobby'}});
     },
     abandon_game: function(game_id, pid, oid) {
