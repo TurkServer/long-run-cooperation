@@ -1,9 +1,12 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-client = MongoClient('mongodb://lilidworkin:lad1295@ds047592.mongolab.com:47592/meteor')
 
-db = client.meteor
+# client = MongoClient('mongodb://lilidworkin:lad1295@ds047592.mongolab.com:47592/meteor')
+# db = client.meteor
+
+client = MongoClient()
+db = client.lilianne_meteor_com
 
 def delete_games():
     db.games.remove(None)

@@ -1,4 +1,8 @@
 Template.game.helpers({
+    notDone: function() {
+	var u = Meteor.user();
+	return u && u.games && u.games.length < 2;
+    },
     invited: function() {
 	var u = Meteor.user();
 	return u && u.game.invited;

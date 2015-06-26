@@ -8,7 +8,7 @@
       </div>
       {{/if}}
 
-      The game will consist of 5 rounds. In each round, you have two choices: cooperate or defect. The payoff matrix illustrating the possible outcomes is below: <br/><br/>
+      The game will consist of 10 rounds. In each round, you have two choices: cooperate or defect. The payoff matrix illustrating the possible outcomes is below: <br/><br/>
       <table class="table table-bordered">
 	<tbody>
 	  <tr>
@@ -49,8 +49,12 @@
       {{else}}
       <br/><strong>Results</strong>:
       Your total payoff is {{payoffs.you}} and your opponent's total payoff is {{payoffs.opponent}}. <br/><br/>
+      {{#if notDone}}
+      <button type="button" class="btn btn-default return">Return to Lobby</button>
+      {{else}}
+      You have finished your 20 games.
       {{> submit}}
-      <!-- <button type="button" class="btn btn-default return">Return to Lobby</button> -->
+      {{/if}}
       {{/if}}
     </div>
   </div>
