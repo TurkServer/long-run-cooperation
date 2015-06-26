@@ -37,8 +37,8 @@ Template.game.helpers({
 	var o_id = oid();
 	var oname = opponent().username;
 	var objects = [];
-	var colors = {'cooperate': 'green',
-		      'defect': 'red'}
+	var colors = {'1': 'green',
+		      '2': 'red'}
 	for (i=2; i<=g.round; i++) {
 	    pchoice = g.moves[p_id][i-2];
 	    ochoice = g.moves[o_id][i-2];
@@ -82,10 +82,10 @@ Template.game.helpers({
 
 Template.game.events({
     "click .cooperate": function () {
-	Meteor.call('complete_move', gid(), pid(), 'cooperate');	
+	Meteor.call('complete_move', gid(), pid(), '1');	
     },
     "click .defect": function () {
-	Meteor.call('complete_move', gid(), pid(), 'defect');
+	Meteor.call('complete_move', gid(), pid(), '2');
     },
     "click .return": function () {
 	Meteor.call('end_game', pid(), gid());

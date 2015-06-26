@@ -58,10 +58,10 @@ Meteor.methods({
 	var pid2 = game.players[1];
 	var choice1 = game.moves[pid1][round-1];
 	var choice2 = game.moves[pid2][round-1];
-	var payoffs_map = {'cooperate': {'cooperate': [2,2],
-					 'defect': [0,3]},
-			   'defect': {'cooperate': [3,0],
-				      'defect': [1,1]}}
+	var payoffs_map = {'1': {'1': [2,2],
+				 '2': [0,3]},
+			   '2': {'1': [3,0],
+				 '2': [1,1]}}
 	var payoffs = payoffs_map[choice1][choice2]
 	var score_obj = {};
 	score_obj['scores.' + pid1] = payoffs[0];

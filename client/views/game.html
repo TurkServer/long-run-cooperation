@@ -8,27 +8,6 @@
       </div>
       {{/if}}
 
-      The game will consist of 10 rounds. In each round, you have two choices: cooperate or defect. The payoff matrix illustrating the possible outcomes is below: <br/><br/>
-      <table class="table table-bordered">
-	<tbody>
-	  <tr>
-	    <td></td>
-	    <td><strong>Cooperate</strong></td>
-	    <td><strong>Defect</strong></td>
-	  </tr>
-	  <tr>
-	    <td><strong>Cooperate</strong></td>
-	    <td>2,2</td>
-	    <td>0,3</td>
-	  </tr>
-	  <tr>
-	    <td><strong>Defect</strong></td>
-	    <td>3,0</td>
-	    <td>1,1</td>
-	  </tr>
-	</tbody>
-      </table>
-
       {{#if opponent_offline}}
       <div class="alert alert-warning" role="alert">
 	Your opponent has disconnected. You can wait for them to return, or <a class="abandon" href="#">click here</a> to abandon the game and return to the lobby.
@@ -44,13 +23,13 @@
       {{#if playing}}
       <strong>Round {{round}}</strong>:
       {{state}} <br/>
-      <button type="button" class="btn btn-success cooperate {{#if turn_over}}disabled{{/if}}">Cooperate</button>
-      <button type="button" class="btn btn-danger defect {{#if turn_over}}disabled{{/if}}">Defect</button>
+      <button type="button" class="btn btn-success cooperate {{#if turn_over}}disabled{{/if}}">Choice 1</button>
+      <button type="button" class="btn btn-danger defect {{#if turn_over}}disabled{{/if}}">Choice 2</button>
       {{else}}
       <br/><strong>Results</strong>:
       Your total payoff is {{payoffs.you}} and your opponent's total payoff is {{payoffs.opponent}}. <br/><br/>
       {{#if notDone}}
-      <button type="button" class="btn btn-default return">Return to Lobby</button>
+      <button type="button" class="btn btn-default return">Return to Waiting Room</button>
       {{else}}
       You have finished your 20 games.
       {{> submit}}

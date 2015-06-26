@@ -1,13 +1,18 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
+me = True
+if me:
+    client = MongoClient('mongodb://lilidworkin:lad1295@ds047592.mongolab.com:47592/meteor')
+    db = client.meteor
+else:
+    client = MongoClient()
+    db = client.lilianne_meteor_com
 
-# client = MongoClient('mongodb://lilidworkin:lad1295@ds047592.mongolab.com:47592/meteor')
-# db = client.meteor
-
-client = MongoClient()
-db = client.lilianne_meteor_com
-
+def delete_all():
+    delete_games()
+    delete_users()
+    
 def delete_games():
     db.games.remove(None)
     db.users.update_many({}, {'$set': {'games': []}})
