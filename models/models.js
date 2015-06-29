@@ -1,58 +1,56 @@
 Games = new Meteor.Collection('games');
 
 Meteor.methods({
-    remove_game: function(game_id) {
-	return Games.remove(game_id);
-    },
-    match_players: function(pid1, pid2) {
+    matchPlayers: function(pid1, pid2) {
 	var state = {};
 	var moves = {};
 	var scores = {};
+	var roundTimes = [];
+	roundTimes.push(new Date());
 	state[pid1] = 'pending';
 	state[pid2] = 'pending';
 	moves[pid1] = [];
 	moves[pid2] = [];
 	scores[pid1] = [];
 	scores[pid2] = [];
-	var game_id = Games.insert({date: new Date(),
+	var game_id = Games.insert({start: new Date(),
 				    players: [pid1, pid2],
 				    round: 1,
 				    state: state,
 				    moves: moves,
 				    scores: scores,
-				    status: 'playing'});
+				    status: 'playing',
+				    roundTimes: roundTimes});
 	Meteor.users.update({_id: pid1},
 			    {$set: {state: 'game',
 				    'game.game_id': game_id,
 				    'game.opponent_id': pid2,
-				    'game.score': 0,
 				    'game.invited': false}});
 	Meteor.users.update({_id: pid2},
 			    {$set: {state: 'game',
 				    'game.game_id': game_id,
 				    'game.opponent_id': pid1,
-				    'game.score': 0,
 				    'game.invited': true}});
 
     },
-    complete_move: function(game_id, pid, action) {
+    completeMove: function(action) {
 	var state_obj = {};
-	state_obj['state.' + pid] = 'completed';
+	state_obj['state.' + pid()] = 'completed';
 	var move_obj = {};
-	move_obj['moves.' + pid] = action;
-	Games.update({_id: game_id},
+	move_obj['moves.' + pid()] = action;
+	Games.update({_id: gid()},
 		     {$set: state_obj,
 		      $push: move_obj});
-	var game = Games.findOne(game_id);
+	var game = Games.findOne(gid());
 	var pid1 = game.players[0];
 	var pid2 = game.players[1];
 	if (game.state[pid1] == 'completed' &&
 	    game.state[pid2] == 'completed') {
-	    Meteor.call('complete_round', game_id);
+	    Meteor.call('completeRound');
 	}
     },
-    complete_round: function(game_id) {
-	var game = Games.findOne(game_id);
+    completeRound: function() {
+	var game = Games.findOne(gid());
 	var round = game.round;
 	var pid1 = game.players[0];
 	var pid2 = game.players[1];
@@ -63,43 +61,44 @@ Meteor.methods({
 			   '2': {'1': [payoffs.T, payoffs.S],
 				 '2': [payoffs.P, payoffs.P]}}
 	var payoff = payoffs_map[choice1][choice2]
-	var score_obj = {};
-	score_obj['scores.' + pid1] = payoff[0];
-	score_obj['scores.' + pid2] = payoff[1];
+	var push_obj = {};
+	push_obj['scores.' + pid1] = payoff[0];
+	push_obj['scores.' + pid2] = payoff[1];
+	push_obj['roundTimes'] = new Date();
 	var update =  {$inc: {round: 1},
-		       $push: score_obj};
-	if (round == 5) {
-	    update['$set'] = {status: 'over'};
+		       $push: push_obj};
+	if (round == numRounds) {
+	    update['$set'] = {status: 'over',
+			      end: new Date()};
 	    Meteor.users.update({_id: pid1},
-				{$push: {games: game_id}});
+				{$push: {games: gid()}});
 	    Meteor.users.update({_id: pid2},
-				{$push: {games: game_id}});
+				{$push: {games: gid()}});
 	} else {
 	    var obj = {};
 	    obj['state.' + pid1] = 'pending';
 	    obj['state.' + pid2] = 'pending';
 	    update['$set'] = obj;
 	}
-	Games.update({_id: game_id}, update);
-	Meteor.users.update({_id: pid1},
-			    {$inc: {'game.score': payoff[0]}});
-	Meteor.users.update({_id: pid2},
-			    {$inc: {'game.score': payoff[1]}});
+	Games.update({_id: gid()}, update);
     },
-    end_game: function(pid, gid) {
-	Meteor.users.update({_id: pid},
-			    {$set: {state: 'lobby'}});
+    completeHIT: function() {
+	var score = totalScore();
+	Meteor.users.update({_id: pid()},
+			    {$set: {state: 'finished',
+				    bonus: score*.003}});
     },
-    to_lobby: function() {
-	Meteor.users.update({_id: Meteor.userId()},
-			    {$set: {state: 'lobby'}});
-    },
-    abandon_game: function(game_id, pid, oid) {
-	Meteor.users.update({_id: pid},
-			    {$set: {state: 'lobby'}});
-	Meteor.users.update({_id: oid},
-			    {$set: {state: 'lobby'}});
-	Games.update({_id: game_id},
+    abandonGame: function() {
+	Games.update({_id: gid()},
 		     {$set: {status: 'abandoned'}});
-    }
+    },
+    setState: function(state) {
+	Meteor.users.update({_id: pid()},
+			    {$set: {state: state}});
+
+    },
+    goOffline: function() {
+	Meteor.users.update({_id: pid()},
+			    {$set: {'status.online': false}});
+    },
 });

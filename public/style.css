@@ -32,11 +32,15 @@ body {
     margin: 5px 0px;
 }
 
-.table {
+.payoffs {
     margin-top: 10px;
     width: 500px;
 }
 
 .align-right {
     text-align: right;
+}
+
+.has-error.radio label, .has-success.radio label {
+    font-weight: bold !important;
 }

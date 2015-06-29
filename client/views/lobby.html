@@ -1,13 +1,15 @@
 <template name="lobby">
   <h4>Waiting Room</h4>
-  <p>If there are other players online, a "Play Game" button will appear. Click this button to begin a game with a randomly chosen opponent.</p>
-  {{#if empty}}
-  No other players online.
+  {{#if frozen}}
+  Because another player disconnected, you will be unable to complete all {{numGames}} games. You will still be paid for the games you did complete. Click the button below to submit the HIT.
+  {{> submit}}
   {{else}}
+  {{#if empty}}
+  <p> There are no other players in the waiting room right now. Please wait a short time to be matched.
+    <!-- After {{lobbyWait}} seconds have passed, you will be able to submit the partially completed HIT, and you will be paid for the games you did complete. --></p>
+  {{else}}
+  <p> Click the button below to begin a game with a randomly chosen opponent. </p>
   <input class="btn btn-default get-matched" type="button" value="Play a Game">
   {{/if}}
-
-  <!-- <hr> -->
-  <!-- <h4>Finished?</h4> -->
-  <!-- {{> submit}} -->
+  {{/if}}
 </template>

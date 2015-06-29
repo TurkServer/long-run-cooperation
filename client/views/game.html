@@ -1,16 +1,18 @@
 <template name="game">
   <div class="row marketing">
     <div class="col-lg-12">
-      <h4>Game {{gameNum}}</h4>
-      <p> The payoff table is shown below. Recall that in each cell, the first number represents your payoff, and the second number represents the payoff of your opponent.
-	{{> payoffTable}}
-      </p>
+
       {{#if invited}}
       <div class="alert alert-success alert-dismissible" role="alert">
 	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	You've been automatically matched to a game.
+	You have been automatically matched to a game.
       </div>
       {{/if}}
+
+      <h4>Game {{gameNum}}</h4>
+        <p>The table below shows the number of points associated with each possible combination of your choice and the choice of your opponent. In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive.
+	  {{> payoffTable}}
+	</p>
       
       {{#if showPrevious}}
       Previous choices and outcomes:
@@ -34,7 +36,7 @@
 	  </tr>
 	  {{/each}}
 	  <tr>
-	    <td colspan="3" class="align-right"><strong>Total Payoff So Far</strong></td>
+	    <td colspan="3" class="align-right"><strong>Total Points</strong></td>
 	    <td>{{payoffs.you}}</td>
 	    <td>{{payoffs.opponent}}</td>
 	  </tr>
@@ -42,30 +44,33 @@
       </table>
       {{/if}}
 
-      {{#if opponent_offline}}
-      <div class="alert alert-warning" role="alert">
-	Your opponent has disconnected. You can wait for them to return, or <a class="abandon" href="#">click here</a> to abandon the game and return to the lobby.
-      </div>
-      {{/if}}
+      <!-- {{#if opponentOffline}} -->
+      <!-- <div class="alert alert-warning" role="alert"> -->
+      <!-- 	Your opponent has disconnected. You can wait for them to return, or <a class="abandon" href="#">click here</a> to abandon the game and return to the lobby. -->
+      <!-- </div> -->
+      <!-- {{/if}} -->
 
+      {{#if offline}}
+      {{> submit}}
+      {{else}}
       {{#if playing}}
       {{#if pending}}
-      Make a choice for round {{round}}.
+      <p>Make a choice for round {{round}}. You have {{roundWait}} seconds. After that, the HIT will be submitted automatically and you will receive partial payment.</p>
       {{else}}
-      Waiting on your opponent.
-      {{/if}}<br/>
-      After a minute has passed, the game will be terminated and you and your opponent will be returned to the lobby. <br/>
-      Seconds elapsed: {{timeSpent}} <br/>
+      <p>Waiting on your opponent. After {{roundWait}} seconds have passed, the game will be terminated and you will be returned to the lobby.</p>
+      {{/if}}
+      <p>Seconds elapsed: {{timeSpent}} </p>
       <button type="button" class="btn btn-success cooperate {{#if turn_over}}disabled{{/if}}">Choice 1</button>
       <button type="button" class="btn btn-danger defect {{#if turn_over}}disabled{{/if}}">Choice 2</button>
       {{else}}
-      <br/><strong>Results</strong>:
-      Your total payoff is {{payoffs.you}} and your opponent's total payoff is {{payoffs.opponent}}. <br/><br/>
+      <!-- <br/><strong>Results</strong>: -->
+      <!-- Your total payoff is {{payoffs.you}} and your opponent's total payoff is {{payoffs.opponent}}. <br/><br/> -->
       {{#if notDone}}
       <button type="button" class="btn btn-default return">Return to Waiting Room</button>
       {{else}}
-      You have finished your 20 games.
+      You have finished your {{numGames}} games. Click the button below to submit the HIT.
       {{> submit}}
+      {{/if}}
       {{/if}}
       {{/if}}
     </div>

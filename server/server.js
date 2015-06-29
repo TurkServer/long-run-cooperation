@@ -14,6 +14,8 @@ Meteor.startup(function () {
 });
 
 Accounts.onCreateUser(function(options, user) {
+    console.log(options.profile);
+    user.assignmentId = options.profile.assignmentId;
     user.state = 'instructions';
     user.game = {};
     user.games = [];

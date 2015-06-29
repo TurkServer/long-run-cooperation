@@ -17,12 +17,16 @@
       </div>
     </div>
     <div class="row">
+      {{#if showStats}}
       <div class="col-md-9">
 	{{> main}}
       </div>
-      {{#if currentUser}}
       <div class="col-md-3">
 	{{> stats}}
+      </div>
+      {{else}}
+      <div class="col-md-12">
+	{{> main}}
       </div>
       {{/if}}
     </div>
@@ -34,7 +38,7 @@
 </template>
 
 <template name="loggedout">
-<p>Please accept the HIT to continue.</p>
+  {{> instructions}}
 </template>
 
 <template name="loading">

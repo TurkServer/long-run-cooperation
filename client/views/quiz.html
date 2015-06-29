@@ -1,0 +1,28 @@
+<template name="quiz">
+  <h4>Quiz</h4>
+  <p>The table below shows the number of points associated with each possible combination of your choice and the choice of your opponent. In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive.
+    {{> payoffTable}}
+  </p>
+
+  <p> Answer the two questions below. If you choose correctly, the text will be turn green. If you choose incorrectly, the text will turn red. You can change your choice as many times as you want. Once you have selected both correct answers, a "Go to Waiting Room" button will appear.</p>
+  <form>
+    {{#each questions}}
+    {{> question}}
+    {{/each}}
+
+    {{#if correct}}
+    <button type="submit" class="btn btn-default lobby">Go to Waiting Room</button>
+    {{/if}}
+  </form>
+</template>
+
+<template name="question">
+  <p>{{text}}</p>
+  {{#each options}}
+  <div class="radio {{#if error}}has-error{{/if}} {{#if success}}has-success{{/if}}">
+    <label>
+      <input type="radio" name="{{../_id}}" id="{{id}}" value="{{value}}">{{text}}
+    </label>
+  </div>
+  {{/each}}
+</template>

@@ -1,9 +1,9 @@
 Template.instructions.helpers({
-    'numgames': function() {
-	return numgames;
+    'numGames': function() {
+	return numGames;
     },
-    'numrounds': function() {
-	return numrounds;
+    'numRounds': function() {
+	return numRounds;
     },
     'payoffs': function() {
 	return payoffs;
@@ -11,7 +11,7 @@ Template.instructions.helpers({
 });
 
 Template.instructions.events({
-    "click .lobby": function () {
-	Meteor.call('to_lobby');
+    "click .quiz": function () {
+	Meteor.call('setState', 'quiz');
     },
 });

@@ -4,15 +4,15 @@ Template.stats.helpers({
 	return user && user.games && user.games.length;
     },
     meanScore: function() {
-	var allGames = playerGames();
-	if (!allGames) {
-	    return;
-	}
-	var allScores = [];
-	for (var i=0; i<allGames.length; i++) {
-	    allScores.push(allGames[i].score);
-	}
-	return (sum(allScores)/allScores.length).toFixed(2);
+	var total = totalScore();
+	return (total/allScores.length).toFixed(2);
+    },
+    totalScore: function() {
+	return totalScore();
+    },
+    bonus: function() {
+	var total = totalScore();
+	return (total*0.003).toFixed(2);
     },
     playing: function() {
 	var user = Meteor.user();

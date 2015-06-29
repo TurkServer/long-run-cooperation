@@ -1,16 +1,27 @@
 <template name="instructions">
 <h4>Welcome.</h4>
-<p>In this HIT, you will participate in an experiment on decision-making. What you earn depends on your decisions and on the decisions of others. You will play a sequence of {{numgames}} games. In each game, you will be randomly paired with a opponent (another Turker). A game consists of a sequence of {{numrounds}} rounds. In each round, you will make a decision. After both you and your opponent have made a decision, you will each receive payoff. After the game is over, you will be randomly matched with another opponent for the next game. When you have completed {{numgames}} games, you will be able to submit the HIT. </p>
-<p>Your total payoff for each game is the sum of your payoffs from each round. Your total payoff for the HIT is the sum of your payoffs from each game. We will convert this payoff to dollars at the rate of $0.003 per point. The amount you earn will be the bonus for the HIT. Regardless of what decisions you make, you will earn a base rate of 0.25 cents.</p>
-<p> The choices and payoffs in each round of a match are as follows:
-{{> payoffTable}}
-The table shows the payoffs associated with each combination of your choice and the choice of your opponent. The first entry in each cell represents your payoff, while the second entry represents the payoff of your opponent. In particular:</p>
-<ul>
-<li> If both you and your opponent select <span class="green">Choice 1</span>, you each make {{payoffs.R}}.</li>
-<li> If you select <span class="green">Choice 1</span> and your opponent selects <span class="red">Choice 2</span>, you make {{payoffs.S}} and your opponent makes {{payoffs.T}}.</li>
-<li> If you select <span class="red">Choice 2</span> and your opponent selects <span class="green">Choice 1</span>, you make {{payoffs.T}} and your opponent makes {{payoffs.S}}.</li>
-<li> If both you and your opponent select <span class="red">Choice 2</span>, you each make {{payoffs.P}}.</li>
-</ul>
-<button type="button" class="btn btn-default lobby">Waiting Room</button>
+<p>In this HIT, you will participate in an experiment on decision-making. What you earn depends on your decisions and on the decisions of others. Please read the following instructions carefully.</p>
 
+<h5>Overview</h5>
+<p>You will play a sequence of {{numGames}} games. In each game, you will be randomly paired with another Turker. A game consists of a sequence of {{numRounds}} rounds. In each round, you will choose between two different actions. After both you and your opponent have made a decision, you will each receive a certain number of points, and the next round will begin. After the game is over, you will be randomly matched with another opponent for the next game. When you have completed {{numGames}} games, you will be able to submit the HIT. </p>
+
+<h5>Payment</h5>
+<p>Your score for each game is the sum of your points from each round. Your score for the HIT is the sum of your points from each game. We will convert your score to dollars at the rate of $0.003 per point. The amount you earn will be given to you as the bonus for the HIT. Regardless of what decisions you make during the games, you will earn a base rate of 0.25 cents for completing the HIT.</p>
+
+<h5>The Game</h5>
+<p> In each round of the game, you will select between <span class="green">Choice 1</span> and <span class="red">Choice 2</span>. The number of points you receive depends both on your choice and the choice of your opponent. The table below shows the number of points associated with each possible combination of your choice and the choice of your opponent:
+{{> payoffTable}}
+In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive. Another way to read the table is as follows:</p>
+<ul>
+<li> If both you and your opponent select <span class="green">Choice 1</span>, you each earn {{payoffs.R}}.</li>
+<li> If you select <span class="green">Choice 1</span> and your opponent selects <span class="red">Choice 2</span>, you earn {{payoffs.S}} and your opponent earns {{payoffs.T}}.</li>
+<li> If you select <span class="red">Choice 2</span> and your opponent selects <span class="green">Choice 1</span>, you earn {{payoffs.T}} and your opponent earns {{payoffs.S}}.</li>
+<li> If both you and your opponent select <span class="red">Choice 2</span>, you each earn {{payoffs.P}}.</li>
+</ul>
+{{#if currentUser}}
+<p>After reading these instructions, click the button below to take a short quiz that tests your understanding. You will then proceed to a waiting room where you will be matched with your first opponent.</p>
+<button type="button" class="btn btn-default quiz">Take the Quiz</button>
+{{else}}
+<p>Once you accept the HIT, you will be given a link to take a short quiz that tests your understanding of the rules above.</p>
+{{/if}}
 </template>

@@ -1,12 +1,26 @@
+var start = new Date();
+
+// Tracker.autorun(function() {
+//     var now = new Date();
+//     var diff = Chronos.liveMoment(now).diff(start, 'seconds');
+//     var p = players();
+//     var count = p && p.count();
+//     if ((diff == lobbyWait) && !count) {
+// 	Session.set('frozen', true);
+//     }
+// });
+
 Template.lobby.helpers({
     empty: function() {
 	var p = players();
-	return p && players().count() == 0;
-	
+	return p && players().count() == 0;	
     },
-    waiting: function() {
-	return players();
+    frozen: function() {
+	return frozen();
     },
+    lobbyWait: function() {
+	return lobbyWait;
+    }
 });
 
 Template.lobby.events({
@@ -15,6 +29,6 @@ Template.lobby.events({
 	var random = Math.floor(Math.random() * count);
 	var opponent = Meteor.users.findOne(online(),
 					    {skip: random});
-	Meteor.call("match_players", pid(), opponent._id);
+	Meteor.call("matchPlayers", pid(), opponent._id);
     }
 });
