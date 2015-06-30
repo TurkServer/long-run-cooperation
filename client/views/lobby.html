@@ -2,7 +2,7 @@
   <h4>Waiting Room</h4>
   {{#if frozen}}
   Because another player disconnected, you will be unable to complete all {{numGames}} games. You will still be paid for the games you did complete. Click the button below to submit the HIT.
-  {{> submit}}
+  {{> submit reason="frozen"}}
   {{else}}
   {{#if empty}}
   <p> There are no other players in the waiting room right now. Please wait a short time to be matched.

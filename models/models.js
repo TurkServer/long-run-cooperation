@@ -82,10 +82,11 @@ Meteor.methods({
 	}
 	Games.update({_id: gid()}, update);
     },
-    completeHIT: function() {
+    completeHIT: function(state) {
 	var score = totalScore();
 	Meteor.users.update({_id: pid()},
-			    {$set: {state: 'finished',
+			    {$set: {state: state,
+				    'status.online': false,
 				    bonus: score*.003}});
     },
     abandonGame: function() {

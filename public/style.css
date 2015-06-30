@@ -44,3 +44,11 @@ body {
 .has-error.radio label, .has-success.radio label {
     font-weight: bold !important;
 }
+
+h5 {
+    text-decoration: underline;
+}
+
+td {
+    padding: 4px !important;
+}

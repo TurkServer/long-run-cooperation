@@ -6,7 +6,7 @@ Template.game.helpers({
 	var start = g.roundTimes[g.roundTimes.length - 1];
 	var now = new Date();
 	var diff = Chronos.liveMoment(now).diff(start, 'seconds');
-	if (diff == roundWait) {
+	if (diff >= roundWait) {
 	    Meteor.call('abandonGame');
 	    if (g.state[pid()] == 'pending') {
 		Meteor.call('goOffline');
@@ -32,6 +32,9 @@ Template.game.helpers({
     },
     numGames: function() {
 	return numGames;
+    },
+    numRounds: function() {
+	return numRounds;
     },
     notDone: function() {
 	var u = Meteor.user();

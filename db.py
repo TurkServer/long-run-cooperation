@@ -35,6 +35,17 @@ def print_users():
     users = db.users.find()
     for user in users:
         print user['username']
+        print 'online: ' + str(user['status']['online'])
+        print 'state: ' + user['state']
+        print 'bonus: ' + str(user.get('bonus'))
+        print
+        
+def print_user_games():
+    users = db.users.find()
+    for user in users:
+        if not user.get('bonus'):
+            continue
+        print user['username']
         for game_id in user['games']:
             game = db.games.find_one({'_id': game_id})
             players = game['players']

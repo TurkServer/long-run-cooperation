@@ -5,6 +5,9 @@ Template.instructions.helpers({
     'numRounds': function() {
 	return numRounds;
     },
+    'roundWait': function() {
+	return roundWait;
+    },
     'payoffs': function() {
 	return payoffs;
     }
