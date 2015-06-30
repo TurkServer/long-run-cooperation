@@ -3,15 +3,11 @@ Template.stats.helpers({
 	var user = Meteor.user();
 	return user && user.games && user.games.length;
     },
-    meanScore: function() {
-	var total = totalScore();
-	return (total/allScores.length).toFixed(2);
-    },
     totalScore: function() {
-	return totalScore();
+	return Meteor.user().score;
     },
     bonus: function() {
-	var total = totalScore();
+	var total = Meteor.user().score;
 	return (total*0.003).toFixed(2);
     },
     playing: function() {
@@ -22,7 +18,4 @@ Template.stats.helpers({
 	var o = opponent();
 	return o && o.games.length;
     },
-    games: function() {
-	return playerGames();
-    }
 });

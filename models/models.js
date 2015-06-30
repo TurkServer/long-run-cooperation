@@ -81,13 +81,15 @@ Meteor.methods({
 	    update['$set'] = obj;
 	}
 	Games.update({_id: gid()}, update);
+	Meteor.users.update({_id: pid1},
+			    {$inc: {score: payoff[0]}});
+	Meteor.users.update({_id: pid2},
+			    {$inc: {score: payoff[1]}});
     },
     completeHIT: function(state) {
-	var score = totalScore();
 	Meteor.users.update({_id: pid()},
 			    {$set: {state: state,
-				    'status.online': false,
-				    bonus: score*.003}});
+				    submitted: true}});
     },
     abandonGame: function() {
 	Games.update({_id: gid()},
@@ -97,9 +99,5 @@ Meteor.methods({
 	Meteor.users.update({_id: pid()},
 			    {$set: {state: state}});
 
-    },
-    goOffline: function() {
-	Meteor.users.update({_id: pid()},
-			    {$set: {'status.online': false}});
     },
 });

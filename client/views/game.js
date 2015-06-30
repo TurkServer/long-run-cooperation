@@ -9,10 +9,7 @@ Template.game.helpers({
 	if (diff >= roundWait) {
 	    Meteor.call('abandonGame');
 	    if (g.state[pid()] == 'pending') {
-		Meteor.call('goOffline');
-		setTimeout(function(){
-		    $('.submit').click();
-		}, 1000);
+		Meteor.call('setState', 'abandoned');
 	    } else {
 		Meteor.call('setState', 'lobby');
 	    }
@@ -22,32 +19,29 @@ Template.game.helpers({
     roundWait: function() {
 	return roundWait;
     },
-    offline: function() {
-	var user = Meteor.user();
-	return user && !user.status.online;
-    },
-    gameNum: function() {
-	var user = Meteor.user();
-	return user && user.games && user.games.length + 1;
-    },
     numGames: function() {
 	return numGames;
     },
     numRounds: function() {
 	return numRounds;
     },
-    notDone: function() {
+    gameNum: function() {
+	var user = Meteor.user();
+	var g = game();
+	if (!user || !g || !user.games) {return;}
+	var number = user.games.length;
+	if (g.status != 'over') {
+	    number += 1;
+	}
+	return number;
+    },
+    done: function() {
 	var u = Meteor.user();
-	return u && u.games && u.games.length < numGames;
+	return u && u.games && u.games.length == numGames;
     },
     invited: function() {
 	var u = Meteor.user();
 	return u && u.game.invited;
-    },
-    opponentOffline: function() {
-	var o = opponent();
-	var g = game();
-	return g && o && !opponent().status.online && g.status=='playing';
     },
     round: function() {
 	var g = game();
@@ -61,56 +55,28 @@ Template.game.helpers({
 	var g = game();
 	return g && g.state[pid()] == 'pending';
     },
-    turn_over: function() {
+    turnOver: function() {
 	var g = game();
 	return g && g.state[pid()] == 'completed';
-    },
-    results: function() {
-	var g = game();
-	if (!g) { return; }
-	var p_id = pid();
-	var o_id = oid();
-	var oname = opponent().username;
-	var objects = [];
-	var colors = {'1': 'green',
-		      '2': 'red'}
-	for (i=2; i<=g.round; i++) {
-	    pchoice = g.moves[p_id][i-2];
-	    ochoice = g.moves[o_id][i-2];
-	    pscore = g.scores[p_id][i-2];
-	    oscore = g.scores[o_id][i-2];
-	    var object = {'round_': i-1,
-			  'pchoice': pchoice,
-			  'pscore': pscore,
-			  'pchoice_color': colors[pchoice],
-			  'oname': oname,
-			  'ochoice': ochoice,
-			  'oscore': oscore,
-			  'ochoice_color': colors[ochoice]};
-	    objects.push(object);
-	}
-	return objects;
-    },
-    payoffs: function() {
-	var g = game();
-	if (!g) { return; }
-	var p_id = pid();
-	var o_id = oid();
-	var oname = opponent().username;
-	var object = {'you': 0,
-		      'opponent': 0};
-	for (i=2; i<=g.round; i++) {
-	    pscore = g.scores[p_id][i-2];
-	    oscore = g.scores[o_id][i-2];
-	    object['you'] += pscore;
-	    object['opponent'] += oscore;
-	}
-	return object;
     },
     playing: function() {
 	var g = game();
 	return g && g.status != 'over';
-    }
+    },
+    results: function() {
+	return gameResults();
+    },
+    payoffs: function() {
+	var results = gameResults();
+	var object = {'you': 0,
+		      'opponent': 0};
+	for (i=0; i<results.length; i++) {
+	    var round = results[i];
+	    object['you'] += round['pscore'];
+	    object['opponent'] += round['oscore'];
+	}
+	return object;
+    },
 });
 
 Template.game.events({

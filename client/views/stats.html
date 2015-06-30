@@ -1,16 +1,8 @@
 <template name="stats">
   <h4> Personal Statistics</h4>
   Number of games played: {{numGames}}<br/>
-  {{#if numGames}}
   Points earned: {{totalScore}}<br/>
   Bonus earned: {{bonus}}<br/>
-  <!-- Details: -->
-  <!-- <ul> -->
-  <!--   {{#each games}} -->
-  <!--   <li> {{date}} (Payoff = {{score}})</li> -->
-  <!--   {{/each}} -->
-  <!-- </ul> -->
-  {{/if}}
 
   {{#if playing}}
   <h4> Opponent Statistics </h4>
