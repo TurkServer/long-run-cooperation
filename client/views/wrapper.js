@@ -18,3 +18,14 @@ Template.main.helpers({
     }
 });
 
+Template.abandoned.helpers({
+    frozen: function() {
+	return frozen();
+    },
+});
+
+Template.abandoned.events({
+    "click .lobby": function () {
+	Meteor.call('setState', 'lobby');
+    },
+});
