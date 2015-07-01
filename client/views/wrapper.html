@@ -1,0 +1,50 @@
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decision-Making Experiment</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</head>
+
+<template name="wrapper">
+  <div class="container">
+    <div class="row header">
+      <div class="col-md-12">
+	<h3 class="text-muted">Decision-Making Experiment</h3>
+      </div>
+    </div>
+    <div class="row">
+      {{#if showStats}}
+      <div class="col-md-9">
+	{{> main}}
+      </div>
+      <div class="col-md-3">
+	{{> stats}}
+      </div>
+      {{else}}
+      <div class="col-md-12">
+	{{> main}}
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</template>
+
+<template name="main">
+  {{> Template.dynamic template=active}}
+</template>
+
+<template name="loggedout">
+  {{> instructions}}
+</template>
+
+<template name="loading">
+</template>
+
+<template name="abandoned">
+  Because you did not make a decision in time, you will be unable to finish the game and must submit the incomplete HIT. You will still be paid for any games you did complete. Click the button below to submit the HIT.
+  {{> submit reason="abandoned"}}
+</template>
