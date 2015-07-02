@@ -1,15 +1,15 @@
 <template name="instructions">
 <h4>Welcome.</h4>
-<p>In this HIT, you will participate in an experiment on decision-making. The amount of money you earn depends on your decisions and on the decisions of others. Please read the following instructions carefully.</p>
+<p>In this HIT, you will participate in an experiment on decision-making. The amount of money you earn depends on your decisions and on the decisions of others. Please read the following instructions carefully. At the end of the instructions, you will be asked to take and pass a quiz that tests your understanding.</p>
 
 <h5>Overview</h5>
-<p>You will play a sequence of {{numGames}} games. In each game, you will be randomly paired with another Turker. A game consists of a sequence of {{numRounds}} rounds. In each round, you will choose between two different actions. After both you and your opponent have made a decision, you will each receive a certain number of points, and the next round will begin. After the game is over, you will be randomly matched with another opponent for the next game. When you have completed {{numGames}} games, you will be able to submit the HIT. </p>
+<p>You will play a sequence of up to {{numGames}} games (the exact number depends on the availability of other Turkers). In each game, you will be randomly paired with another Turker. A game consists of a sequence of {{numRounds}} rounds. In each round, you will choose between two different actions. After both you and your opponent have made a decision, you will each receive a certain number of points, and the next round will begin. After the game is over, you will be randomly matched with another opponent for the next game. When you have completed {{numGames}} games, you will be able to submit the HIT. </p>
 
 <h5>Payment</h5>
 <p>Your score for each game is the sum of your points from each round. Your score for the HIT is the sum of your points from each game. We will convert your score to dollars at the rate of $0.003 per point. The amount you earn will be given to you as the bonus for the HIT. Regardless of what decisions you make during the games, you will earn a base rate of 0.25 cents for completing the HIT.</p>
 
 <h5>The Game</h5>
-<p> In each round of the game, you will select between <span class="green">Choice 1</span> and <span class="red">Choice 2</span>. You will have {{roundWait}} seconds to make your decision. After that, you will be unable to finish the game and must submit the incomplete HIT.</p>
+<p> In each round of the game, you will select between <span class="green">Choice 1</span> and <span class="red">Choice 2</span>. You will have two minutes to make your decision. After that, you will be unable to finish the game and must submit the incomplete HIT.</p>
 <p>The number of points you receive in each round depends both on your choice and the choice of your opponent. The table below shows the number of points associated with each possible combination:
 {{> payoffTable}}
 In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive. Another way to understand the table is as follows:</p>

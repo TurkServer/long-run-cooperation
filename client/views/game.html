@@ -46,9 +46,9 @@
       {{#if playing}}
       
       {{#if pending}}
-      <p>Make a choice for round {{round}}. You have {{roundWait}} seconds. After that, the game will be terminated and you will be returned to the waiting room.</p>
+      <p>Make a choice for round {{round}}. You have {{roundWait}} seconds. After that, the game will be terminated.</p>
       {{else}}
-      <p>Waiting on your opponent. After {{roundWait}} seconds have passed, the game will be terminated and you will be returned to the waiting room.</p>
+      <p>Waiting on your opponent. After {{roundWait}} seconds have passed, the game will be terminated and you will be matched with another opponent.</p>
       {{/if}}
 
       <p>Seconds elapsed: {{timeSpent}} </p>
@@ -62,7 +62,7 @@
       {{> submit reason="finished"}}
       {{else}}
       <strong>Game Over.</strong><br/>
-      <button type="button" class="btn btn-default return">Return to Waiting Room</button>
+      <button type="button" class="btn btn-default return">Next Game</button>
       {{/if}}
 
       {{/if}}

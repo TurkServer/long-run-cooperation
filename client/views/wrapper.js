@@ -25,7 +25,7 @@ Template.abandoned.helpers({
 });
 
 Template.abandoned.events({
-    "click .lobby": function () {
-	Meteor.call('setState', 'lobby');
+    "click .next": function () {
+	Meteor.call('getMatched');
     },
 });

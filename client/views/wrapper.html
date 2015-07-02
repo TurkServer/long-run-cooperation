@@ -46,11 +46,10 @@
 
 <template name="abandoned">
   {{#if frozen}}
-  Because you did not make a decision in time, you will be unable to finish the game and must submit the incomplete HIT. You will still be paid for any games you did complete. Click the button below to submit the HIT.
+  <p> You did not make a decision in time, so the game was terminated. You will still be paid for any games you did complete. Click the button below to submit the HIT.</p>
   {{> submit reason="frozen"}}
   {{else}}
-  Because you did not make a decision in time, the game was terminated. Click the button below to return to the waiting room.<br/>
-  <input class="btn btn-default lobby" type="button" value="Go to Waiting Room">
+  <p>You did not make a decision in time, so the game was terminated. Click the button below to play another game.</p>
+  <input class="btn btn-default next" type="button" value="Next Game">
   {{/if}}
-  
 </template>

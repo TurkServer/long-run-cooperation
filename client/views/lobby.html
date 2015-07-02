@@ -1,15 +1,9 @@
 <template name="lobby">
   <h4>Waiting Room</h4>
   {{#if frozen}}
-  Because another player disconnected, you will be unable to complete all {{numGames}} games. You will still be paid for the games you did complete. Click the button below to submit the HIT.
+  Another player has disconnected, so you will be unable to complete all {{numGames}} games. You will still be paid for the games you did complete. Click the button below to submit the HIT.
   {{> submit reason="frozen"}}
   {{else}}
-  Your partner is not available yet.
+  <p> There are no other players in the waiting room right now. Please wait to be matched to a game.</p>
   {{/if}}
-  <!-- {{#if empty}} -->
-  <!-- <p> There are no other players in the waiting room right now. Please wait to be matched to a game.</p> -->
-  <!-- {{else}} -->
-  <!-- <p> Click the button below to begin a game with a randomly chosen opponent. </p> -->
-  <!-- <input class="btn btn-default get-matched" type="button" value="Play a Game"> -->
-  <!-- {{/if}} -->
 </template>

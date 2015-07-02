@@ -87,6 +87,6 @@ Template.game.events({
 	Meteor.call('completeMove', '2');
     },
     "click .return": function () {
-	Meteor.call('setState', 'lobby');
+	Meteor.call('getMatched');
     },
 });
