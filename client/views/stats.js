@@ -8,7 +8,7 @@ Template.stats.helpers({
     },
     bonus: function() {
 	var total = Meteor.user().score;
-	return (total*0.003).toFixed(2);
+	return (total*0.0025).toFixed(2);
     },
     playing: function() {
 	var user = Meteor.user();
