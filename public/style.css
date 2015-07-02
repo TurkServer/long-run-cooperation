@@ -41,14 +41,22 @@ body {
     text-align: right;
 }
 
-.has-error.radio label, .has-success.radio label {
-    font-weight: bold !important;
-}
-
 h5 {
     text-decoration: underline;
 }
 
 td {
     padding: 4px !important;
+}
+
+.alert {
+    margin-bottom: 10px;
+}
+
+.sm-width {
+    width: 100px;
+}
+
+label {
+    font-weight:normal;
 }

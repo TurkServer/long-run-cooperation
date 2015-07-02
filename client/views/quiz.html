@@ -4,25 +4,38 @@
     {{> payoffTable}}
   </p>
 
-  <p> Answer the two questions below. If you choose correctly, the text will be turn green. If you choose incorrectly, the text will turn red. You can change your choice as many times as you want. Once you have selected both correct answers, a "Go to Waiting Room" button will appear.</p>
-  <form>
+  <p> Answer the two questions below. If you answer any questions incorrectly, you will get a second chance. If you answer a question incorrectly twice, you will not be allowed to play the game and must submit the incomplete HIT. You will still be paid the base rate. If you answer correctly, you will be taken to the waiting room and can begin playing games.</p>
+
+  <form class="quiz">
     {{#each questions}}
     {{> question}}
     {{/each}}
 
-    {{#if correct}}
-    <button type="submit" class="btn btn-default lobby">Go to Waiting Room</button>
+    {{#if failed}}
+    <div class="alert alert-danger" role="alert">You have used up your two tries. While you will be unable to play the games, you will still earn the base rate. Please click the button below to submit the HIT.</div>    
+    {{> submit reason="failed"}}
+    {{else}}
+    {{#if incorrect}}
+    <div class="alert alert-warning" role="alert">There is a mistake in one or both of your answers. Please try one more time.</div>
+    <button type="submit" class="btn btn-default submit">Submit</button>
+    {{else}}
+    <button type="submit" class="btn btn-default submit">Submit</button>
+    {{/if}}
     {{/if}}
   </form>
+
 </template>
 
 <template name="question">
-  <p>{{text}}</p>
-  {{#each options}}
-  <div class="radio {{#if error}}has-error{{/if}} {{#if success}}has-success{{/if}}">
-    <label>
-      <input type="radio" name="{{../_id}}" id="{{id}}" value="{{value}}">{{text}}
-    </label>
+  <div class="form-group {{#if incorrect}}has-error{{/if}}">
+    <label for="{{_id}}" class="control-label">{{text}}</label>
+    <input id="{{_id}}" name="{{_id}}" class="sm-width form-control">
   </div>
-  {{/each}}
+  <!-- {{#each options}} -->
+  <!-- <div class="radio {{#if error}}has-error{{/if}} {{#if success}}has-success{{/if}}"> -->
+  <!--   <label> -->
+  <!--     <input type="radio" name="{{../_id}}" id="{{id}}" value="{{value}}">{{text}} -->
+  <!--   </label> -->
+  <!-- </div> -->
+  <!-- {{/each}} -->
 </template>

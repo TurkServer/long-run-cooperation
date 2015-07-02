@@ -8,7 +8,9 @@ Meteor.startup(function () {
 		     games: 1,
 		     treatment: 1,
 		     submitted: 1,
-		     score: 1}});
+		     score: 1,
+		     quiz: 1,
+		     number: 1}});
     });
     Meteor.publish('games', function () {
       return Games.find();
@@ -16,7 +18,10 @@ Meteor.startup(function () {
 });
 
 Accounts.onCreateUser(function(options, user) {
-    console.log(options.profile);
+    var numbers = [0];
+    Meteor.users.find().forEach(function(obj) {
+	numbers.push(obj.number);
+    });
     user.assignmentId = options.profile.assignmentId;
     user.state = 'instructions';
     user.game = {};
@@ -24,6 +29,8 @@ Accounts.onCreateUser(function(options, user) {
     user.treatment = 1;
     user.submitted = false;
     user.score = 0;
+    user.quiz = 0;
+    user.number = Math.max.apply(Math, numbers) + 1;
     return user;
 });
 

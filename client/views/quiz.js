@@ -17,41 +17,63 @@ Template.quiz.helpers({
     questions: function() {
 	return Questions.find();
     },
-    correct: function() {
-	return Questions.find({correct: true}).count() == 2;
-
+    incorrect: function() {
+	var u = Meteor.user();
+	return u && u.quiz == 1;
+    },
+    failed: function() {
+	var u = Meteor.user();
+	return u && u.quiz == 2;
     }
 });
 
 Template.quiz.events({
-    "click .lobby": function (e) {
+    "submit .quiz": function (e) {
 	e.preventDefault();
-	Meteor.call('setState', 'lobby');
+	var form = e.target;
+	Questions.find().forEach(function(obj) {
+	    var val = form[obj._id].value;
+	    var correct = val == obj.answer ? true: false;
+	    Questions.update({_id: obj._id},
+			     {$set: {correct: correct}});
+	});
+	var correct = Questions.find({correct: true}).count() == 2;
+	if (correct) {
+	    Meteor.call('getMatched');
+	} else {
+	    Meteor.call('incQuiz');
+	}
     },
 });
-			  
-Template.question.events({
-    'click input': function(e, template) {
-	var qobj = template.data;
-	var oobj = this;
-	var options = qobj.options;
-	var correct = false;
-	for (var key in options) {
-	    if (key == oobj.value - 1) {
-		if (oobj.text != qobj.answer) {
-		    options[key].error = true;
-		} else {
-		    options[key].success = true;
-		    correct = true;
-		}
-	    } else {
-		options[key].error = false;
-		options[key].success = false;
-	    }
-	}
-	Questions.update(qobj._id,
-			 {$set: {options: options,
-				 correct: correct}});;
+
+Template.question.helpers({
+    incorrect: function() {
+	return this.correct === false;
     }
 });
+			  
+// Template.question.events({
+//     'click input': function(e, template) {
+// 	var qobj = template.data;
+// 	var oobj = this;
+// 	var options = qobj.options;
+// 	var correct = false;
+// 	for (var key in options) {
+// 	    if (key == oobj.value - 1) {
+// 		if (oobj.text != qobj.answer) {
+// 		    options[key].error = true;
+// 		} else {
+// 		    options[key].success = true;
+// 		    correct = true;
+// 		}
+// 	    } else {
+// 		options[key].error = false;
+// 		options[key].success = false;
+// 	    }
+// 	}
+// 	Questions.update(qobj._id,
+// 			 {$set: {options: options,
+// 				 correct: correct}});;
+//     }
+// });
 		     

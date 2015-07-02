@@ -18,9 +18,6 @@ Template.lobby.helpers({
     frozen: function() {
 	return frozen();
     },
-    lobbyWait: function() {
-	return lobbyWait;
-    }
 });
 
 Template.lobby.events({

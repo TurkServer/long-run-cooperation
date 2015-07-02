@@ -1,6 +1,15 @@
 Games = new Meteor.Collection('games');
 
 Meteor.methods({
+    getMatched: function() {
+	var oppNumber = nextOpponent();
+	var opp = Meteor.users.findOne({number: oppNumber});
+	if (opp && opp.status.online && opp.state=='lobby') {
+	    Meteor.call('matchPlayers', Meteor.userId(), opp._id); 
+	} else {
+	    Meteor.call('setState', 'lobby');
+	}
+    },
     matchPlayers: function(pid1, pid2) {
 	var state = {};
 	var moves = {};
@@ -30,7 +39,7 @@ Meteor.methods({
 			    {$set: {state: 'game',
 				    'game.game_id': game_id,
 				    'game.opponent_id': pid1,
-				    'game.invited': true}});
+				    'game.invited': false}});
 
     },
     completeMove: function(action) {
@@ -100,4 +109,8 @@ Meteor.methods({
 			    {$set: {state: state}});
 
     },
+    incQuiz: function() {
+	Meteor.users.update({_id: Meteor.userId()},
+			    {$inc: {quiz: 1}});
+    }
 });
