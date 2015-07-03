@@ -45,11 +45,11 @@
 </template>
 
 <template name="abandoned">
-  {{#if frozen}}
-  <p> You did not make a decision in time, so the game was terminated. You will still be paid for any games you did complete. Click the button below to submit the HIT.</p>
-  {{> submit reason="frozen"}}
-  {{else}}
   <p>You did not make a decision in time, so the game was terminated. Click the button below to play another game.</p>
   <input class="btn btn-default next" type="button" value="Next Game">
-  {{/if}}
+</template>
+
+<template name="idle">
+  <p>You seem to have gone idle. Click the button below to resume.</p>
+  <input class="btn btn-default next" type="button" value="Continue">
 </template>

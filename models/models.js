@@ -114,5 +114,10 @@ Meteor.methods({
     incQuiz: function() {
 	Meteor.users.update({_id: Meteor.userId()},
 			    {$inc: {quizAttempts: 1}});
+    },
+    passedQuiz: function() {
+	Meteor.users.update({_id: Meteor.userId()},
+			    {$set: {passedQuiz: 1}});
+
     }
 });

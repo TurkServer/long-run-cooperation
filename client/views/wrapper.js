@@ -18,14 +18,18 @@ Template.main.helpers({
     }
 });
 
-Template.abandoned.helpers({
-    frozen: function() {
-	return frozen();
-    },
-});
-
 Template.abandoned.events({
     "click .next": function () {
 	Meteor.call('getMatched');
+    },
+});
+
+Template.idle.events({
+    "click .next": function () {
+	if (Meteor.user().passedQuiz) {
+	    Meteor.call('getMatched');
+	} else {
+	    Meteor.call('setState', 'instructions');
+	}
     },
 });

@@ -37,6 +37,7 @@ Template.quiz.events({
 	});
 	var correct = Questions.find({correct: true}).count() == 2;
 	if (correct) {
+	    Meteor.call('passedQuiz');
 	    Meteor.call('getMatched');
 	} else {
 	    Meteor.call('incQuiz');

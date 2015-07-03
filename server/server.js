@@ -9,7 +9,8 @@ Meteor.startup(function () {
 		     treatment: 1,
 		     submitted: 1,
 		     score: 1,
-		     quizAttempts: 1}});
+		     quizAttempts: 1,
+		     passedQuiz: 1}});
     });
     Meteor.publish('games', function () {
       return Games.find();
@@ -25,6 +26,7 @@ Accounts.onCreateUser(function(options, user) {
     user.submitted = false;
     user.score = 0;
     user.quizAttempts = 0;
+    user.passedQuiz = 0;
     return user;
 });
 
