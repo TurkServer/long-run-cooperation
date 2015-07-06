@@ -46,9 +46,9 @@
       {{#if playing}}
       
       {{#if pending}}
-      <p>Make a choice for round {{round}}. You have two minutes. After that, the game will be terminated.</p>
+      <p>Make a choice for round {{round}}. You have {{roundWait}} seconds. After that, the game will be terminated.</p>
       {{else}}
-      <p>Waiting on your opponent. After two minutes have passed, the game will be terminated and you will be matched with another opponent.</p>
+      <p>Waiting on your opponent. After {{roundWait}} seconds have passed, the game will be terminated and you will be matched with another opponent.</p>
       {{/if}}
 
       <p>Seconds elapsed: {{timeSpent}} </p>

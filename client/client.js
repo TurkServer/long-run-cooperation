@@ -2,21 +2,21 @@ Accounts.ui.config({
   passwordSignupFields: "USERNAME_ONLY"
 });
 
-Deps.autorun(function(c) {
-    try {
-	var settings = {'interval': idleWait*1000,
-			'threshold': 10000,
-			'idleOnBlur': false};
-	UserStatus.startMonitor(settings);
-	c.stop;
-    } catch (err) { }
-});
+// Deps.autorun(function(c) {
+//     try {
+// 	var settings = {'interval': idleWait*1000,
+// 			'threshold': 10000,
+// 			'idleOnBlur': false};
+// 	UserStatus.startMonitor(settings);
+// 	c.stop;
+//     } catch (err) { }
+// });
 
-Deps.autorun(function() {
-    if (Meteor.user() && UserStatus.isIdle()) {
-	Meteor.call('setState', 'idle');
-    }
-});
+// Deps.autorun(function() {
+//     if (Meteor.user() && UserStatus.isIdle()) {
+// 	Meteor.call('setState', 'idle');
+//     }
+// });
 
 Meteor.startup(function () {
     $('.alert').alert()

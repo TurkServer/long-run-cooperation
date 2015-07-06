@@ -1,5 +1,5 @@
 <template name="submit">
-  <form action="https://workersandbox.mturk.com/mturk/externalSubmit" method="POST" class="new-entry">
+  <form action="{{submitURL}}" method="POST" class="new-entry">
     <input type="hidden" id="assignmentId" value="{{ params.assignmentId }}" name="assignmentId"/>
     <input type="hidden" id="workerId" value="{{ params.workerId }}" name="workerId"/>
     <input type="hidden" id="hitId" value="{{ params.hitId }}" name="hitId"/>

@@ -1,10 +1,10 @@
 var Questions = new Meteor.Collection(null)
 var question1 = {text: '1. If you choose 1 and your opponent chooses 2, how much payoff will you receive?',
-		 answer: 2,
+		 answer: payoffs.S,
 		 correct: false,
 		 answered: false};
 var question2  = {text: '2. If you choose 2 and your opponent chooses 1, how much payoff will you receive?',
-		  answer: 6,
+		  answer: payoffs.T,
 		  correct: false,
 		  answered: false};
 Questions.insert(question1);

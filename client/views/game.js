@@ -5,13 +5,13 @@ Template.game.helpers({
 	var round_times = g.round_times;
 	var start = g.roundTimes[g.roundTimes.length - 1];
 	var now = new Date();
-	var diff = Chronos.liveMoment(now).diff(start, 'seconds');
+	var diff = Math.max(Chronos.liveMoment(now).diff(start, 'seconds'),0);
 	if (diff >= roundWait) {
 	    Meteor.call('abandonGame');
 	    if (g.state[pid()] == 'pending') {
 		Meteor.call('setState', 'abandoned');
 	    } else {
-		Meteor.call('setState', 'lobby');
+		Meteor.call('getMatched');
 	    }
 	}
 	return diff;
