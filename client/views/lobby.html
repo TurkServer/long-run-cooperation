@@ -4,6 +4,10 @@
   <p>Another player has disconnected, so you will be unable to complete all {{numGames}} games. You will still be paid for the games you did complete. Click the button below to submit the HIT.</p>
   {{> submit reason="frozen"}}
   {{else}}
-  <p> All other players are currently paired up. Games go very quickly, so please wait a moment to be matched.</p>
+  <p> All other players are currently paired up. Games go very quickly, so please wait a moment to be matched. As soon as someone becomes available, you will be automatically matched to a game.</p>
+  <br/>
+  <br/>
+  <p> If you find yourself waiting for a long time, you can click the button below to submit the HIT early, without completing all {{numGames}} games. You will still be paid for the games you did complete.</p>
+  {{> submit reason="early"}}
   {{/if}}
 </template>
