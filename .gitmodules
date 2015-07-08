@@ -1,0 +1,3 @@
+[submodule "packages/mizzao:turkserver"]
+	path = packages/mizzao:turkserver
+	url = ssh://git@github.com/HarvardEconCS/turkserver-meteor.git

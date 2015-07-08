@@ -8,13 +8,9 @@ Template.wrapper.helpers({
 
 Template.main.helpers({
     active: function() {
-	if (Meteor.loggingIn()) {
-	    return 'loading';
+	if (TurkServer.inExperiment()) {
+	    return 'game';
 	}
-	if (Meteor.user()) {
-	    return playerState();
-	}
-	return 'loggedout';
     }
 });
 
