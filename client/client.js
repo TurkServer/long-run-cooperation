@@ -8,5 +8,5 @@ Tracker.autorun(function() {
 
 Tracker.autorun(function() {
     var group = TurkServer.group();
-    Meteor.subscribe('users', group);
+    Meteor.subscribe('collections', group);
 });

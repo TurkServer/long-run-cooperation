@@ -1,21 +1,4 @@
 Template.game.helpers({
-    timeSpent: function() {
-	var g = game();
-	if (!g) { return; }
-	var round_times = g.round_times;
-	var start = g.roundTimes[g.roundTimes.length - 1];
-	var now = new Date();
-	var diff = Math.max(Chronos.liveMoment(now).diff(start, 'seconds'),0);
-	if (diff >= roundWait) {
-	    Meteor.call('abandonGame');
-	    if (g.state[pid()] == 'pending') {
-		Meteor.call('setState', 'abandoned');
-	    } else {
-		Meteor.call('getMatched');
-	    }
-	}
-	return diff;
-    },
     roundWait: function() {
 	return roundWait;
     },
@@ -25,68 +8,38 @@ Template.game.helpers({
     numRounds: function() {
 	return numRounds;
     },
-    gameNum: function() {
-	var user = Meteor.user();
-	var g = game();
-	if (!user || !g || !user.games) {return;}
-	var number = user.games.length;
-	if (g.status != 'over') {
-	    number += 1;
-	}
-	return number;
-    },
-    done: function() {
-	var u = Meteor.user();
-	return u && u.games && u.games.length == numGames;
-    },
-    invited: function() {
-	var u = Meteor.user();
-	return u && u.game.invited;
-    },
     round: function() {
-	var g = game();
-	return g && game().round;
+	var round = TurkServer.currentRound();
+	return round && round.index;
+    },
+    choseAction: function() {
+	var round = TurkServer.currentRound();
+	return round && 
+	    Rounds.findOne({playerId: Meteor.userId(),
+			    roundIndex: round.index});
     },
     showPrevious: function() {
-	var g = game();
-	return g && game().round > 1;   
-    },
-    pending: function() {
-	var g = game();
-	return g && g.state[pid()] == 'pending';
-    },
-    turnOver: function() {
-	var g = game();
-	return g && g.state[pid()] == 'completed';
-    },
-    playing: function() {
-	var g = game();
-	return g && g.status != 'over';
+	var round = TurkServer.currentRound();
+	return round && round.index > 1;
     },
     results: function() {
-	return gameResults();
+	return results();
     },
     payoffs: function() {
-	var results = gameResults();
-	var object = {'you': 0,
+	var r = results();
+	var object = {'you': 0, 
 		      'opponent': 0};
-	for (i=0; i<results.length; i++) {
-	    var round = results[i];
+	for (var i=0; i<r.length; i++) {
+	    var round = r[i];
 	    object['you'] += round['pscore'];
 	    object['opponent'] += round['oscore'];
 	}
 	return object;
-    },
+    }
 });
-
 Template.game.events({
-    "click .cooperate": function () {
-	Meteor.call('completeMove', '1');	
-    },
-    "click .defect": function () {
-	Meteor.call('completeMove', '2');
-    },
-    "click .return": function () {
-	Meteor.call('getMatched');
+    "click button": function (e) {
+	Meteor.call('chooseAction', parseInt(e.target.value),
+		    TurkServer.currentRound().index);
     },
 });

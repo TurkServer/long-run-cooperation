@@ -36,20 +36,3 @@
 <template name="main">
   {{> Template.dynamic template=active}}
 </template>
-
-<template name="loggedout">
-  {{> instructions}}
-</template>
-
-<template name="loading">
-</template>
-
-<template name="abandoned">
-  <p>You did not make a decision in time, so the game was terminated. Click the button below to play another game.</p>
-  <input class="btn btn-default next" type="button" value="Next Game">
-</template>
-
-<template name="idle">
-  <p>You seem to have gone idle. Click the button below to resume.</p>
-  <input class="btn btn-default next" type="button" value="Continue">
-</template>

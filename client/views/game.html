@@ -6,59 +6,70 @@
         <p>Each game consists of {{numRounds}} rounds. In each round, you will select between <span class="green">Choice 1</span> and <span class="red">Choice 2</span>. The table below shows the number of points associated with each possible combination of your choice and the choice of your opponent. In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive.
 	  {{> payoffTable}}
 	</p>
-      
+
       {{#if showPrevious}}
       Previous choices and outcomes:
       <table class="table table-bordered">
-	<tbody>
-	  <tr>
-	    <td><strong>Round</strong></td>
-	    <td><strong>Your Choice</strong></td>
-	    <td><strong>Opponent's Choice</strong></td>
-	    <td><strong>Your Points</strong></td>
-	    <td><strong>Opponent's Points</strong></td>
-	  </tr>
-	  {{#each results}}
-	  <tr>
-	    <td>{{round_}}</td>
-	    <td><span class="{{pchoice_color}}">{{pchoice}}</span></td>
-	    <td><span class="{{ochoice_color}}">{{ochoice}}</span></td>
-	    <td>{{pscore}}</td>
-	    <td>{{oscore}}</td>
-	  </tr>
-	  {{/each}}
-	  <tr>
-	    <td colspan="3" class="align-right"><strong>Total Points</strong></td>
-	    <td>{{payoffs.you}}</td>
-	    <td>{{payoffs.opponent}}</td>
-	  </tr>
-	</tbody>
+      	<tbody>
+      	  <tr>
+      	    <td><strong>Round</strong></td>
+      	    <td><strong>Your Choice</strong></td>
+      	    <td><strong>Opponent's Choice</strong></td>
+      	    <td><strong>Your Points</strong></td>
+      	    <td><strong>Opponent's Points</strong></td>
+      	  </tr>
+      	  {{#each results}}
+      	  <tr>
+      	    <td>{{round_}}</td>
+      	    <td><span class="{{pcolor}}">{{pchoice}}</span></td>
+      	    <td><span class="{{ocolor}}">{{ochoice}}</span></td>
+      	    <td>{{pscore}}</td>
+      	    <td>{{oscore}}</td>
+      	  </tr>
+      	  {{/each}}
+      	  <tr>
+      	    <td colspan="3" class="align-right"><strong>Total Points</strong></td>
+      	    <td>{{payoffs.you}}</td>
+      	    <td>{{payoffs.opponent}}</td>
+      	  </tr>
+      	</tbody>
       </table>
       {{/if}}
 
-      {{#if playing}}
+
+      {{#if choseAction}}
+      <p>Waiting for your opponent to make a decision. After two minutes, the game will be terminated.</p> 
+      {{else}}
+      <p>Make a choice for round {{round}}. You have two minutes. After that, the game will be terminated.</p> 
+      {{/if}}
+      <p>Time remaining: {{tsRoundRemainingTime}} </p>
+      <button type="button" value="1" class="btn btn-success {{#if choseAction}}disabled{{/if}}">Choice 1</button>
+      <button type="button" value="2" class="btn btn-danger {{#if choseAction}}disabled{{/if}}">Choice 2</button>
+
+
+
+      <!-- {{#if playing}} -->
       
-      {{#if pending}}
-      <p>Make a choice for round {{round}}. You have {{roundWait}} seconds. After that, the game will be terminated.</p>
-      {{else}}
-      <p>Waiting on your opponent. After {{roundWait}} seconds have passed, the game will be terminated and you will be matched with another opponent.</p>
-      {{/if}}
+      <!-- {{#if pending}} -->
+      <!-- <p>Make a choice for round {{round}}. You have {{roundWait}} seconds. After that, the game will be terminated.</p> -->
+      <!-- {{else}} -->
+      <!-- <p>Waiting on your opponent. After {{roundWait}} seconds have passed, the game will be terminated and you will be matched with another opponent.</p> -->
+      <!-- {{/if}} -->
 
-      <p>Seconds elapsed: {{timeSpent}} </p>
-      <button type="button" class="btn btn-success cooperate {{#if turnOver}}disabled{{/if}}">Choice 1</button>
-      <button type="button" class="btn btn-danger defect {{#if turnOver}}disabled{{/if}}">Choice 2</button>
+      <!-- <p>Seconds elapsed: {{timeSpent}} </p> -->
+      <!-- <button type="button" class="btn btn-success cooperate {{#if turnOver}}disabled{{/if}}">Choice 1</button> -->
+      <!-- <button type="button" class="btn btn-danger defect {{#if turnOver}}disabled{{/if}}">Choice 2</button> -->
 
-      {{else}} <!-- game is over -->
+      <!-- {{else}}-->
+      <!-- {{#if done}} -->
+      <!-- You have finished your {{numGames}} games. Click the button below to submit the HIT. -->
+      <!-- {{> submit reason="finished"}} -->
+      <!-- {{else}} -->
+      <!-- <strong>Game Over.</strong><br/> -->
+      <!-- <button type="button" class="btn btn-default return">Next Game</button> -->
+      <!-- {{/if}} -->
 
-      {{#if done}} <!-- ready to submit -->
-      You have finished your {{numGames}} games. Click the button below to submit the HIT.
-      {{> submit reason="finished"}}
-      {{else}}
-      <strong>Game Over.</strong><br/>
-      <button type="button" class="btn btn-default return">Next Game</button>
-      {{/if}}
-
-      {{/if}}
+      <!-- {{/if}} -->
     </div>
   </div>
 </template>
