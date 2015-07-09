@@ -1,9 +1,6 @@
 Meteor.publish("users", function() {
     return Meteor.users.find();
 });
-Meteor.publish('games', function () {
-    return Games.find();
-});
 
 Meteor.startup(function () {
     Batches.upsert({name: 'testing'}, {name: 'testing'});

@@ -1,6 +1,3 @@
-Games = new Meteor.Collection('games');
-TurkServer.partitionCollection(Games);
-
 Meteor.methods({
     getMatched: function() {
 	var count = readyPlayers().count();
