@@ -1,21 +1,26 @@
 Template.stats.helpers({
-    numGames: function() {
-	var user = Meteor.user();
-	return user && user.games && user.games.length;
+    todayStats: function() {
+	stats = {};
+	var session = Sessions.findOne({userId: Meteor.userId(),
+					day: today()});
+	stats['games'] = session.games;
+	stats['bonus'] = session.bonus.toFixed(2);
+	return stats;
     },
-    totalScore: function() {
-	return Meteor.user().score;
-    },
-    bonus: function() {
-	var total = Meteor.user().score;
-	return (total*0.0025).toFixed(2);
+    allStats: function() {
+	stats = {'games': 0, 'bonus': 0};
+	var sessions = Sessions.find({userId: Meteor.userId()});
+	sessions.forEach(function(obj) {
+	    stats['games'] += obj.games;
+	    stats['bonus'] += obj.bonus;
+	});
+	stats['bonus'] = stats['bonus'].toFixed(2);
+	return stats;
     },
     playing: function() {
-	var user = Meteor.user();
-	return user && user.state == 'game';
+	return TurkServer.inExperiment();
     },
     numOpponentGames: function() {
-	var o = opponent();
-	return o && o.games.length;
+	return
     },
 });

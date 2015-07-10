@@ -8,6 +8,11 @@ Template.game.helpers({
     numRounds: function() {
 	return numRounds;
     },
+    gameNum: function() {
+	var session = Sessions.findOne({userId: Meteor.userId(),
+					day: today()});
+	return session && session.games + 1;
+    },
     round: function() {
 	var round = TurkServer.currentRound();
 	return round && round.index;
@@ -19,7 +24,7 @@ Template.game.helpers({
     choseAction: function() {
 	var round = TurkServer.currentRound();
 	return round && 
-	    Rounds.findOne({playerId: Meteor.userId(),
+	    Rounds.findOne({userId: Meteor.userId(),
 			    roundIndex: round.index});
     },
     results: function() {
@@ -37,6 +42,7 @@ Template.game.helpers({
 	return object;
     }
 });
+
 Template.game.events({
     "click .action": function(e) {
 	Meteor.call('chooseAction', parseInt(e.target.value),

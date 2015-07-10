@@ -1,14 +1,13 @@
 Meteor.publish('collections', function() {
-    return [Meteor.users.find(), Rounds.find()];
+    return [Meteor.users.find(), Rounds.find(), Sessions.find({userId: this.userId})];
 });
 
 Meteor.startup(function () {
+    Sessions._ensureIndex({day: 1, userId: 1});
+    Rounds._ensureIndex({roundIndex: 1, userId: 1});
     Batches.upsert({name: 'testing'}, {name: 'testing', active: true});
     var batchid = Batches.findOne({name: 'testing'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
-    
-    //var batch = Batches.findOne({name: 'testing'});
-    //batch.setAssigner(new TurkServer.Assigners.PairAssigner);
 });
 
 TurkServer.initialize(function() {
@@ -19,41 +18,47 @@ Meteor.methods({
     startRound: function() {
 	var start = new Date();
 	var end = new Date(start.getTime() + 2*60000);
-	TurkServer.Timers.startNewRound(start, end, function() {});
+	TurkServer.Timers.startNewRound(start, end, function() {
+	    console.log('end round');
+	});
     },
     chooseAction: function(action, round) {
 	Rounds.insert({timestamp: new Date(),
-		       playerId: Meteor.userId(),
+		       userId: Meteor.userId(),
 		       roundIndex: round,
 		       action: action});
 	var rounds = Rounds.find({roundIndex: round});
-	var playerIds = [];
+	var userIds = [];
 	var actions = {};
 	if (rounds.count() == 2) {
 	    rounds.forEach(function(obj) {
-		playerIds.push(obj.playerId);
-		actions[obj.playerId] = obj.action;
+		userIds.push(obj.userId);
+		actions[obj.userId] = obj.action;
 	    });
-	    var payoffs = payoffMap[actions[playerIds[0]]][actions[playerIds[1]]];
+	    var payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
 	    for (var i=0; i<=1; i++) {
 		Rounds.update({roundIndex: round,
-			       playerId: playerIds[i]},
+			       userId: userIds[i]},
 			      {$set: {payoff: payoffs[i]}});
-		var asst = TurkServer.Assignment.getCurrentUserAssignment(playerIds[i]);
-		asst.addPayment(payoffs[i]);
+		var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+		var bonus = payoffs[i]*conversion;
+		asst.addPayment(bonus);
+		Sessions.update({userId: asst.userId, 
+				 day: today()}, 
+				{$inc: {bonus: bonus}});
+
+	    }
+	    if (round == numRounds) {
+		Sessions.update({userId: asst.userId,
+				 day: today()},
+				{$inc: {games: 1}});
+		TurkServer.Instance.currentInstance().teardown(false);
 	    }
 	    Meteor.call('startRound');
 	}
     },
     goToLobby: function() {
-	var batch = TurkServer.Batch.currentBatch();
-	var asst = TurkServer.Assignment.currentAssignment();
 	var inst = TurkServer.Instance.currentInstance();
-	Partitioner.clearUserGroup(Meteor.userId());
-	asst._leaveInstance(inst._id);
-	batch.lobby.addAssignment(asst);
+	inst.sendUserToLobby(Meteor.userId());
     },
-    endGame: function() {
-	TurkServer.Instance.currentInstance().teardown();
-    }
 });
