@@ -21,6 +21,7 @@ email@1.0.6
 facts@1.0.4
 fastclick@1.0.3
 geojson-utils@1.0.3
+grigio:babel@0.1.4
 html-tools@1.0.4
 htmljs@1.0.4
 http@1.1.0
@@ -48,9 +49,9 @@ minimongo@1.0.8
 mizzao:autocomplete@0.5.1
 mizzao:bootboxjs@4.3.0
 mizzao:partitioner@0.5.4
-mizzao:timesync@0.3.1
+mizzao:timesync@0.3.2
 mizzao:turkserver@0.0.0
-mizzao:user-status@0.6.4
+mizzao:user-status@0.6.5
 mobile-status-bar@1.0.3
 momentjs:moment@2.10.3
 mongo@1.1.0

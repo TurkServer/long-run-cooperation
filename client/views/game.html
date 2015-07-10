@@ -7,7 +7,6 @@
 	  {{> payoffTable}}
 	</p>
 
-      {{#if showPrevious}}
       Previous choices and outcomes:
       <table class="table table-bordered">
       	<tbody>
@@ -34,42 +33,22 @@
       	  </tr>
       	</tbody>
       </table>
-      {{/if}}
 
-
+      {{#if gameOver}}
+      <strong>Game Over.</strong><br/>
+      <button type="button" class="btn btn-default endgame">Next Game</button>
+      {{else}}
+      
       {{#if choseAction}}
       <p>Waiting for your opponent to make a decision. After two minutes, the game will be terminated.</p> 
       {{else}}
-      <p>Make a choice for round {{round}}. You have two minutes. After that, the game will be terminated.</p> 
+      <p>Make a choice for round {{round}}. You have two minutes. After that, the game will be terminated.</p>
       {{/if}}
+
       <p>Time remaining: {{tsRoundRemainingTime}} </p>
-      <button type="button" value="1" class="btn btn-success {{#if choseAction}}disabled{{/if}}">Choice 1</button>
-      <button type="button" value="2" class="btn btn-danger {{#if choseAction}}disabled{{/if}}">Choice 2</button>
-
-
-
-      <!-- {{#if playing}} -->
-      
-      <!-- {{#if pending}} -->
-      <!-- <p>Make a choice for round {{round}}. You have {{roundWait}} seconds. After that, the game will be terminated.</p> -->
-      <!-- {{else}} -->
-      <!-- <p>Waiting on your opponent. After {{roundWait}} seconds have passed, the game will be terminated and you will be matched with another opponent.</p> -->
-      <!-- {{/if}} -->
-
-      <!-- <p>Seconds elapsed: {{timeSpent}} </p> -->
-      <!-- <button type="button" class="btn btn-success cooperate {{#if turnOver}}disabled{{/if}}">Choice 1</button> -->
-      <!-- <button type="button" class="btn btn-danger defect {{#if turnOver}}disabled{{/if}}">Choice 2</button> -->
-
-      <!-- {{else}}-->
-      <!-- {{#if done}} -->
-      <!-- You have finished your {{numGames}} games. Click the button below to submit the HIT. -->
-      <!-- {{> submit reason="finished"}} -->
-      <!-- {{else}} -->
-      <!-- <strong>Game Over.</strong><br/> -->
-      <!-- <button type="button" class="btn btn-default return">Next Game</button> -->
-      <!-- {{/if}} -->
-
-      <!-- {{/if}} -->
+      <button type="button" value="1" class="btn btn-success action {{#if choseAction}}disabled{{/if}}">Choice 1</button>
+      <button type="button" value="2" class="btn btn-danger action {{#if choseAction}}disabled{{/if}}">Choice 2</button>
+      {{/if}}
     </div>
   </div>
 </template>

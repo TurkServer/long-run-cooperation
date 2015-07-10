@@ -6,6 +6,9 @@ Meteor.startup(function () {
     Batches.upsert({name: 'testing'}, {name: 'testing', active: true});
     var batchid = Batches.findOne({name: 'testing'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
+    
+    //var batch = Batches.findOne({name: 'testing'});
+    //batch.setAssigner(new TurkServer.Assigners.PairAssigner);
 });
 
 TurkServer.initialize(function() {
@@ -19,34 +22,38 @@ Meteor.methods({
 	TurkServer.Timers.startNewRound(start, end, function() {});
     },
     chooseAction: function(action, round) {
-	var oppId = Meteor.users.findOne({_id: {$ne:
-						Meteor.userId()}})._id;
 	Rounds.insert({timestamp: new Date(),
 		       playerId: Meteor.userId(),
-		       oppId: oppId,
 		       roundIndex: round,
 		       action: action});
 	var rounds = Rounds.find({roundIndex: round});
+	var playerIds = [];
+	var actions = {};
 	if (rounds.count() == 2) {
-	    actions = {};
-	    opponents = {};
 	    rounds.forEach(function(obj) {
+		playerIds.push(obj.playerId);
 		actions[obj.playerId] = obj.action;
-		opponents[obj.playerId] = obj.oppId;
 	    });
-	    for (var playerId in actions) {
-		var myAction = actions[playerId];
-		var oppAction = actions[opponents[playerId]];
-		var payoff = payoffMap[myAction][oppAction];
+	    var payoffs = payoffMap[actions[playerIds[0]]][actions[playerIds[1]]];
+	    for (var i=0; i<=1; i++) {
 		Rounds.update({roundIndex: round,
-			       playerId: playerId},
-			      {$set: {payoff: payoff}});
+			       playerId: playerIds[i]},
+			      {$set: {payoff: payoffs[i]}});
+		var asst = TurkServer.Assignment.getCurrentUserAssignment(playerIds[i]);
+		asst.addPayment(payoffs[i]);
 	    }
-	    if (round < numRounds) {
-		Meteor.call('startRound');
-	    } else {
-		TurkServer.Instance.currentInstance().teardown();
-	    }
+	    Meteor.call('startRound');
 	}
     },
+    goToLobby: function() {
+	var batch = TurkServer.Batch.currentBatch();
+	var asst = TurkServer.Assignment.currentAssignment();
+	var inst = TurkServer.Instance.currentInstance();
+	Partitioner.clearUserGroup(Meteor.userId());
+	asst._leaveInstance(inst._id);
+	batch.lobby.addAssignment(asst);
+    },
+    endGame: function() {
+	TurkServer.Instance.currentInstance().teardown();
+    }
 });

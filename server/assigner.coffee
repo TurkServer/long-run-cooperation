@@ -8,3 +8,5 @@ class TurkServer.Assigners.PairAssigner extends TurkServer.Assigner
           for asst in lobbyAssts
               @lobby.pluckUsers([asst.userId])
               @instance.addAssignment(asst)
+              Assignments.update asst._id,
+                $set: {game: 1}                

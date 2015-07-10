@@ -12,21 +12,21 @@ Template.game.helpers({
 	var round = TurkServer.currentRound();
 	return round && round.index;
     },
+    gameOver: function() {
+	var round = TurkServer.currentRound();
+	return round && round.index == numRounds + 1;
+    },
     choseAction: function() {
 	var round = TurkServer.currentRound();
 	return round && 
 	    Rounds.findOne({playerId: Meteor.userId(),
 			    roundIndex: round.index});
     },
-    showPrevious: function() {
-	var round = TurkServer.currentRound();
-	return round && round.index > 1;
-    },
     results: function() {
-	return results();
+	return gameResults();
     },
     payoffs: function() {
-	var r = results();
+	var r = gameResults();
 	var object = {'you': 0, 
 		      'opponent': 0};
 	for (var i=0; i<r.length; i++) {
@@ -38,8 +38,11 @@ Template.game.helpers({
     }
 });
 Template.game.events({
-    "click button": function (e) {
+    "click .action": function(e) {
 	Meteor.call('chooseAction', parseInt(e.target.value),
 		    TurkServer.currentRound().index);
     },
+    "click .endgame": function() {
+	Meteor.call('goToLobby');
+    }
 });
