@@ -1,5 +1,19 @@
 Router.map(function() {
-    this.route('wrapper', {
-	path: '/',
+    // authentication?
+    // see lobby_client.coffee in TurkServer
+    this.route('lobby', {
+	path: '/lobby',
+	layoutTemplate: 'wrapper',
+	template: 'lobby'
+    });
+    this.route('game', {
+	path: '/game',
+	layoutTemplate: 'wrapper',
+	template: 'game'
+    });
+    this.route('survey', {
+	path: '/survey',
+	layoutTemplate: 'wrapper',
+	template: 'submit'
     });
 });

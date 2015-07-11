@@ -1,8 +1,12 @@
 $('.alert').alert()
 
 Tracker.autorun(function() {
-    if (TurkServer.inExperiment()) {
-	Router.go('/');
+    if (TurkServer.inLobby()) {
+	Router.go('/lobby');
+    } else if (TurkServer.inExperiment()) {
+	Router.go('/game');
+    } else if (TurkServer.inExitSurvey()) {
+	Router.go('/survey');
     }
 });
 

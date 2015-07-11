@@ -17,22 +17,7 @@
       </div>
     </div>
     <div class="row">
-      {{#if showStats}}
-      <div class="col-md-9">
-	{{> main}}
-      </div>
-      <div class="col-md-3">
-	{{> stats}}
-      </div>
-      {{else}}
-      <div class="col-md-12">
-	{{> main}}
-      </div>
-      {{/if}}
+      {{> yield}}
     </div>
   </div>
-</template>
-
-<template name="main">
-  {{> Template.dynamic template=active}}
 </template>

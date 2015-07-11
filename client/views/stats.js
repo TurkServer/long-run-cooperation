@@ -3,6 +3,7 @@ Template.stats.helpers({
 	stats = {};
 	var session = Sessions.findOne({userId: Meteor.userId(),
 					day: today()});
+	if (!session) {return;}
 	stats['games'] = session.games;
 	stats['bonus'] = session.bonus.toFixed(2);
 	return stats;

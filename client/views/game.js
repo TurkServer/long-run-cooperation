@@ -11,15 +11,19 @@ Template.game.helpers({
     gameNum: function() {
 	var session = Sessions.findOne({userId: Meteor.userId(),
 					day: today()});
-	return session && session.games + 1;
+	var round = TurkServer.currentRound();
+	if (TurkServer.instanceEnded()) {
+	    return session && session.games;
+	} else {
+	    return session && session.games + 1;
+	}
     },
     round: function() {
 	var round = TurkServer.currentRound();
 	return round && round.index;
     },
     gameOver: function() {
-	var round = TurkServer.currentRound();
-	return round && round.index == numRounds + 1;
+	return TurkServer.instanceEnded();
     },
     choseAction: function() {
 	var round = TurkServer.currentRound();

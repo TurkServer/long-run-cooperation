@@ -8,22 +8,45 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
     return PairAssigner.__super__.constructor.apply(this, arguments);
   }
 
+  PairAssigner.prototype.initialize = function() {
+      PairAssigner.__super__.initialize.apply(this, arguments);
+      this.counter = 0;
+      this.lobby.events.on("next-round", (function(_this) {
+	  return function() {
+	      var treatment = [];
+	      var lobbyAssts = _this.lobby.getAssignments();
+	      if (lobbyAssts.length > 0) {
+		  _this.counter += 1;
+		  var shuffledAssts = _.shuffle(lobbyAssts);
+		  console.log(shuffledAssts);
+		  var pairs = _.groupBy(shuffledAssts, function(element, index) {return Math.floor(index/2)});
+		  for (var key in pairs) {
+		      var instance = _this.batch.createInstance(_this.batch.getTreatments());
+		      instance.setup();
+		      var assts = pairs[key];
+		      if (assts.length == 2) {
+			  for (var i=0; i<2; i++) {
+			      var asst = assts[i];
+			      _this.lobby.pluckUsers([asst.userId]);
+			      instance.addAssignment(asst);
+			  }
+		      }
+		  }
+	      }
+	  };
+      })(this));
+  };
+
   PairAssigner.prototype.userJoined = function(asst) {
-      var treatment = [];
-      var lobbyAssts = this.lobby.getAssignments();
-      if (lobbyAssts.length == 2) {
-	  this.instance = this.batch.createInstance(this.batch.getTreatments());
-	  this.instance.setup();
-	  for (var i=0; i<2; i++) {
-	      var asst = lobbyAssts[i];
-	      this.lobby.pluckUsers([asst.userId]);
-	      this.instance.addAssignment(asst);
-	      console.log(asst.getInstances());
-	      Sessions.upsert({userId: asst.userId, 
-			       day: today()}, 
-			      {$inc: {games: 0,
-				      bonus: 0}});
-	  }
+      if (asst.getInstances().length == 0) {
+	  Sessions.insert({userId: asst.userId, 
+			   day: today(),
+			   games: 0,
+			   bonus: 0});
+      }
+      if (this.counter == numGames) {
+	  this.lobby.pluckUsers([asst.userId]);
+	  asst.showExitSurvey();
       }
   };
 

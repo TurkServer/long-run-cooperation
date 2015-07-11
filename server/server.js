@@ -1,3 +1,5 @@
+Counter = new Mongo.Collection('counter');
+
 Meteor.publish('collections', function() {
     return [Meteor.users.find(), Rounds.find(), Sessions.find({userId: this.userId})];
 });
@@ -17,9 +19,9 @@ TurkServer.initialize(function() {
 Meteor.methods({
     startRound: function() {
 	var start = new Date();
-	var end = new Date(start.getTime() + 2*60000);
+	var end = new Date(start.getTime() + 10000);
 	TurkServer.Timers.startNewRound(start, end, function() {
-	    console.log('end round');
+	    TurkServer.Instance.currentInstance().teardown(false);
 	});
     },
     chooseAction: function(action, round) {
@@ -49,12 +51,15 @@ Meteor.methods({
 
 	    }
 	    if (round == numRounds) {
-		Sessions.update({userId: asst.userId,
-				 day: today()},
-				{$inc: {games: 1}});
+		for (var i=0; i<=1; i++) {
+		    Sessions.update({userId: userIds[i],
+				     day: today()},
+				    {$inc: {games: 1}});
+		}
 		TurkServer.Instance.currentInstance().teardown(false);
+	    } else {
+		Meteor.call('startRound');
 	    }
-	    Meteor.call('startRound');
 	}
     },
     goToLobby: function() {

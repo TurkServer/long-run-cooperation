@@ -1,10 +1,9 @@
 <template name="submit">
-  <form action="{{submitURL}}" method="POST" class="new-entry">
-    <input type="hidden" id="assignmentId" value="{{ params.assignmentId }}" name="assignmentId"/>
-    <input type="hidden" id="workerId" value="{{ params.workerId }}" name="workerId"/>
-    <input type="hidden" id="hitId" value="{{ params.hitId }}" name="hitId"/>
-    Was there anything confusing about this HIT?
-    <textarea class="form-control" name="free" rows="3"></textarea>
-    <button type="submit" class="btn btn-default submit" value="{{reason}}">Submit the HIT</button>
-  </form>
+  <div class="col-md-12">
+    <form class="survey">
+      Was there anything confusing about this HIT?
+      <textarea class="form-control" name="free" rows="3"></textarea>
+      <button type="submit" class="btn btn-default submit">Submit the HIT</button>
+    </form>
+  </div>
 </template>
