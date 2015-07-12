@@ -1,3 +1,33 @@
+color = function(action) {
+    return action == 1? 'green' : 'red';
+}
+
+gameResults = function() {
+    var game = Games.findOne();
+    if (!game) {return;}
+    var round = game.round;
+    var finished = game.state == 'finished';
+    var rounds = [];
+    Rounds.find().forEach(function(obj) {
+	if ((obj.roundIndex < round) || finished) {
+	    var index = obj.roundIndex - 1;
+	    if (index > rounds.length-1) {
+		rounds.push({round_: index + 1});
+	    }
+	    if (obj.userId == Meteor.userId()) {
+		rounds[index]['pchoice'] = obj.action;
+		rounds[index]['pcolor'] = color(obj.action);
+		rounds[index]['pscore'] = obj.payoff;
+	    } else {
+		rounds[index]['ochoice'] = obj.action;		    
+		rounds[index]['ocolor'] = color(obj.action);
+		rounds[index]['oscore'] = obj.payoff;
+	    }
+	}
+    });
+    return rounds;
+}
+
 Template.game.helpers({
     roundWait: function() {
 	return roundWait;
@@ -9,8 +39,7 @@ Template.game.helpers({
 	return numRounds;
     },
     gameNum: function() {
-	var session = Sessions.findOne({userId: Meteor.userId(),
-					day: today()});
+	var session = Sessions.findOne({assignmentId: assignmentId()});
 	var game = Games.findOne();
 	if (game && game.state == 'finished') {
 	    return session && session.games;

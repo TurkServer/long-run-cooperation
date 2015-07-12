@@ -5,7 +5,7 @@ Meteor.publish('sessions', function() { return Sessions.find(); }); // security 
 
 Meteor.startup(function () {
     // Indices
-    Sessions._ensureIndex({day: 1, userId: 1});
+    Sessions._ensureIndex({hitId: 1, userId: 1});
     Rounds._ensureIndex({roundIndex: 1, userId: 1});
 
     // TESTING
@@ -42,16 +42,10 @@ Meteor.methods({
     },
     endGame: function(state) {
 	Games.update({}, {$set: {state: state}});
-	var inst = TurkServer.Instance.currentInstance();
-	inst.teardown(false);
-	var userIds = inst.users();
-	for (var i=0; i<2; i++) {
-	}
+	TurkServer.Instance.currentInstance().teardown(false);
     },
     setPayment: function() {
-	var asst = TurkServer.Assignment.currentAssignment();
-	var session = Sessions.findOne({userId: Meteor.userId(), 
-					day: today()}); // HACK
+	var session = Sessions.findOne({assignmentId: assignmentId()});
 	var bonus = session.bonus;
 	asst.setPayment(parseFloat(bonus.toFixed(2)));
     }    

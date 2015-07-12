@@ -11,8 +11,7 @@ var allPlayerStats = function(sessions) {
 Template.stats.helpers({
     todayStats: function() {
 	stats = {};
-	var session = Sessions.findOne({userId: Meteor.userId(),
-					day: today()}); // HACK
+	var session = Sessions.findOne({userId: Meteor.userId(), batchId: batchId()});
 	if (!session) {return;}
 	stats['games'] = session.games;
 	stats['bonus'] = session.bonus.toFixed(2);

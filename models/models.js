@@ -27,17 +27,14 @@ Meteor.methods({
 	    Rounds.update({roundIndex: round,
 			   userId: userIds[i]},
 			  {$set: {payoff: payoffs[i]}});
-	    Sessions.update({userId: userIds[i], 
-			     day: today()}, // HACK
+	    Sessions.update({userId: userIds[i], batchId: batchId()},
 			    {$inc: {bonus: payoffs[i]*conversion}});
 	}
 	if (round == numRounds) {
 	    for (var i=0; i<=1; i++) {
-	    Sessions.update({userId: userIds[i],
-			     day: today()}, // HACK
-			    {$inc: {games: 1}});
+		Sessions.update({userId: userIds[i], batchId: batchId()},
+				{$inc: {games: 1}});
 	    }
-
 	    Meteor.call('endGame', 'finished');
 	} else {
 	    Games.update({}, {$inc: {round: 1}});

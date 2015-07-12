@@ -53,11 +53,12 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 
   PairAssigner.prototype.userJoined = function(asst) {
       if (asst.getInstances().length == 0) { // first instance of the day
-	  Sessions.insert({userId: asst.userId, 
-			   day: today(),
+	  Sessions.insert({userId: asst.userId,
+			   assignmentId: asst.assignmentId,
+			   hitId: asst.hitId,
+			   batchId: asst.batchId,
 			   games: 0,
-			   bonus: 0,
-			   assignmentId: asst.assignmentId});
+			   bonus: 0});
       }
       if ((this.counter == numGames) || this.ended) { // numGames is global constant denoting how many games to have each day
 	  this.lobby.pluckUsers([asst.userId]);
@@ -65,7 +66,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
       }
 
       // TESTING
-      var session = Sessions.findOne({userId: asst.userId, day: today()});
+      var session = Sessions.findOne({assignmentId: asst.assignmentId});
       if (session.games == numGames) {
 	  this.lobby.pluckUsers([asst.userId]);
 	  asst.showExitSurvey();
