@@ -36,23 +36,41 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 	      }
 	  };
       })(this));
+
+      this.lobby.events.on("end-session", (function(_this) {
+	  return function() {
+	      _this.ended = true;
+	      var lobbyAssts = _this.lobby.getAssignments();
+	      for (var i=0; i<lobbyAssts.length; i++) {
+		  var asst = lobbyAssts[i];
+		  _this.lobby.pluckUsers([asst.userId]);
+		  asst.showExitSurvey();
+	      }
+	  };
+      })(this));
+
   };
 
   PairAssigner.prototype.userJoined = function(asst) {
       if (asst.getInstances().length == 0) { // first instance of the day
-	  Players.upsert({userId: asst.userId}, {userId: asst.userId});
 	  Sessions.insert({userId: asst.userId, 
 			   day: today(),
 			   games: 0,
 			   bonus: 0,
-			   assignmentId: asst._id});
+			   assignmentId: asst.assignmentId});
       }
-      if (this.counter == numGames) { // numGames is global constant denoting how many games to have each day
+      if ((this.counter == numGames) || this.ended) { // numGames is global constant denoting how many games to have each day
 	  this.lobby.pluckUsers([asst.userId]);
 	  asst.showExitSurvey();
       }
 
-      // JUST FOR TESTING
+      // TESTING
+      var session = Sessions.findOne({userId: asst.userId, day: today()});
+      if (session.games == numGames) {
+	  this.lobby.pluckUsers([asst.userId]);
+	  asst.showExitSurvey();
+      }
+
       var assts = this.lobby.getAssignments();
       if (assts.length == 2) {
 	  var instance = this.batch.createInstance(this.batch.getTreatments());

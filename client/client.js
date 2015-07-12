@@ -1,5 +1,3 @@
-$('.alert').alert()
-
 Tracker.autorun(function() {
     if (TurkServer.inLobby()) {
 	Router.go('/lobby');
@@ -16,5 +14,4 @@ Tracker.autorun(function() {
     Meteor.subscribe('rounds', group);
     Meteor.subscribe('games', group);
     Meteor.subscribe('sessions');
-    Meteor.subscribe('players');
 });
