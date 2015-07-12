@@ -1,4 +1,2 @@
 settings.json
-*.py
-*.pyc
-*.sh
+params.txt
