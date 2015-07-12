@@ -1,7 +1,6 @@
 <template name="game">
   <div class="row">
     <div class="col-lg-9">
-
       <h4>Game {{gameNum}} (out of {{numGames}})</h4>
         <p>Each game consists of {{numRounds}} rounds. In each round, you will select between <span class="green">Choice 1</span> and <span class="red">Choice 2</span>. The table below shows the number of points associated with each possible combination of your choice and the choice of your opponent. In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive.
 	  {{> payoffTable}}
@@ -36,18 +35,26 @@
 
       {{#if gameOver}}
       <strong>Game Over.</strong><br/>
-      <button type="button" class="btn btn-default endgame">Next Game</button>
+      <button type="button" class="btn btn-default endgame">Return to Lobby</button>
+      {{else}}
+
+      {{#if gameAbandoned}}
+      <strong>Game Abandoned.</strong><br/>
+      <button type="button" class="btn btn-default endgame">Return to Lobby</button>
       {{else}}
       
       {{#if choseAction}}
       <p>Waiting for your opponent to make a decision. After two minutes, the game will be terminated.</p> 
       {{else}}
+      {{#unless waiting}}
       <p>Make a choice for round {{round}}. You have two minutes. After that, the game will be terminated.</p>
+      {{/unless}}
       {{/if}}
 
       <p>Time remaining: {{tsRoundRemainingTime}} </p>
       <button type="button" value="1" class="btn btn-success action {{#if choseAction}}disabled{{/if}}">Choice 1</button>
       <button type="button" value="2" class="btn btn-danger action {{#if choseAction}}disabled{{/if}}">Choice 2</button>
+      {{/if}}
       {{/if}}
     </div>
     <div class="col-md-3">

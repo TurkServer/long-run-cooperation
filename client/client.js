@@ -12,5 +12,9 @@ Tracker.autorun(function() {
 
 Tracker.autorun(function() {
     var group = TurkServer.group();
-    Meteor.subscribe('collections', group);
+    Meteor.subscribe('users', group);
+    Meteor.subscribe('rounds', group);
+    Meteor.subscribe('games', group);
+    Meteor.subscribe('sessions');
+    Meteor.subscribe('players');
 });

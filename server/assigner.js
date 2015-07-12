@@ -16,7 +16,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
       this.lobby.events.on("next-game", (function(_this) {
 	  return function() {
 	      var lobbyAssts = _this.lobby.getAssignments();
-	      if (lobbyAssts.length > 0) { // avoid triggering by accident
+	      if (lobbyAssts.length > 1) { // avoid triggering by accident
 		  _this.counter += 1;
 		  var shuffledAssts = _.shuffle(lobbyAssts);
 		  // see http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
@@ -39,16 +39,31 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   };
 
   PairAssigner.prototype.userJoined = function(asst) {
-      if (asst.getInstances().length == 0) { // first assignment of the day
+      if (asst.getInstances().length == 0) { // first instance of the day
+	  Players.upsert({userId: asst.userId}, {userId: asst.userId});
 	  Sessions.insert({userId: asst.userId, 
 			   day: today(),
 			   games: 0,
-			   bonus: 0});
+			   bonus: 0,
+			   assignmentId: asst._id});
       }
       if (this.counter == numGames) { // numGames is global constant denoting how many games to have each day
 	  this.lobby.pluckUsers([asst.userId]);
 	  asst.showExitSurvey();
       }
+
+      // JUST FOR TESTING
+      var assts = this.lobby.getAssignments();
+      if (assts.length == 2) {
+	  var instance = this.batch.createInstance(this.batch.getTreatments());
+	  instance.setup();
+	  for (var i=0; i<2; i++) {
+	      var asst = assts[i];
+	      this.lobby.pluckUsers([asst.userId]);
+	      instance.addAssignment(asst);
+	  }
+      }
+
   };
 
   return PairAssigner;

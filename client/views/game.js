@@ -11,25 +11,37 @@ Template.game.helpers({
     gameNum: function() {
 	var session = Sessions.findOne({userId: Meteor.userId(),
 					day: today()});
-	var round = TurkServer.currentRound();
-	if (TurkServer.instanceEnded()) {
+	var game = Games.findOne();
+	if (game && game.state == 'finished') {
 	    return session && session.games;
 	} else {
 	    return session && session.games + 1;
 	}
     },
     round: function() {
-	var round = TurkServer.currentRound();
-	return round && round.index;
+	var game = Games.findOne();
+	if (!game) {return 1};
+	return game.round;
     },
     gameOver: function() {
-	return TurkServer.instanceEnded();
+	var game = Games.findOne();
+	return game && game.state == 'finished';
+    },
+    gameAbandoned: function() {
+	var game = Games.findOne();
+	return game && game.state == 'abandoned';
     },
     choseAction: function() {
-	var round = TurkServer.currentRound();
-	return round && 
-	    Rounds.findOne({userId: Meteor.userId(),
-			    roundIndex: round.index});
+	var game = Games.findOne();
+	if (!game) {return};
+	return Rounds.findOne({userId: Meteor.userId(),
+			       roundIndex: game.round});
+    },
+    waiting: function() {
+	var game = Games.findOne();
+	if (!game) {return};
+	var rounds = Rounds.find({roundIndex: game.round});
+	return rounds.count() == 2;
     },
     results: function() {
 	return gameResults();
@@ -38,6 +50,7 @@ Template.game.helpers({
 	var r = gameResults();
 	var object = {'you': 0, 
 		      'opponent': 0};
+	if (!r) {return object;}
 	for (var i=0; i<r.length; i++) {
 	    var round = r[i];
 	    object['you'] += round['pscore'];
