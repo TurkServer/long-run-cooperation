@@ -11,8 +11,6 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   PairAssigner.prototype.initialize = function() {
       PairAssigner.__super__.initialize.apply(this, arguments);
 
-      this.ended = false; 
-
       this.lobby.events.on("next-game", (function(_this) {
 	  return function() {
 	      var lobbyAssts = _this.lobby.getAssignments();
@@ -33,27 +31,19 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 		      }
 		  }
 	      }
-	      var assts = Assignments.find({status: 'assigned'}).fetch();
-	      var counts = _.map(assts, function(asst) {
-		  return asst.instances.length;
-	      });
-	      _this.ended = _.max(counts) == numGames;
 	  };
       })(this));
-
-      this.lobby.events.on("end-session", (function(_this) {
-	  return function() {
-	      _this.ended = true;
-	      var lobbyAssts = _this.lobby.getAssignments();
-	      for (var i=0; i<lobbyAssts.length; i++) {
-		  var asst = lobbyAssts[i];
-		  _this.lobby.pluckUsers([asst.userId]);
-		  asst.showExitSurvey();
-	      }
-	  };
-      })(this));
-
   };
+    
+
+  PairAssigner.prototype.counter = function() {
+      var assts = Assignments.find({status: 'assigned'}).fetch();
+      console.log(assts);
+      var counts = _.map(assts, function(asst) {
+	  return (asst.instances && asst.instances.length) || 0;
+      });
+      return _.max(counts);
+  }
 
   PairAssigner.prototype.userJoined = function(asst) {
       if (asst.getInstances().length == 0) { // first instance of the day
@@ -62,7 +52,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 			   games: 0,
 			   bonus: 0});
       }
-      if (this.ended) { 
+      if (this.counter() >= numGames) { 
 	  this.lobby.pluckUsers([asst.userId]);
 	  asst.showExitSurvey();
       }
