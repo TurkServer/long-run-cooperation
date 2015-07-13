@@ -31,7 +31,7 @@ m = mturk.MechanicalTurk(config)
 def clear_db():
     collections = db.collection_names()
     for collection in collections:
-        if 'system' not in collection and collection not in ['users', 'ts.hittypes']:
+        if 'system' not in collection:
             db[collection].remove({})
 
 def print_users():

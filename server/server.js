@@ -47,6 +47,7 @@ Meteor.methods({
     setPayment: function() {
 	var session = Sessions.findOne({assignmentId: assignmentId()});
 	var bonus = session.bonus;
+	var asst = TurkServer.Assignment.currentAssignment();
 	asst.setPayment(parseFloat(bonus.toFixed(2)));
     }    
 });

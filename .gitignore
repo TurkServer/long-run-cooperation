@@ -1,2 +1,5 @@
+app
+deploy.sh
 settings.json
 params.txt
+*.pyc

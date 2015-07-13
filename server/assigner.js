@@ -52,6 +52,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   };
 
   PairAssigner.prototype.userJoined = function(asst) {
+      console.log('userJoined')
       if (asst.getInstances().length == 0) { // first instance of the day
 	  Sessions.insert({userId: asst.userId,
 			   assignmentId: asst.assignmentId,
