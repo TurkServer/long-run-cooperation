@@ -11,13 +11,12 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   PairAssigner.prototype.initialize = function() {
       PairAssigner.__super__.initialize.apply(this, arguments);
 
-      this.counter = 0; // counts how many games so far
+      this.ended = false; 
 
       this.lobby.events.on("next-game", (function(_this) {
 	  return function() {
 	      var lobbyAssts = _this.lobby.getAssignments();
 	      if (lobbyAssts.length > 1) { // avoid triggering by accident
-		  _this.counter += 1;
 		  var shuffledAssts = _.shuffle(lobbyAssts);
 		  // see http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
 		  var pairs = _.groupBy(shuffledAssts, function(element, index) {return Math.floor(index/2)});
@@ -34,6 +33,11 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 		      }
 		  }
 	      }
+	      var assts = Assignments.find({status: 'assigned'}).fetch();
+	      var counts = _.map(assts, function(asst) {
+		  return asst.instances.length;
+	      });
+	      _this.ended = _.max(counts) == numGames;
 	  };
       })(this));
 
@@ -52,37 +56,34 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   };
 
   PairAssigner.prototype.userJoined = function(asst) {
-      console.log('userJoined')
       if (asst.getInstances().length == 0) { // first instance of the day
 	  Sessions.insert({userId: asst.userId,
 			   assignmentId: asst.assignmentId,
-			   hitId: asst.hitId,
-			   batchId: asst.batchId,
 			   games: 0,
 			   bonus: 0});
       }
-      if ((this.counter == numGames) || this.ended) { // numGames is global constant denoting how many games to have each day
+      if (this.ended) { 
 	  this.lobby.pluckUsers([asst.userId]);
 	  asst.showExitSurvey();
       }
 
       // TESTING
-      var session = Sessions.findOne({assignmentId: asst.assignmentId});
-      if (session.games == numGames) {
-	  this.lobby.pluckUsers([asst.userId]);
-	  asst.showExitSurvey();
-      }
+      // var session = Sessions.findOne({assignmentId: asst.assignmentId});
+      // if (session.games == numGames) {
+      // 	  this.lobby.pluckUsers([asst.userId]);
+      // 	  asst.showExitSurvey();
+      // }
 
-      var assts = this.lobby.getAssignments();
-      if (assts.length == 2) {
-	  var instance = this.batch.createInstance(this.batch.getTreatments());
-	  instance.setup();
-	  for (var i=0; i<2; i++) {
-	      var asst = assts[i];
-	      this.lobby.pluckUsers([asst.userId]);
-	      instance.addAssignment(asst);
-	  }
-      }
+      // var assts = this.lobby.getAssignments();
+      // if (assts.length == 2) {
+      // 	  var instance = this.batch.createInstance(this.batch.getTreatments());
+      // 	  instance.setup();
+      // 	  for (var i=0; i<2; i++) {
+      // 	      var asst = assts[i];
+      // 	      this.lobby.pluckUsers([asst.userId]);
+      // 	      instance.addAssignment(asst);
+      // 	  }
+      // }
 
   };
 

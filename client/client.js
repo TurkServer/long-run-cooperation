@@ -13,5 +13,11 @@ Tracker.autorun(function() {
     Meteor.subscribe('users', group);
     Meteor.subscribe('rounds', group);
     Meteor.subscribe('games', group);
-    Meteor.subscribe('sessions');
+    Meteor.subscribe('sessions', Meteor.userId());
+});
+
+Tracker.autorun(function() {
+    var opp = Meteor.users.findOne({_id: {$ne: Meteor.userId()}});
+    if (!opp) {return;}
+    Meteor.subscribe('sessions', opp._id);
 });

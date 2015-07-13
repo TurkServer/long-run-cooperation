@@ -1,16 +1,13 @@
 Meteor.publish('users', function() { return Meteor.users.find(); });
 Meteor.publish('rounds', function() { return Rounds.find(); });
 Meteor.publish('games', function() { return Games.find(); });
-Meteor.publish('sessions', function() { return Sessions.find(); }); // security vulnerability?
+Meteor.publish('sessions', function(userId) { 
+    return Sessions.find({userId: userId}); 
+}); 
 
 Meteor.startup(function () {
-    // Indices
-    Sessions._ensureIndex({hitId: 1, userId: 1});
-    Rounds._ensureIndex({roundIndex: 1, userId: 1});
-
-    // TESTING
-    Batches.upsert({name: 'testing'}, {name: 'testing', active: true});
-    var batchid = Batches.findOne({name: 'testing'})._id;
+    Batches.upsert({name: 'main'}, {name: 'main', active: true});
+    var batchid = Batches.findOne({name: 'main'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
 });
 
@@ -40,14 +37,36 @@ Meteor.methods({
 	var inst = TurkServer.Instance.currentInstance();
 	inst.sendUserToLobby(Meteor.userId());
     },
+    endRound: function(round, userIds, actions) {
+	var payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
+	for (var i=0; i<=1; i++) {
+	    Rounds.update({roundIndex: round,
+			   userId: userIds[i]},
+			  {$set: {payoff: payoffs[i]}});
+	    var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+	    Sessions.update({assignmentId: asst.assignmentId},
+			    {$inc: {bonus: payoffs[i]*conversion}});
+	}
+	if (round == numRounds) {
+	    for (var i=0; i<=1; i++) {
+		var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+		Sessions.update({assignmentId: asst.assignmentId},
+				{$inc: {games: 1}});
+	    }
+	    Meteor.call('endGame', 'finished');
+	} else {
+	    Games.update({}, {$inc: {round: 1}});
+	    Meteor.call('startTimer');
+	}
+    },
     endGame: function(state) {
 	Games.update({}, {$set: {state: state}});
 	TurkServer.Instance.currentInstance().teardown(false);
     },
     setPayment: function() {
-	var session = Sessions.findOne({assignmentId: assignmentId()});
-	var bonus = session.bonus;
 	var asst = TurkServer.Assignment.currentAssignment();
+	var session = Sessions.findOne({assignmentId: asst.assignmentId});
+	var bonus = session.bonus;
 	asst.setPayment(parseFloat(bonus.toFixed(2)));
     }    
 });

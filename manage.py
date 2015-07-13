@@ -4,7 +4,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 
 me = True
-sandbox = False
+sandbox = True
 
 params = yaml.load(open('params.txt'))
 
@@ -128,14 +128,22 @@ def delete_hits():
     if isinstance(hitobjs, dict):
         hitobjs = [hitobjs]
     hits = [x['HITId'] for x in hitobjs]
-    for hit in hits:
+    for hitobj in hitobjs:
+        hit = hitobj['HITId']
         expire = {'Operation': 'ForceExpireHIT',
                   'HITId': hit}
         r = m.request('ForceExpireHIT', expire)
-        delete = {'Operation': 'DisposeHIT',
-                  'HITId': hit}
-        r = m.request('DisposeHIT', delete)
+        if hitobj['HITStatus'] == 'Unassignable':
+            disable = {'Operation': 'DisableHIT',
+                      'HITId': hit}
+            r = m.request('DisableHIT', disable)
+        else:
+            delete = {'Operation': 'DisposeHIT',
+                      'HITId': hit}
+            r = m.request('DisposeHIT', delete)
+            print r
 
+                
 def get_hits():
     get = {'Operation': 'SearchHITs'}
     r = m.request('SearchHITs', get)
