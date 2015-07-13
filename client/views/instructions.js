@@ -15,6 +15,6 @@ Template.instructions.helpers({
 
 Template.instructions.events({
     "click .quiz": function () {
-	Meteor.call('setState', 'quiz');
+	Router.go('/quiz');
     },
 });

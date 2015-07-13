@@ -1,4 +1,5 @@
 <template name="instructions">
+<div class="col-md-12">
 <h4>Welcome.</h4>
 <p>In this HIT, you will participate in an experiment on decision-making. The amount of money you earn depends on your decisions and on the decisions of others. Please read the following instructions carefully. At the end of the instructions, you will be asked to take and pass a short quiz that tests your understanding. You will have two attempts to pass the quiz. If you fail twice, you will not be allowed to play the games and must submit the incomplete HIT. You will still be paid the base rate of 25 cents.</p>
 
@@ -19,10 +20,7 @@ In each cell, the first number is the number of points you will receive, and the
 <li> If you select <span class="red">Choice 2</span> and your opponent selects <span class="green">Choice 1</span>, you earn {{payoffs.T}} points and your opponent earns {{payoffs.S}} points.</li>
 <li> If both you and your opponent select <span class="red">Choice 2</span>, you each earn {{payoffs.P}} points.</li>
 </ul>
-{{#if currentUser}}
-<p>Click the button below to take a short quiz that tests your understanding of the rules above. After passing the quiz, you will be matched with your first opponent.</p>
+<p>Click the button below to take a short quiz that tests your understanding of the rules above.</p>
 <button type="button" class="btn btn-default quiz">Take the Quiz</button>
-{{else}}
-<p>Once you accept the HIT, you will be given a link to take a short quiz that tests your understanding of the rules above. After passing the quiz, you will be matched with your first opponent.</p>
-{{/if}}
+</div>
 </template>

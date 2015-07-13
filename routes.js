@@ -11,14 +11,19 @@ Router.map(function() {
 	layoutTemplate: 'wrapper',
 	template: 'lobby'
     });
-    this.route('game', {
-	path: '/game',
+    this.route('experiment', {
+	path: '/experiment',
 	layoutTemplate: 'wrapper',
-	template: 'game'
+	template: 'experiment'
     });
     this.route('survey', {
 	path: '/survey',
 	layoutTemplate: 'wrapper',
-	template: 'submit'
+	template: 'survey'
+    });
+    this.route('quiz', {
+	path: '/quiz',
+	layoutTemplate: 'wrapper',
+	template: 'quiz'
     });
 });

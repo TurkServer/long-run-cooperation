@@ -2,7 +2,7 @@ Tracker.autorun(function() {
     if (TurkServer.inLobby()) {
 	Router.go('/lobby');
     } else if (TurkServer.inExperiment()) {
-	Router.go('/game');
+	Router.go('/experiment');
     } else if (TurkServer.inExitSurvey()) {
 	Router.go('/survey');
     }

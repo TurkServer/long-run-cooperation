@@ -7,12 +7,26 @@ Meteor.publish('sessions', function(userId) {
 
 Meteor.startup(function () {
     Batches.upsert({name: 'main'}, {name: 'main', active: true});
+    Batches.upsert({name: 'recruiting'}, {name: 'recruiting', active: true});
+
     var batchid = Batches.findOne({name: 'main'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
+    TurkServer.ensureTreatmentExists({name: 'main'});
+    Batches.update({name: 'main'}, {$addToSet: {treatments: 'main'}});
+
+    var batchid = Batches.findOne({name: 'recruiting'})._id;
+    TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
+    TurkServer.ensureTreatmentExists({name: 'recruiting'});
+    Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
+
+    var active = 'main';
+    Batches.update({name: active}, {$set: {active: true}});
 });
 
 TurkServer.initialize(function() {
-    Meteor.call('initGame');
+    if (_.indexOf(this.instance.treatment().treatments, "recruiting") == -1) {
+	Meteor.call('initGame');
+    }
 });
 
 TurkServer.Timers.onRoundEnd(function() {
@@ -68,5 +82,8 @@ Meteor.methods({
 	var session = Sessions.findOne({assignmentId: asst.assignmentId});
 	var bonus = session.bonus;
 	asst.setPayment(parseFloat(bonus.toFixed(2)));
-    }    
+    },
+    endQuiz: function() {
+	TurkServer.Instance.currentInstance().teardown();
+    },
 });

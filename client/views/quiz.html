@@ -1,4 +1,5 @@
 <template name="quiz">
+<div class="col-md-12">
   <h4>Quiz</h4>
   <p>The table below shows the number of points associated with each possible combination of your choice and the choice of your opponent. In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive.
     {{> payoffTable}}
@@ -11,21 +12,12 @@
     {{> question}}
     {{/each}}
 
-    {{#unless failed}}
     {{#if incorrect}}
     <div class="alert alert-warning" role="alert">There is a mistake in one or both of your answers. Please try one more time.</div>
-    <button type="submit" class="btn btn-default submit">Submit</button>
-    {{else}}
-    <button type="submit" class="btn btn-default submit">Submit</button>
     {{/if}}
-    {{/unless}}
+    <button type="submit" class="btn btn-default submit">Submit</button>
   </form>
-
-    {{#if failed}}
-    <div class="alert alert-danger" role="alert">You have used up your two tries. While you will be unable to play the games, you will still earn the base rate. Please click the button below to submit the HIT.</div>    
-    {{> submit reason="failed"}}
-    {{/if}}
-
+</div>
 </template>
 
 <template name="question">

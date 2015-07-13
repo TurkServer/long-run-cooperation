@@ -38,7 +38,6 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 
   PairAssigner.prototype.counter = function() {
       var assts = Assignments.find({status: 'assigned'}).fetch();
-      console.log(assts);
       var counts = _.map(assts, function(asst) {
 	  return (asst.instances && asst.instances.length) || 0;
       });

@@ -10,18 +10,15 @@ var question2  = {text: '2. If you choose 2 and your opponent chooses 1, how muc
 Questions.insert(question1);
 Questions.insert(question2);
 
+Attempts = new Meteor.Collection(null);
+
 Template.quiz.helpers({
     questions: function() {
 	return Questions.find();
     },
     incorrect: function() {
-	var u = Meteor.user();
-	return u && u.quizAttempts == 1;
+	return Attempts.find().count() == 1;
     },
-    failed: function() {
-	var u = Meteor.user();
-	return u && u.quizAttempts == 2;
-    }
 });
 
 Template.quiz.events({
@@ -37,10 +34,12 @@ Template.quiz.events({
 	});
 	var correct = Questions.find({correct: true}).count() == 2;
 	if (correct) {
-	    Meteor.call('passedQuiz');
-	    Meteor.call('getMatched');
+	    Meteor.call('endQuiz');
 	} else {
-	    Meteor.call('incQuiz');
+	    Attempts.insert({'attempt': true});
+	    if (Attempts.find().count() == 2) {
+		Meteor.call('endQuiz');
+	    }
 	}
     },
 });
