@@ -1,5 +1,5 @@
 var helper = function(ttmt, recruiting, main) {
-    if (ttmt == 'recruiting') {
+    if (_.indexOf(ttmt, 'recruiting') >= 0) {
 	return recruiting;
     } else if (ttmt == 'main') {
 	return main;
@@ -11,14 +11,14 @@ var helper = function(ttmt, recruiting, main) {
 Template.home.helpers({
     active: function() {
 	var ttmt = treatment();
-	return helper(ttmt, 'landing-recruiting', 'landing-main');
+	return helper(ttmt, 'landing-recruiting', 'instructionspilot');
     }
 });
 
 Template.lobbyBase.helpers({
     active: function() {
 	var ttmt = treatment();
-	return helper(ttmt, 'blank', 'lobby');
+	return helper(ttmt, 'blank', 'lobbypilot');
     }
 });
 
@@ -43,4 +43,5 @@ Template.recruiting.helpers({
 	return obj.state;
     }
 });
+
 

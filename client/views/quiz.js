@@ -1,14 +1,24 @@
 var Questions = new Meteor.Collection(null)
-var question1 = {text: '1. If you choose 1 and your opponent chooses 2, how much payoff will you receive?',
+var question1 = {text: '1. If you choose 1 and your opponent chooses 1, how much payoff will you receive?',
+		 answer: payoffs.R,
+		 correct: false,
+		 answered: false};
+var question2 = {text: '2. If you choose 1 and your opponent chooses 2, how much payoff will you receive?',
 		 answer: payoffs.S,
 		 correct: false,
 		 answered: false};
-var question2  = {text: '2. If you choose 2 and your opponent chooses 1, how much payoff will you receive?',
+var question3  = {text: '3. If you choose 2 and your opponent chooses 1, how much payoff will you receive?',
 		  answer: payoffs.T,
+		  correct: false,
+		  answered: false};
+var question4  = {text: '4. If you choose 2 and your opponent chooses 2, how much payoff will you receive?',
+		  answer: payoffs.P,
 		  correct: false,
 		  answered: false};
 Questions.insert(question1);
 Questions.insert(question2);
+Questions.insert(question3);
+Questions.insert(question4);
 
 Template.quiz.helpers({
     questions: function() {
@@ -31,7 +41,7 @@ Template.quiz.events({
 			     {$set: {correct: correct,
 				     answered: true}});
 	});
-	var correct = Questions.find({correct: true}).count() == 2;
+	var correct = Questions.find({correct: true}).count() == Questions.find().count();
 	if (correct) {
 	    Meteor.call('endQuiz');
 	} else {

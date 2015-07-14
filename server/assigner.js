@@ -19,7 +19,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 		  // see http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
 		  var pairs = _.groupBy(shuffledAssts, function(element, index) {return Math.floor(index/2)});
 		  for (var key in pairs) {
-		      var instance = _this.batch.createInstance(_this.batch.getTreatments());
+		      var instance = _this.batch.createInstance(['main'])
 		      instance.setup();
 		      var assts = pairs[key];
 		      if (assts.length == 2) {

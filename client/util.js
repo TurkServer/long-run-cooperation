@@ -6,7 +6,7 @@ assignmentId = function() {
 treatment = function() {
    var batch = TurkServer.batch();
     if (!batch) {return;}
-    return batch.treatments[0];
+    return batch.treatments;
 }
  
 

@@ -120,8 +120,26 @@ def get_hits():
     get = {'Operation': 'SearchHITs'}
     r = m.request('SearchHITs', get)
     hitobjs = r['SearchHITsResponse']['SearchHITsResult']['HIT']
-    print hitobjs
+    return hitobjs
 
+def expire_hit(id):
+    expire = {'Operation': 'ForceExpireHIT',
+              'HITId': id}
+    r = m.request('ForceExpireHIT', expire)
+
+def approve_assignments(id):
+    assignments = {'Operation': 'GetAssignmentsForHit',
+                    'HITId': id}
+    r = m.request('GetAssignmentsForHIT', assignments)
+    assignmentobjs = r['GetAssignmentsForHITResponse']['GetAssignmentsForHITResult']['Assignment']
+    if isinstance(assignmentobjs, dict):
+        assignmentobjs = [assignmentobjs]
+    for assignment in assignmentobjs:
+        print assignment
+        approve = {'Operation': 'ApproveAssignment',
+                   'AssignmentId': assignment['AssignmentId']}
+        r = m.request('ApproveAssignment', approve)
+    
 
 def delete_hits():
     get = {'Operation': 'SearchHITs'}
@@ -130,12 +148,10 @@ def delete_hits():
     if isinstance(hitobjs, dict):
         hitobjs = [hitobjs]
     hits = [x['HITId'] for x in hitobjs]
-    for hitobj in hitobjs:
+    for hitobj in hitobjs:        
         hit = hitobj['HITId']
-        expire = {'Operation': 'ForceExpireHIT',
-                  'HITId': hit}
-        r = m.request('ForceExpireHIT', expire)
-        print r
+        expire_hit(hit)
+        approve_assignments(hit)
         delete = {'Operation': 'DisposeHIT',
         'HITId': hit}
         r = m.request('DisposeHIT', delete)

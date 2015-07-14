@@ -4,13 +4,13 @@
     {{#if failed}}
     <p>You have used up your two tries to pass the quiz. While you will be unable to participate in the experiment, you will still be paid for this recruiting HIT. Please click the button below to submit the HIT.</p>    
     {{else}}
-    <p>Congratulations! You passed the quiz and are eligible for our experiment. Please fill out the following. Note that you must be able to participate in a HIT <strong>every day</strong> at the times you select.</p>
+    <p>Congratulations! You passed the quiz and are eligible for our experiment. Please fill out the following. Note that you must be able to participate in a HIT <strong>every day</strong> at the times you select. If you miss more than 2 days, you will be unable to continue participation in the experiment.</p>
+    {{> tsTimePicker}}
     <div class="checkbox">
       <label class="checkbox">
-        <input name="contact" type="checkbox">Please grant me a qualification and contact me via Amazon Mechanical Turk for information on the decision-making experiments.
+        <input name="contact" type="checkbox">I am able to participate in a HIT every day at the times above. Please grant me a qualification and contact me via Amazon Mechanical Turk for information on the decision-making experiments.
       </label>
     </div>
-    {{> tsTimePicker}}
     {{/if}}
     <button type="submit" class="btn btn-default">Submit the HIT</button>
   </form>
