@@ -19,8 +19,6 @@ Meteor.startup(function () {
     TurkServer.ensureTreatmentExists({name: 'recruiting'});
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
 
-    var active = 'main';
-    Batches.update({name: active}, {$set: {active: true}});
 });
 
 TurkServer.initialize(function() {

@@ -5,7 +5,7 @@
     {{> payoffTable}}
   </p>
 
-  <p> Answer the two questions below. If you answer any questions incorrectly, you will get a second chance. If you answer a question incorrectly twice, you will not be allowed to play the games and must submit the incomplete HIT. You will still be paid the base rate. If you answer correctly, you will be matched with your first opponent.</p>
+  <p> Answer the two questions below. If you answer any questions incorrectly, you will get a second chance. If you answer a question incorrectly twice, you will not eligible to participate in the experiment.</p>
 
   <form class="quiz">
     {{#each questions}}
@@ -25,11 +25,4 @@
     <label for="{{_id}}" class="control-label">{{text}}</label>
     <input id="{{_id}}" name="{{_id}}" class="sm-width form-control">
   </div>
-  <!-- {{#each options}} -->
-  <!-- <div class="radio {{#if error}}has-error{{/if}} {{#if success}}has-success{{/if}}"> -->
-  <!--   <label> -->
-  <!--     <input type="radio" name="{{../_id}}" id="{{id}}" value="{{value}}">{{text}} -->
-  <!--   </label> -->
-  <!-- </div> -->
-  <!-- {{/each}} -->
 </template>

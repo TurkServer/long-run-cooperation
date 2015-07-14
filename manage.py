@@ -31,7 +31,7 @@ m = mturk.MechanicalTurk(config)
 def clear_db():
     collections = db.collection_names()
     for collection in collections:
-        if 'system' not in collection:
+        if 'system' not in collection and collection not in ['ts.hittypes', 'ts.batches', 'ts.treatments']:
             db[collection].remove({})
 
 def print_users():
@@ -129,20 +129,15 @@ def delete_hits():
         hitobjs = [hitobjs]
     hits = [x['HITId'] for x in hitobjs]
     for hitobj in hitobjs:
+        print hitobj
         hit = hitobj['HITId']
         expire = {'Operation': 'ForceExpireHIT',
                   'HITId': hit}
         r = m.request('ForceExpireHIT', expire)
-        if hitobj['HITStatus'] == 'Unassignable':
-            disable = {'Operation': 'DisableHIT',
-                      'HITId': hit}
-            r = m.request('DisableHIT', disable)
-        else:
-            delete = {'Operation': 'DisposeHIT',
-                      'HITId': hit}
-            r = m.request('DisposeHIT', delete)
-            print r
-
+        delete = {'Operation': 'DisposeHIT',
+        'HITId': hit}
+        r = m.request('DisposeHIT', delete)
+        
                 
 def get_hits():
     get = {'Operation': 'SearchHITs'}

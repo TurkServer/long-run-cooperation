@@ -1,8 +1,8 @@
 <template name="timepicker">
-
+<div class="col-md-12">
   <form class="survey">
     {{#if failed}}
-    <p>You have used up your two tries to pass the quiz. While you will be unable to participate in our experiment, you will still be paid for this recruiting HIT. Please click the button below to submit the HIT.</p>    
+    <p>You have used up your two tries to pass the quiz. While you will be unable to participate in the experiment, you will still be paid for this recruiting HIT. Please click the button below to submit the HIT.</p>    
     {{else}}
     <p>Congratulations! You passed the quiz and are eligible for our experiment. Please fill out the following. Note that you must be able to participate in a HIT <strong>every day</strong> at the times you select.</p>
     <div class="checkbox">
@@ -14,4 +14,5 @@
     {{/if}}
     <button type="submit" class="btn btn-default">Submit the HIT</button>
   </form>
+</div>
 </template>
