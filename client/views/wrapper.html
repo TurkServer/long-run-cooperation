@@ -23,10 +23,31 @@
 </template>
 
 <template name="home">
+  {{> UI.dynamic template=active}}
+</template>
+
+<template name ="landing-recruiting">
+  <div class="col-md-12">
+    <p>After completing this HIT, you will gain a qualification for a month-long experiment in which you will log on to Mechanical Turk for an hour every business day and play a sequence of two-player games.</p>
+
+    <p>To gain the qualification, you will first read a page of instructions. You will then be asked to take and pass a short quiz that tests your understanding of the rules. You will be given two attempts to pass the quiz. If you fail twice, you will not be eligible for the qualification.</p>
+
+    <p> After passing the quiz, you will fill out a form describing your availability. We will use this information to decide what time of day to hold each session. Please note that to order participate in the experiment, you must be able to accept a hit <strong>every day</strong> at this time.</p>
+
+<p> Accept this HIT to begin the qualification process.</p>
+  </div>
+</template>
+
+<template name="landing-main">
   <div class="col-md-12">
     <h4>Welcome.</h4>
-    <p>Please accept the HIT to continue.</p>
+    <p>This is the HIT for today's session of the decision-making experiment.</p>
+    <p>After you accept the HIT, you will be be placed into a waiting room. Once enough other players have joined, you will be matched to a game. You will play approximately 20 games, and will then be able to submit the HIT </p>
   </div>
+</template>
+
+<template name="lobbyBase">
+  {{> UI.dynamic template=active}}
 </template>
 
 <template name="experiment">

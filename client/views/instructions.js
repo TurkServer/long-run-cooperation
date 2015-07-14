@@ -14,7 +14,13 @@ Template.instructions.helpers({
 });
 
 Template.instructions.events({
-    "click .quiz": function () {
-	Router.go('/quiz');
+    "submit .consent": function (e, tmpl) {
+	e.preventDefault();
+	var checked = tmpl.find("input[name=agree]").checked;
+	if (!checked) {
+	    alert('hi');
+	} else {
+	    Router.go('/quiz');
+	}
     },
 });
