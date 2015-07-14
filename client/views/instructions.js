@@ -18,7 +18,7 @@ Template.instructions.events({
 	e.preventDefault();
 	var checked = tmpl.find("input[name=agree]").checked;
 	if (!checked) {
-	    alert('hi');
+	    alert('Please accept the terms before continuing.');
 	} else {
 	    Router.go('/quiz');
 	}
