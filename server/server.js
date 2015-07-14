@@ -1,6 +1,7 @@
 Meteor.publish('users', function() { return Meteor.users.find(); });
 Meteor.publish('rounds', function() { return Rounds.find(); });
 Meteor.publish('games', function() { return Games.find(); });
+Meteor.publish('recruiting', function() { return Recruiting.find(); });
 Meteor.publish('sessions', function(userId) { 
     return Sessions.find({userId: userId}); 
 }); 
@@ -24,6 +25,8 @@ Meteor.startup(function () {
 TurkServer.initialize(function() {
     if (_.indexOf(this.instance.treatment().treatments, "recruiting") == -1) {
 	Meteor.call('initGame');
+    } else {
+	Meteor.call('initRecruiting');
     }
 });
 
@@ -39,6 +42,10 @@ Meteor.methods({
 	Games.insert({round: 1,
 		      state: 'active'});
 	Meteor.call('startTimer');
+    },
+    initRecruiting: function() {
+	Recruiting.insert({state: 'instructions',
+			   attempts: 0});
     },
     startTimer: function() {
 	var start = new Date();

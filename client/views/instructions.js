@@ -20,7 +20,7 @@ Template.instructions.events({
 	if (!checked) {
 	    alert('Please accept the terms before continuing.');
 	} else {
-	    Router.go('/quiz');
+	    Meteor.call('goToQuiz');
 	}
     },
 });

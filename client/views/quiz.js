@@ -10,14 +10,13 @@ var question2  = {text: '2. If you choose 2 and your opponent chooses 1, how muc
 Questions.insert(question1);
 Questions.insert(question2);
 
-Attempts = new Meteor.Collection(null);
-
 Template.quiz.helpers({
     questions: function() {
 	return Questions.find();
     },
     incorrect: function() {
-	return Attempts.find().count() == 1;
+	var obj = Recruiting.findOne();
+	return obj && obj.attempts == 1;
     },
 });
 
@@ -36,8 +35,10 @@ Template.quiz.events({
 	if (correct) {
 	    Meteor.call('endQuiz');
 	} else {
-	    Attempts.insert({'attempt': true});
-	    if (Attempts.find().count() == 2) {
+	    Meteor.call('incQuiz');
+	    var obj = Recruiting.findOne();
+	    if (obj && obj.attempts == 2) {
+		Session.set('failedQuiz', true);
 		Meteor.call('endQuiz');
 	    }
 	}

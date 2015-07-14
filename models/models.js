@@ -1,8 +1,10 @@
 Rounds = new Mongo.Collection('rounds');
 Games = new Mongo.Collection('games'); 
+Recruiting = new Mongo.Collection('recruiting'); 
 Sessions = new Mongo.Collection('sessions'); // one per assignment (user/HIT)
 TurkServer.partitionCollection(Rounds);
 TurkServer.partitionCollection(Games);
+TurkServer.partitionCollection(Recruiting);
 
 Meteor.methods({
     chooseAction: function(action, round) {
@@ -21,6 +23,12 @@ Meteor.methods({
 	    Meteor.call('endRound', round, userIds, actions);
 	}
     },
+    goToQuiz: function() {
+	Recruiting.update({}, {$set: {'state': 'quiz'}});
+    },
+    incQuiz: function() {
+	Recruiting.update({}, {$inc: {'attempts': 1}});
+    }
 });
 
 

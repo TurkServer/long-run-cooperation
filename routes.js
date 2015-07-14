@@ -21,9 +21,4 @@ Router.map(function() {
 	layoutTemplate: 'wrapper',
 	template: 'survey'
     });
-    this.route('quiz', {
-	path: '/quiz',
-	layoutTemplate: 'wrapper',
-	template: 'quiz'
-    });
 });

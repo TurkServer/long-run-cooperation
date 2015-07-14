@@ -13,6 +13,7 @@ Tracker.autorun(function() {
     Meteor.subscribe('users', group);
     Meteor.subscribe('rounds', group);
     Meteor.subscribe('games', group);
+    Meteor.subscribe('recruiting', group);
     Meteor.subscribe('sessions', Meteor.userId());
 });
 

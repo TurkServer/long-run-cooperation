@@ -25,7 +25,7 @@ Template.lobbyBase.helpers({
 Template.experiment.helpers({
     active: function() {
 	var ttmt = treatment();
-	return helper(ttmt, 'instructions', 'game');
+	return helper(ttmt, 'recruiting', 'game');
     }
 });
 
@@ -33,6 +33,14 @@ Template.survey.helpers({
     active: function() {
 	var ttmt = treatment();
 	return helper(ttmt, 'timepicker', 'submit');
+    }
+});
+
+Template.recruiting.helpers({
+    active: function() {
+	var obj = Recruiting.findOne();
+	if (!obj) {return 'blank';}
+	return obj.state;
     }
 });
 
