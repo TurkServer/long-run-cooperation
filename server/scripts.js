@@ -11,7 +11,7 @@ Meteor.methods({
     },
     'fakeData': function() {
 	TurkServer.checkAdmin();
-	var batchid = Batches.findOne({name: 'main'})._id;
+	var batchid = Batches.findOne({name: 'testing'})._id;
 	for (var i=0; i<11; i++) {
 	    workerId = Random.id();
 	    userId = Accounts.insertUserDoc({}, {workerId: workerId});

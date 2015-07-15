@@ -7,17 +7,23 @@ Meteor.publish('sessions', function(userId) {
 }); 
 
 Meteor.startup(function () {
-    Batches.upsert({name: 'main'}, {name: 'main', active: true});
+    Batches.upsert({name: 'testing'}, {name: 'testing', active: true});
+    Batches.upsert({name: 'pilot'}, {name: 'pilot', active: true});
     Batches.upsert({name: 'recruiting'}, {name: 'recruiting', active: true});
 
-    var batchid = Batches.findOne({name: 'main'})._id;
-    TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
     TurkServer.ensureTreatmentExists({name: 'main'});
-    Batches.update({name: 'main'}, {$addToSet: {treatments: 'main'}});
+    TurkServer.ensureTreatmentExists({name: 'recruiting'});
+
+    var batchid = Batches.findOne({name: 'testing'})._id;
+    TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
+    Batches.update({name: 'testing'}, {$addToSet: {treatments: 'main'}});
+
+    var batchid = Batches.findOne({name: 'pilot'})._id;
+    TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
+    Batches.update({name: 'pilot'}, {$addToSet: {treatments: 'main'}});
 
     var batchid = Batches.findOne({name: 'recruiting'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
-    TurkServer.ensureTreatmentExists({name: 'recruiting'});
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
 
 });

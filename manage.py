@@ -33,7 +33,7 @@ def clear_db():
     for collection in collections:
         if collection == 'users':
             db[collection].remove({'username': {'$ne': 'admin'}})
-        elif 'system' not in collection and collection not in ['ts.hittypes', 'ts.batches', 'ts.treatments']:
+        elif 'system' not in collection and collection not in []:
             db[collection].remove({})
 
 def print_users():
@@ -131,7 +131,9 @@ def approve_assignments(id):
     assignments = {'Operation': 'GetAssignmentsForHit',
                     'HITId': id}
     r = m.request('GetAssignmentsForHIT', assignments)
-    assignmentobjs = r['GetAssignmentsForHITResponse']['GetAssignmentsForHITResult']['Assignment']
+    assignmentobjs = r['GetAssignmentsForHITResponse']['GetAssignmentsForHITResult'].get('Assignment')
+    if not assignmentobjs:
+        return
     if isinstance(assignmentobjs, dict):
         assignmentobjs = [assignmentobjs]
     for assignment in assignmentobjs:
