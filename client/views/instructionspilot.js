@@ -1,4 +1,4 @@
-Template.instructionspilot.helpers({
+Template.pilot.helpers({
     'numGames': function() {
 	return numGames;
     },
