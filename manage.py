@@ -33,7 +33,7 @@ def clear_db():
     for collection in collections:
         if collection == 'users':
             db[collection].remove({'username': {'$ne': 'admin'}})
-        elif 'system' not in collection and collection not in []:
+        elif 'system' not in collection and collection not in ['ts.hittypes', 'ts.batches', 'ts.treatments']:
             db[collection].remove({})
 
 def print_users():

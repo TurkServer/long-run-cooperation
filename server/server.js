@@ -62,6 +62,22 @@ Meteor.methods({
 	var inst = TurkServer.Instance.currentInstance();
 	inst.sendUserToLobby(Meteor.userId());
     },
+    chooseAction: function(action, round) {
+	Rounds.insert({timestamp: new Date(),
+		       userId: Meteor.userId(),
+		       roundIndex: round,
+		       action: action});
+	var rounds = Rounds.find({roundIndex: round});
+	if (rounds.count() == 2) {
+	    var userIds = [];
+	    var actions = {};
+	    rounds.forEach(function(obj) {
+		userIds.push(obj.userId);
+		actions[obj.userId] = obj.action;
+	    });
+	    Meteor.call('endRound', round, userIds, actions);
+	}
+    },
     endRound: function(round, userIds, actions) {
 	var payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
 	for (var i=0; i<=1; i++) {
@@ -93,6 +109,12 @@ Meteor.methods({
 	var session = Sessions.findOne({assignmentId: asst.assignmentId});
 	var bonus = session.bonus;
 	asst.setPayment(parseFloat(bonus.toFixed(2)));
+    },
+    goToQuiz: function() {
+	Recruiting.update({}, {$set: {'state': 'quiz'}});
+    },
+    incQuiz: function() {
+	Recruiting.update({}, {$inc: {'attempts': 1}});
     },
     endQuiz: function() {
 	TurkServer.Instance.currentInstance().teardown();
