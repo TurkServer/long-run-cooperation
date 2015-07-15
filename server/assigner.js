@@ -11,6 +11,17 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   PairAssigner.prototype.initialize = function() {
       PairAssigner.__super__.initialize.apply(this, arguments);
 
+      this.lobby.events.on("exit-survey", (function(_this) {
+	  return function() {
+	      var lobbyAssts = _this.lobby.getAssignments();
+	      for (var i=0; i<lobbyAssts.length; i++) {
+		  var asst = lobbyAssts[i];
+		  _this.lobby.pluckUsers([asst.userId]);
+		  asst.showExitSurvey();
+	      }
+	  }
+      })(this));
+
       this.lobby.events.on("next-game", (function(_this) {
 	  return function() {
 	      var allLobbyAssts = _this.lobby.getAssignments();
@@ -23,10 +34,10 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 		  // see http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
 		  var pairs = _.groupBy(shuffledAssts, function(element, index) {return Math.floor(index/2)});
 		  for (var key in pairs) {
-		      var instance = _this.batch.createInstance(['main'])
-		      instance.setup();
 		      var assts = pairs[key];
 		      if (assts.length == 2) {
+			  var instance = _this.batch.createInstance(['main'])
+			  instance.setup();
 			  for (var i=0; i<2; i++) {
 			      var asst = assts[i];
 			      _this.lobby.pluckUsers([asst.userId]);
@@ -39,7 +50,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
       })(this));
   };
     
-
+ 
   PairAssigner.prototype.counter = function() {
       var assts = Assignments.find({status: 'assigned'}).fetch();
       var counts = _.map(assts, function(asst) {
