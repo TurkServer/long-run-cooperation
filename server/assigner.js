@@ -11,6 +11,15 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   PairAssigner.prototype.initialize = function() {
       PairAssigner.__super__.initialize.apply(this, arguments);
 
+      this.counter = this.setCounter();
+
+      this.lobby.events.on("reset-lobby", (function(_this) {
+	  return function() {
+	      this.counter = 0;
+	  }
+      })(this));
+
+
       this.lobby.events.on("exit-survey", (function(_this) {
 	  return function() {
 	      var lobbyAssts = _this.lobby.getAssignments();
@@ -30,6 +39,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 		  return statusObj.status;
 	      });
 	      if (lobbyAssts.length > 1) { // avoid triggering by accident
+		  _this.counter += 1;
 		  var shuffledAssts = _.shuffle(lobbyAssts);
 		  // see http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
 		  var pairs = _.groupBy(shuffledAssts, function(element, index) {return Math.floor(index/2)});
@@ -51,8 +61,9 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   };
     
  
-  PairAssigner.prototype.counter = function() {
+  PairAssigner.prototype.setCounter = function() {
       var assts = Assignments.find({status: 'assigned'}).fetch();
+      if (assts.length == 0) { return 0; }
       var counts = _.map(assts, function(asst) {
 	  return (asst.instances && asst.instances.length) || 0;
       });
@@ -68,7 +79,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
       } else {
 	  LobbyStatus.update({_id: asst.userId}, {$set: {status: true}});
       }
-      if (this.counter() >= numGames) { 
+      if (this.counter >= numGames) { 
 	  this.lobby.pluckUsers([asst.userId]);
 	  asst.showExitSurvey();
       }

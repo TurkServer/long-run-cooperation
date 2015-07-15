@@ -6,7 +6,6 @@ Meteor.methods({
 	    "bonusPaid": {$exists: false}
 	}).forEach(function(asst) {
 	    var asstObj = TurkServer.Assignment.getAssignment(asst._id);
-	    console.log(asstObj);
 	    asstObj.payBonus('Bonus for the decision-making HIT.');
 	});
     },
