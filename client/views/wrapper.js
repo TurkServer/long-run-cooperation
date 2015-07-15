@@ -8,27 +8,39 @@ var helper = function(ttmt, recruiting, main) {
     }
 }
 
+// before accepting
 Template.home.helpers({
     active: function() {
 	var ttmt = treatment();
-	return helper(ttmt, 'landing-recruiting', 'instructionspilot');
+	return helper(ttmt, 'landingRecruiting', 'landingPilot');
     }
 });
 
+// lobby
 Template.lobbyBase.helpers({
     active: function() {
 	var ttmt = treatment();
-	return helper(ttmt, 'blank', 'lobbypilot');
+	return helper(ttmt, 'blank', 'lobbyPilot');
     }
 });
 
+// experiment
 Template.experiment.helpers({
     active: function() {
 	var ttmt = treatment();
-	return helper(ttmt, 'recruiting', 'game');
+	return helper(ttmt, 'mainRecruiting', 'game');
     }
 });
 
+Template.mainRecruiting.helpers({
+    active: function() {
+	var obj = Recruiting.findOne();
+	if (!obj) {return 'blank';}
+	return obj.state;
+    }
+});
+
+// survey
 Template.survey.helpers({
     active: function() {
 	var ttmt = treatment();
@@ -36,12 +48,5 @@ Template.survey.helpers({
     }
 });
 
-Template.recruiting.helpers({
-    active: function() {
-	var obj = Recruiting.findOne();
-	if (!obj) {return 'blank';}
-	return obj.state;
-    }
-});
 
 

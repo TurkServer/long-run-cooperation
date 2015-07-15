@@ -1,4 +1,4 @@
-Template.lobbypilot.helpers({
+Template.lobbyPilot.helpers({
     'notReady': function() {
 	var obj = LobbyStatus.findOne(Meteor.userId());
 	return obj && !obj.status;
@@ -15,7 +15,7 @@ Template.lobbypilot.helpers({
     }
 });
 
-Template.lobbypilot.events({
+Template.lobbyPilot.events({
     'click .begin': function() {
 	Meteor.call('toggleStatus');
     }
