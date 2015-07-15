@@ -55,7 +55,7 @@ Meteor.methods({
 	Meteor.call('startTimer');
     },
     initRecruiting: function() {
-	Recruiting.insert({state: 'instructions',
+	Recruiting.insert({state: 'consent',
 			   attempts: 0});
     },
     startTimer: function() {
