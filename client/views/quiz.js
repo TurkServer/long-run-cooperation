@@ -45,9 +45,9 @@ Template.quiz.events({
 	if (correct) {
 	    Meteor.call('endQuiz');
 	} else {
-	    Meteor.call('incQuiz');
 	    var obj = Recruiting.findOne();
-	    if (obj && obj.attempts == 2) {
+	    Meteor.call('incQuiz');
+	    if (obj && obj.attempts == 1) {
 		Session.set('failedQuiz', true);
 		Meteor.call('endQuiz');
 	    }
