@@ -13,7 +13,11 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 
       this.lobby.events.on("next-game", (function(_this) {
 	  return function() {
-	      var lobbyAssts = _this.lobby.getAssignments();
+	      var allLobbyAssts = _this.lobby.getAssignments();
+	      var lobbyAssts = _.filter(allLobbyAssts, function(asst) {
+		  var statusObj = LobbyStatus.findOne(asst.userId);
+		  return statusObj.status;
+	      });
 	      if (lobbyAssts.length > 1) { // avoid triggering by accident
 		  var shuffledAssts = _.shuffle(lobbyAssts);
 		  // see http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
@@ -50,6 +54,8 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 			   assignmentId: asst.assignmentId,
 			   games: 0,
 			   bonus: 0});
+      } else {
+	  LobbyStatus.update({_id: asst.userId}, {$set: {status: true}});
       }
       if (this.counter() >= numGames) { 
 	  this.lobby.pluckUsers([asst.userId]);
