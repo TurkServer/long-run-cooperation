@@ -1,5 +1,7 @@
-app
-deploy.sh
+dump
+dump.sh
+db.sh
+todo.txt
 settings.json
 params.txt
 *.pyc

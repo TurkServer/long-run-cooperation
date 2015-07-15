@@ -1,0 +1,30 @@
+<template name="lobbypilot">
+<div class="col-md-12">
+
+{{#if notReady}}
+<h4>Welcome</h4>
+<p>In this HIT you will play a sequence of up to {{numGames}} games (the exact number depends on the availability of other players). In each game, you will be randomly paired with another player. A game consists of a sequence of {{numRounds}} rounds. In each round, you will choose between two different actions (Choice 1 and Choice 2). You will have two minutes to make your decision. After both you and your opponent have made a decision, you will each receive a certain number of points. The table below shows the number of points associated with each possible combination of your choice and the choice of your opponent in each round:</p>
+
+{{> payoffTable}}
+
+<p>In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive. Another way to understand the table is as follows:</p>
+
+<ul>
+<li> If both you and your opponent select <span class="green">Choice 1</span>, you each earn {{payoffs.R}} points.</li>
+<li> If you select <span class="green">Choice 1</span> and your opponent selects <span class="red">Choice 2</span>, you earn {{payoffs.S}} points and your opponent earns {{payoffs.T}} points.</li>
+<li> If you select <span class="red">Choice 2</span> and your opponent selects <span class="green">Choice 1</span>, you earn {{payoffs.T}} points and your opponent earns {{payoffs.S}} points.</li>
+<li> If both you and your opponent select <span class="red">Choice 2</span>, you each earn {{payoffs.P}} points.</li>
+</ul>
+
+<p>After you have completed {{numRounds}} rounds, the game ends, and you will be randomly matched with another opponent for the next game. When you have completed {{numGames}} games (or as many as possible given the availability of other players), you will be able to submit the HIT.</p>
+
+<h4>Payment</h4>
+<p>You will receive a base payment of 25 cents. You will then earn additional compensation, based on number of points you earn, in the form of a bonus paid on Amazon Mechanical Turk. Your score for the HIT is the sum of your points from each game. We will convert your score to dollars at the rate of 4 points = 1 cent. </p>
+
+<p>Click the button below to begin playing. You will then enter a waiting room, and once enough players have joined, the first game will begin.</p>
+<button class="btn btn-default begin">Begin</button>
+{{else}}
+<p>Please wait a moment for the next game to begin.</p>
+{{/if}}
+</div>
+</template>
