@@ -15,7 +15,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 
       this.lobby.events.on("reset-lobby", (function(_this) {
 	  return function() {
-	      this.counter = 0;
+	      _this.counter = 0;
 	  }
       })(this));
 
