@@ -52,8 +52,8 @@
       {{/if}}
 
       <p>Time remaining: {{tsRoundRemainingTime}} </p>
-      <button type="button" value="1" class="btn btn-success action {{#if choseAction}}disabled{{/if}}">Choice 1</button>
-      <button type="button" value="2" class="btn btn-danger action {{#if choseAction}}disabled{{/if}}">Choice 2</button>
+      <button type="button" value="1" class="btn btn-success action {{#if choseAction}}disabled{{/if}}" disabled={{choseAction}}>Choice 1</button>
+      <button type="button" value="2" class="btn btn-danger action {{#if choseAction}}disabled{{/if}}" disabled={{choseAction}}>Choice 2</button>
       {{/if}}
       {{/if}}
     </div>
