@@ -25,9 +25,7 @@ Template.stats.helpers({
 	return TurkServer.inExperiment();
     },
     numOpponentGames: function() {
-	var opponent = Meteor.users.findOne({_id: {$ne: Meteor.userId()}});
-	if (!opponent) {return;}
-	var sessions = Sessions.find({userId: opponent._id});
+	var sessions = Sessions.find({userId: oppId()});
 	var stats = allPlayerStats(sessions);
 	return stats['games'];
     },

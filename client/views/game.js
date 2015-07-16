@@ -8,7 +8,7 @@ gameResults = function() {
     var round = game.round;
     var finished = game.state == 'finished';
     var rounds = [];
-    Rounds.find().forEach(function(obj) {
+    Rounds.find({}, {sort: {roundIndex: 1}}).forEach(function(obj) {
 	if ((obj.roundIndex < round) || finished) {
 	    var index = obj.roundIndex - 1;
 	    if (index > rounds.length-1) {

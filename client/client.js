@@ -20,7 +20,5 @@ Tracker.autorun(function() {
 });
 
 Tracker.autorun(function() {
-    var opp = Meteor.users.findOne({_id: {$ne: Meteor.userId()}});
-    if (!opp) {return;}
-    Meteor.subscribe('sessions', opp._id);
+    Meteor.subscribe('sessions', oppId());
 });
