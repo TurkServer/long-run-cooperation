@@ -39,7 +39,18 @@ def active_users():
     plt.xticks(range(1,21))
     plt.yticks(range(5))
     plt.show()
+
+problems = ["PZiqsCuy6SMohJJsG", "Ge88kj9LPwEAXfsMQ", "x8hWBug3PEGfSWdbe", "js6L2MjvpZYcQR8on"]
     
+def investigate(id):
+    for round_ in sorted(db.rounds.find({'_groupId': id}), key=lambda x: x['timestamp']):
+        print 'Round: ' + str(round_['roundIndex'])
+        print 'User: ' + round_['userId']
+        print 'Timestamp: ' + str(round_['timestamp'])
+        print 'Payoff: ' + str(round_.get('payoff'))
+        print
+        
+        
 def getGame(_id):
     roundObjs = sorted(db.rounds.find({'_groupId': gameid}), key=lambda x: x['roundIndex'])
     rounds = []
