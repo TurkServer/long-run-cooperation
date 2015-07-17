@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import matplotlib.pyplot as plt
 import itertools
 
 client = MongoClient()
@@ -28,6 +29,17 @@ games = [["FeFfLSSazQALHYWGm", "ReZMKmPcqyNJmAHbd", "erT5isCghEnGfZ7gw"],
          ["ovHEKNB44mRXxQfBf"],
          ["7Cqn2edHfiJnNnGwB"]]
 
+def active_users():
+    num = [len(game) for game in games]
+    plt.plot(range(1,21), num)
+    plt.ylabel('Number of game instances launched')
+    plt.xlabel('Game counter')
+    plt.ylim((0,4))
+    plt.xlim((1,20))
+    plt.xticks(range(1,21))
+    plt.yticks(range(5))
+    plt.show()
+    
 def getGame(_id):
     roundObjs = sorted(db.rounds.find({'_groupId': gameid}), key=lambda x: x['roundIndex'])
     rounds = []

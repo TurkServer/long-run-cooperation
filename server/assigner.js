@@ -34,6 +34,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 
       this.lobby.events.on("next-game", (function(_this) {
 	  return function() {
+	      var started = new Date();
 	      var allLobbyAssts = _this.lobby.getAssignments();
 	      var lobbyAssts = _.filter(allLobbyAssts, function(asst) {
 		  var statusObj = LobbyStatus.findOne(asst.userId);
@@ -41,14 +42,17 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 	      });
 	      if (lobbyAssts.length > 1) { // avoid triggering by accident
 		  _this.counter += 1;
+		  console.log('Game: ' + _this.counter);
 		  var shuffledAssts = _.shuffle(lobbyAssts);
 		  // see http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
 		  var pairs = _.groupBy(shuffledAssts, function(element, index) {return Math.floor(index/2)});
+		  var instances = [];
 		  for (var key in pairs) {
 		      var assts = pairs[key];
 		      if (assts.length == 2) {
-			  var instance = _this.batch.createInstance(['main', 'game'+_this.counter])
+			  var instance = _this.batch.createInstance(['main'])
 			  instance.setup();
+			  instances.push(instance.groupId);
 			  for (var i=0; i<2; i++) {
 			      var asst = assts[i];
 			      _this.lobby.pluckUsers([asst.userId]);
@@ -56,6 +60,14 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 			  }
 		      }
 		  }
+		  GameGroups.insert({
+		      'counter': _this.counter,
+		      'timestamp': started,
+		      'users': _.map(lobbyAssts, function(asst) {
+			  return asst.userId;
+		      }),
+		      'instances': instances
+		  });
 	      }
 	  };
       })(this));
@@ -84,25 +96,6 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 	  this.lobby.pluckUsers([asst.userId]);
 	  asst.showExitSurvey();
       }
-
-      // TESTING
-      // var session = Sessions.findOne({assignmentId: asst.assignmentId});
-      // if (session.games == numGames) {
-      // 	  this.lobby.pluckUsers([asst.userId]);
-      // 	  asst.showExitSurvey();
-      // }
-
-      // var assts = this.lobby.getAssignments();
-      // if (assts.length == 2) {
-      // 	  var instance = this.batch.createInstance(this.batch.getTreatments());
-      // 	  instance.setup();
-      // 	  for (var i=0; i<2; i++) {
-      // 	      var asst = assts[i];
-      // 	      this.lobby.pluckUsers([asst.userId]);
-      // 	      instance.addAssignment(asst);
-      // 	  }
-      // }
-
   };
 
   return PairAssigner;
