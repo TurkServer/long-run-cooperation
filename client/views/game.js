@@ -66,12 +66,6 @@ Template.game.helpers({
 	return Rounds.findOne({userId: Meteor.userId(),
 			       roundIndex: game.round});
     },
-    waiting: function() {
-	var game = Games.findOne();
-	if (!game) {return};
-	var rounds = Rounds.find({roundIndex: game.round});
-	return rounds.count() == 2;
-    },
     results: function() {
 	return gameResults();
     },
