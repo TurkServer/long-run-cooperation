@@ -47,7 +47,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 		  for (var key in pairs) {
 		      var assts = pairs[key];
 		      if (assts.length == 2) {
-			  var instance = _this.batch.createInstance(['main'])
+			  var instance = _this.batch.createInstance(['main', 'game'+_this.counter])
 			  instance.setup();
 			  for (var i=0; i<2; i++) {
 			      var asst = assts[i];
