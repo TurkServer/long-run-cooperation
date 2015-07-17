@@ -67,23 +67,33 @@ Meteor.methods({
 	var inst = TurkServer.Instance.currentInstance();
 	inst.sendUserToLobby(Meteor.userId());
     },
-    chooseAction: function(action, round) {
-	Rounds.insert({timestamp: new Date(),
-		       userId: Meteor.userId(),
-		       roundIndex: round,
-		       action: action});
-	var rounds = Rounds.find({roundIndex: round});
-	if (rounds.count() == 2) {
-	    var userIds = [];
-	    var actions = {};
-	    rounds.forEach(function(obj) {
-		userIds.push(obj.userId);
-		actions[obj.userId] = obj.action;
+    chooseAction: function(action) {
+	var round = Games.findOne().round;
+	var myTimestamp = new Date()
+	Rounds.upsert({userId: Meteor.userId(),
+		       roundIndex: round},
+		      {$set: {timestamp: myTimestamp,
+			      action: action}});
+	var rounds = Rounds.find({roundIndex: round}).fetch();
+	var endRound;
+	if (rounds.length == 2) {
+	    _.each(rounds, function(round) {
+		if (round.userId != Meteor.userId()) {
+		    endRound = myTimestamp > round.timestamp;
+		}
 	    });
-	    Meteor.call('endRound', round, userIds, actions);
+	    if (endRound) {
+		Meteor.call('endRound', rounds, round);
+	    }
 	}
     },
-    endRound: function(round, userIds, actions) {
+    endRound: function(rounds, round) {
+	var userIds = [];
+	var actions = {};
+	_.each(rounds, function(round) {
+	    userIds.push(round.userId);
+	    actions[round.userId] = round.action;
+	});
 	var payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
 	for (var i=0; i<=1; i++) {
 	    Rounds.update({roundIndex: round,
