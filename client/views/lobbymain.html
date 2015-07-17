@@ -1,0 +1,21 @@
+<template name="lobbyMain">
+  <div class="col-md-12">
+
+    {{#if notReady}}
+    {{> pilot}}
+    <p>Click the button below to begin playing. You will then enter a waiting room, and once enough players have joined, the first game will begin.</p>
+    <button class="btn btn-primary begin">Begin</button>
+    {{else}}
+    <p>
+      {{#if plural}}
+      There are currently <strong>{{numWaiting}} players</strong> in the waiting room.
+      {{else}}
+      There is currently <strong>1 player</strong> in the waiting room.
+      {{/if}}
+      Once about {{numPlayers}} players have joined, we will begin the next game.</p>
+
+    <p>Note that if there are an odd number of players, you might be left out when a game starts. But games go very quickly, so just wait a moment for the next one to begin.</p>
+
+    {{/if}}
+  </div>
+</template>
