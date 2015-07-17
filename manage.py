@@ -1,16 +1,10 @@
 import yaml
 import mturk
-from pymongo import MongoClient
-from bson.objectid import ObjectId
 
 me = True
 sandbox = True
 
 params = yaml.load(open('params.txt'))
-
-""" Mongo Setup"""
-client = MongoClient(params['mongoURI'])
-db = client.meteor
 
 """MTurk Setup"""
 if me:
@@ -28,54 +22,12 @@ config = {'use_sandbox': sandbox,
 
 m = mturk.MechanicalTurk(config)
 
-def clear_db():
-    collections = db.collection_names()
-    for collection in collections:
-        if collection == 'users':
-            db[collection].remove({'username': {'$ne': 'admin'}})
-        elif 'system' not in collection and collection not in ['ts.hittypes', 'ts.batches', 'ts.treatments']:
-            db[collection].remove({})
-
-def print_users():
-    users = db.users.find()
-    for user in users:
-        print user['username']
-        print 'assignmentId: ' + user['assignmentId']
-        print 'online: ' + str(user['status']['online'])
-        print 'state: ' + user['state']
-        print 'score: ' + str(user['score'])
-        print 'createdAt: ' + str(user['createdAt'])
-        print
-        
-def print_user_games():
-    users = db.users.find()
-    for user in users:
-        print user['username']
-        for game_id in user['games']:
-            game = db.games.find_one({'_id': game_id})
-            players = game['players']
-            name1 = db.users.find_one({'_id': players[0]})['username']
-            name2 = db.users.find_one({'_id': players[1]})['username']
-            score1 = sum(game['scores'][players[0]])
-            score2 = sum(game['scores'][players[1]])
-            print '%s: %d, %s: %d' % (name1, score1, name2, score2)
-    
-
 question = """
 <ExternalQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2006-07-14/ExternalQuestion.xsd">
 <ExternalURL>https://test.lilianne.me</ExternalURL>
 <FrameHeight>800</FrameHeight>
 </ExternalQuestion>
 """
-
-qualifications = [
-    {'QualificationTypeId': mturk.LOCALE,
-     'Comparator': 'In',
-     'LocaleValue': [{'Country': 'US'}, {'Country':'CA'}]},
-    {'QualificationTypeId': mturk.P_APPROVED,
-     'Comparator': 'GreaterThanOrEqualTo',
-     'IntegerValue': 95}
-]
 
 def create_qual():
     qual = {'Operation': 'CreateQualificationType',
@@ -92,21 +44,6 @@ def assign_qual():
     r = m.request('AssignQualification', qual)
     print r
             
-def create_hit():
-    hit = {'Title': 'Decision-Making Experiment',
-           'Description': 'In this HIT you will play a sequence of games against random opponents and earn a bonus based on the decisions you make.',
-           'Keywords': 'experiment,decision-making',
-           'Question': question,
-           'Reward': {'Amount': 0.25, 'CurrencyCode': 'USD'},
-           'LifetimeInSeconds': 60*60*24,
-           'AssignmentDurationInSeconds': 60*60,
-           'MaxAssignments': 4,
-           'AutoApprovalDelayInSeconds': 60,
-           'QualificationRequirement': []}        
-    r = m.request('CreateHIT', hit)
-    print r
-
-
 def notify():
     notify = {'Operation': 'NotifyWorkers',
               'Subject': 'TestSubject',
@@ -114,7 +51,6 @@ def notify():
               'WorkerId': ''}
     r = m.request('NotifyWorkers', notify)
     print r
-
 
 def get_hits():
     get = {'Operation': 'SearchHITs'}
@@ -142,7 +78,6 @@ def approve_assignments(id):
                    'AssignmentId': assignment['AssignmentId']}
         r = m.request('ApproveAssignment', approve)
     
-
 def delete_hits():
     get = {'Operation': 'SearchHITs'}
     r = m.request('SearchHITs', get)
@@ -158,30 +93,3 @@ def delete_hits():
         'HITId': hit}
         r = m.request('DisposeHIT', delete)
         
-                
-def get_hits():
-    get = {'Operation': 'SearchHITs'}
-    r = m.request('SearchHITs', get)
-    return r['SearchHITsResponse']['SearchHITsResult']['HIT']
-    
-def grant_bonus():
-    users = db.users.find()
-    for user in users:
-        if user['score'] > 0:
-            amt = '%.2f' % (user['score']*0.0025)
-            bonus = {'Operation': 'GrantBonus',
-                     'WorkerId': user['username'],
-                     'AssignmentId': user['assignmentId'],
-                     'BonusAmount': {'Amount': amt, 'CurrencyCode': 'USD'},
-                     'Reason': 'Bonus for decision-making HIT'}
-            r = m.request('GrantBonus', bonus)
-            print r
-
-def time_games():
-    games = db.games.find()
-    times = []
-    for game in games:
-        roundTimes = game['roundTimes']
-        length = roundTimes[-1] - roundTimes[0]
-        times.append(length)
-    print times
