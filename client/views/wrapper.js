@@ -12,15 +12,15 @@ var helper = function(ttmt, recruiting, main) {
 Template.home.helpers({
     active: function() {
 	var ttmt = treatment();
-	return helper(ttmt, 'landingRecruiting', 'landingPilot');
+	return helper(ttmt, 'landingRecruiting', 'landingMain');
     }
 });
 
 // lobby
-Template.lobbyBase.helpers({
+Template.lobby.helpers({
     active: function() {
 	var ttmt = treatment();
-	return helper(ttmt, 'blank', 'lobbyPilot');
+	return helper(ttmt, 'blank', 'lobbyMain');
     }
 });
 
@@ -47,6 +47,3 @@ Template.survey.helpers({
 	return helper(ttmt, 'timepicker', 'submit');
     }
 });
-
-
-

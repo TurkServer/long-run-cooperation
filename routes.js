@@ -9,7 +9,7 @@ Router.map(function() {
     this.route('lobby', {
 	path: '/lobby',
 	layoutTemplate: 'wrapper',
-	template: 'lobbyBase'
+	template: 'lobby'
     });
     this.route('experiment', {
 	path: '/experiment',
