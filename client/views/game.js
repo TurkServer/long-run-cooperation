@@ -85,8 +85,7 @@ Template.game.helpers({
 
 Template.game.events({
     "click .action": function(e) {
-	Meteor.call('chooseAction', parseInt(e.target.value),
-		    TurkServer.currentRound().index);
+	Meteor.call('chooseAction', parseInt(e.target.value));
     },
     "click .endgame": function() {
 	Meteor.call('goToLobby');
