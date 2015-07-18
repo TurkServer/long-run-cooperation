@@ -31,10 +31,12 @@ TurkServer.initialize(function() {
     }
 });
 
-TurkServer.Timers.onRoundEnd(function() {
-    var game = Games.findOne();
-    if (game.state != 'finished') {
-	Meteor.call('endGame', 'abandoned');
+TurkServer.Timers.onRoundEnd(function(reason) {
+    if (reason === TurkServer.Timers.ROUND_END_TIMEOUT) {
+	var game = Games.findOne();
+	if (game.state != 'finished') {
+	    Meteor.call('endGame', 'abandoned');
+	}
     }
 });
 
