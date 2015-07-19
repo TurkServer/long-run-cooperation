@@ -4,7 +4,7 @@ Meteor.publish('games', function() { return Games.find(); });
 Meteor.publish('recruiting', function() { return Recruiting.find(); });
 Meteor.publish('sessions', function(userId) { 
     return Sessions.find({userId: userId}); 
-}); 
+});
 
 Meteor.startup(function () {
     Batches.upsert({name: 'main'}, {name: 'main', active: true});
@@ -46,24 +46,8 @@ Meteor.methods({
 	inst.sendUserToLobby(Meteor.userId());
     },
     chooseAction: function(action) {
-	var round = Games.findOne().round;
-	var myTimestamp = new Date()
-	Rounds.upsert({userId: Meteor.userId(),
-		       roundIndex: round},
-		      {$set: {timestamp: myTimestamp,
-			      action: action}});
-	var rounds = Rounds.find({roundIndex: round}).fetch();
-	var endRoundFlag;
-	if (rounds.length == 2) {
-	    _.each(rounds, function(round) {
-		if (round.userId != Meteor.userId()) {
-		    endRoundFlag = myTimestamp > round.timestamp;
-		}
-	    });
-	    if (endRoundFlag) {
-		endRound(rounds, round);
-	    }
-	}
+	var timestamp = new Date();
+	chooseActionInternal(userId, action);
     },
     setPayment: function() {
 	var asst = TurkServer.Assignment.currentAssignment();
@@ -94,37 +78,69 @@ var initRecruiting = function() {
 }
 
 var startTimer = function() {
-    var start = new Date();
-    var end = new Date(start.getTime() + roundWait*60000);
+    start = new Date();
+    end = new Date(start.getTime() + roundWait*60000);
     TurkServer.Timers.startNewRound(start, end);
 }
 
+var chooseActionInternal = function(userId, action) {
+    var round = Games.findOne().round;
+    var exists = Rounds.findOne({userId: userId,
+				 roundIndex: round});
+    if (exists) { return; }
+    Rounds.insert({userId: userId,
+		   roundIndex: round,
+		   timestamp: new Date(),
+		   action: action});
+    var rounds = Rounds.find({roundIndex: round}).fetch();
+    var timestamps = {};
+    var otherId;
+    if (rounds.length == 2) {
+	_.each(rounds, function(round) {
+	    timestamps[round.userId] = round.timestamp;
+	    if (round.userId != userId) {
+		otherId = round.userId;
+	    }
+	});
+	if (timestamps[userId] > timestamps[otherId]) {
+	    endRound(rounds, round);
+	} else if (timestamps[userId].getTime() == timestamps[otherId].getTime()) {
+	    // if they really pressed the button at the same time,
+	    // just remove both objects and let them click again
+	    // but don't compare the two Date objects directly:
+	    // http://stackoverflow.com/a/493018
+	    Rounds.remove({userId: userId,
+			   roundIndex: round});
+	}
+    }
+}
+
 var endRound = function(rounds, round) {
-    var userIds = [];
-    var actions = {};
+    userIds = [];
+    actions = {};
     _.each(rounds, function(round) {
 	userIds.push(round.userId);
 	actions[round.userId] = round.action;
     });
-    var payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
-    for (var i=0; i<=1; i++) {
+    payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
+    for (i=0; i<=1; i++) {
 	Rounds.update({roundIndex: round,
 		       userId: userIds[i]},
 		      {$set: {payoff: payoffs[i]}});
-	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+	asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
 	Sessions.update({assignmentId: asst.assignmentId},
 			{$inc: {bonus: payoffs[i]*conversion}});
     }
     if (round == numRounds) {
-	for (var i=0; i<=1; i++) {
-	    var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+	for (i=0; i<=1; i++) {
+	    asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
 	    Sessions.update({assignmentId: asst.assignmentId},
 			    {$inc: {games: 1}});
 	}
 	endGame('finished');
     } else {
 	Games.update({}, {$inc: {round: 1}});
-	startTimer()
+	startTimer();
     }
 }
 
@@ -132,3 +148,6 @@ var endGame = function(state) {
     Games.update({}, {$set: {state: state}});
     TurkServer.Instance.currentInstance().teardown(false);
 }
+
+testingFuncs = {}
+testingFuncs.chooseActionInternal = chooseActionInternal;
