@@ -47,7 +47,7 @@ Meteor.methods({
     },
     chooseAction: function(action) {
 	var timestamp = new Date();
-	chooseActionInternal(userId, action);
+	chooseActionInternal(Meteor.userId(), action);
     },
     setPayment: function() {
 	var asst = TurkServer.Assignment.currentAssignment();
