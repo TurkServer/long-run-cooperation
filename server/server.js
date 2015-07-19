@@ -24,7 +24,7 @@ Meteor.startup(function () {
 });
 
 TurkServer.initialize(function() {
-    if (_.indexOf(this.instance.treatment().treatments, "recruiting") == -1) {
+    if (this.instance.treatment().treatments.indexOf("recruiting") == -1) {
 	initGame();
     } else {
 	initRecruiting();
@@ -85,13 +85,11 @@ var startTimer = function() {
 
 var chooseActionInternal = function(userId, action) {
     var round = Games.findOne().round;
-    var exists = Rounds.findOne({userId: userId,
-				 roundIndex: round});
-    if (exists) { return; }
-    Rounds.insert({userId: userId,
-		   roundIndex: round,
-		   timestamp: new Date(),
-		   action: action});
+    var upsert = Rounds.upsert({userId: userId,
+				roundIndex: round},
+			       {$setOnInsert: {timestamp: new Date(),
+					       action: action}});
+    if (!('insertedId' in upsert)) { return; }
     var rounds = Rounds.find({roundIndex: round}).fetch();
     var timestamps = {};
     var otherId;
