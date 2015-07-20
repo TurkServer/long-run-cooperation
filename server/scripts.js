@@ -22,7 +22,8 @@ Meteor.methods({
 	TurkServer.checkAdmin();
 	Assignments.find({
 	    "bonusPayment": {$gt: 0},
-	    "bonusPaid": {$exists: false}
+	    "bonusPaid": {$exists: false},
+	    "status": "completed"
 	}).forEach(function(asst) {
 	    var asstObj = TurkServer.Assignment.getAssignment(asst._id);
 	    asstObj.payBonus('Bonus for the decision-making HIT.');
