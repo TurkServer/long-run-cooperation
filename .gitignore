@@ -1,4 +1,6 @@
 dumps
+dump.sh
+restore.sh
 run.sh
 todo.txt
 settings.json

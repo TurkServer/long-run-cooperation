@@ -1,4 +1,23 @@
 Meteor.methods({
+    'recalculateBonuses': function() {
+	TurkServer.checkAdmin();
+	Assignments.find().forEach(function(asst) {
+	    var asstObj = TurkServer.Assignment.getAssignment(asst._id);
+	    var userId = asstObj.userId;
+	    var points = 0;
+	    Partitioner.directOperation(function() {
+		Rounds.find({'userId': userId}).forEach(function(round) {
+		    if (!('payoff' in round)) {
+			points += 5;
+		    } else {
+			points += round.payoff;
+		    }
+		});
+	    });
+	    var bonus = points*conversion;
+	    asstObj.setPayment(parseFloat(bonus.toFixed(2)));
+	});
+    },
     'payBonuses': function() {
 	TurkServer.checkAdmin();
 	Assignments.find({
