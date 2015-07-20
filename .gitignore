@@ -1,6 +1,5 @@
 dumps
-dump.sh
-db.sh
+run.sh
 todo.txt
 settings.json
 params.txt
