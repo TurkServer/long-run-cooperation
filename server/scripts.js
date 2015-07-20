@@ -40,24 +40,36 @@ Meteor.methods({
     },
     'testGame': function() {
 	TurkServer.checkAdmin();
-	console.log('');
 	var batchid = Batches.findOne({name: 'main'})._id;
 	var batch = TurkServer.Batch.getBatch(batchid);
-	var asst1 = addTestUser(batchid);
-	var asst2 = addTestUser(batchid);
-	var instance = batch.createInstance(['main']);
-	instance.setup();
-	instance.addAssignment(asst1);
-	instance.addAssignment(asst2);
+	var asst1;
+	var asst2;
+	var instance;
 	var clientFunc = function(userId) {
-	    for (var i=0; i<10; i++) {
+	    for (var i=0; i<100; i++) {
 		testingFuncs.chooseActionInternal(userId, 1);
 	    }
 	};
-	Partitioner.bindGroup(instance.groupId, function() {
-	    Meteor.defer(function() {clientFunc(asst1.userId)});
-	    Meteor.defer(function() {clientFunc(asst2.userId)});
-	});
+	var addSession = function(asst) {
+	    Sessions.insert({userId: asst.userId,
+			     assignmentId: asst.assignmentId,
+			     games: 0,
+			     bonus: 0});
+	};
+	for (var j=0; j<5; j++) {
+	    asst1 = addTestUser(batchid);
+	    asst2 = addTestUser(batchid);
+	    addSession(asst1);
+	    addSession(asst2);
+	    instance = batch.createInstance(['main']);
+	    instance.setup();
+	    instance.addAssignment(asst1);
+	    instance.addAssignment(asst2);
+	    Partitioner.bindGroup(instance.groupId, function() {
+		Meteor.defer(function() {clientFunc(asst1.userId)});
+		Meteor.defer(function() {clientFunc(asst2.userId)});
+	    });
+	}
     }
 });
 
