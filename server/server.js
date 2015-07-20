@@ -114,23 +114,23 @@ var chooseActionInternal = function(userId, action) {
 }
 
 var endRound = function(rounds, round) {
-    userIds = [];
-    actions = {};
+    var userIds = [];
+    var actions = {};
     _.each(rounds, function(round) {
 	userIds.push(round.userId);
 	actions[round.userId] = round.action;
     });
-    payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
-    for (i=0; i<=1; i++) {
+    var payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
+    for (var i=0; i<=1; i++) {
 	Rounds.update({roundIndex: round,
 		       userId: userIds[i]},
 		      {$set: {payoff: payoffs[i]}});
-	asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
 	Sessions.update({assignmentId: asst.assignmentId},
 			{$inc: {bonus: payoffs[i]*conversion}});
     }
     if (round == numRounds) {
-	for (i=0; i<=1; i++) {
+	for (var i=0; i<=1; i++) {
 	    asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
 	    Sessions.update({assignmentId: asst.assignmentId},
 			    {$inc: {games: 1}});
