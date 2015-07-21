@@ -3,19 +3,19 @@
         have a choice between two different actions (Choice 1 and Choice 2). You
         will have one minute to make your decision. After both you and your partner
         make a decision, you will each receive a certain number of points. This
-        table shows how many points you and your opponent will earn based on
+        table shows how many points you and your partner will earn based on
         your choices:</p>
 
     {{> payoffTable}}
 
     <p>In each cell, the first number is how many points you will receive, and
-        the second how many points your opponent will receive. In other words:</p>
+        the second how many points your partner will receive. In other words:</p>
 
     <ul>
         <li> If both you and your partner select <span class="green">Choice 1</span>,
             you each earn {{payoffs.R}} points.</li>
-        <li> If you select <span class="green">Choice 1</span> and your partner selects <span class="red">Choice 2</span>, you earn {{payoffs.S}} points and your opponent earns {{payoffs.T}} points.</li>
-        <li> If you select <span class="red">Choice 2</span> and your opponent selects <span class="green">Choice 1</span>, you earn {{payoffs.T}} points and your opponent earns {{payoffs.S}} points.</li>
+        <li> If you select <span class="green">Choice 1</span> and your partner selects <span class="red">Choice 2</span>, you earn {{payoffs.S}} points and your partner earns {{payoffs.T}} points.</li>
+        <li> If you select <span class="red">Choice 2</span> and your partner selects <span class="green">Choice 1</span>, you earn {{payoffs.T}} points and your partner earns {{payoffs.S}} points.</li>
         <li> If both you and your partner select <span class="red">Choice 2</span>, you
             each earn {{payoffs.P}} points.</li>
     </ul>
@@ -30,8 +30,8 @@
     <tbody>
       <tr>
 	<td></td>
-	<td><span class="green"><strong>Choice 1</strong></span> (Opponent)</td>
-	<td><span class="red"><strong>Choice 2</strong></span> (Opponent)</td>
+	<td><span class="green"><strong>Choice 1</strong></span> (Partner)</td>
+	<td><span class="red"><strong>Choice 2</strong></span> (Partner)</td>
       </tr>
       <tr>
 	<td><span class="green"><strong>Choice 1</strong></span> (You)</td>
