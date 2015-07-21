@@ -14,10 +14,9 @@ sgi:sprintfjs
 momentjs:moment
 npm-bcrypt
 iron:router
-remcoder:chronos
 mizzao:turkserver
 coffeescript
 mizzao:partitioner
 underscore
 twbs:bootstrap
-mrt:moment-timezone
+aldeed:moment-timezone
