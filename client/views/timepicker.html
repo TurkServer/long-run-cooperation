@@ -2,30 +2,32 @@
 <div class="col-md-12">
   <form class="survey">
     {{#if failed}}
-    <p>You have used up your two tries to pass the quiz. While you will be unable to participate in the experiment, you will still be paid for this recruiting HIT. Please click the button below to submit the HIT.</p>    
+    <p>You have used up your two tries to pass the quiz. While you will be unable to participate in the study, you will still be paid for this recruiting HIT. Please click the button below to submit the HIT.</p>
     {{else}}
-    <p>Congratulations! You passed the quiz and are eligible for our experiment. Please answer the questions below. </p>
+    <p>Congratulations! You passed the quiz and are eligible for our study. Please help us to schedule the study by answering the questions below. </p>
 
     <div class="form-group">
-      Is it reasonable to ask you to participate in a session every day for 20 days?
+      Is it reasonable for you to participate in a session every day for 20
+        days? If not, how often would you be able to participate?
       <input class="form-control" name="reasonable">
     </div>
 
     <div class="form-group">
-      How much money would be fair payment for each of the 30 minute sessions?
+      How much would it be fair to pay for each of the 30 minute sessions?
       <input class="form-control" name="money">
     </div>
 
     <div class="form-group">
-      The Prisoner's Dilemma (PD) is a game played by two players, who choose between "cooperation" and "defection," sometimes repeatedly over a sequence of rounds. The PD is often studied by researchers who are interested in understanding human cooperation. In all the time you have worked on Mechanical Turk, how many games of Prisoner's Dilemma have you played?
+      The Prisoner's Dilemma (PD) is a game played by two players, who choose between <i>cooperation</i> and <i>defection</i>, sometimes repeatedly over a sequence of rounds. The PD is often studied by researchers who are interested in understanding human cooperation. In all the time you have worked on Mechanical Turk, approximately how many games of Prisoner's Dilemma have you played?
       <input class="form-control" name="pd">
     </div>
 
     <div class="form-group">
-      Researchers also study other related games of cooperation such as "public goods games," in which players voluntarily contribute some fraction of their wealth to a common pool that is then shared equally among all participants. In all the time that you have worked on Mechanical Turk, how many public goods games have you played?
+      Researchers also study other related games of cooperation such as "public goods games," in which players voluntarily contribute some fraction of their wealth to a common pool that is then shared equally among all participants. In all the time that you have worked on Mechanical Turk, approximately how many public goods games
+        have you played?
       <input class="form-control" name="pg">
     </div>
-<p>Please pick up to three different times (on a typical weekday) when you can be present for an hour. Note that you must be able to participate in a HIT <strong>every day</strong> at the times you select. We expect the experiment to start the week of July 27, 2015 and run at least through August 21, 2015. If you miss more than 2 sessions, you will be unable to continue participation in the experiment.</p>
+<p>Please pick up to three different times (on a typical weekday) when you can be present for an hour. Note that you must be able to participate in a HIT <strong>every day</strong> at the times you select. We expect the experiment to start the week of July 27, 2015 and run at least through August 21, 2015. If you miss more than 2 sessions, you will not be able to continue participating in the study.</p>
 
     {{> tsTimePicker}}
     <div class="checkbox">
@@ -34,7 +36,7 @@
       </label>
     </div>
     {{/if}}
-    <p>Because this is a research project, we kindly ask that you do not discuss the quiz with other Turkers.</p>
+    <p>Because this is a research project, we kindly ask that you do not discuss the details of the study with other workers.</p>
     <button type="submit" class="btn btn-primary">Submit the HIT</button>
   </form>
 </div>
