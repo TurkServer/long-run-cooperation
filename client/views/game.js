@@ -5,10 +5,10 @@ color = function(action) {
 gameResults = function() {
     var game = Games.findOne();
     if (!game) {return;}
-    var round = game.round;
+    var round = currentRound();
     var finished = game.state == 'finished';
     var rounds = [];
-    Rounds.find({}, {sort: {roundIndex: 1}}).forEach(function(obj) {
+    Actions.find({}, {sort: {roundIndex: 1}}).forEach(function(obj) {
 	if ((obj.roundIndex < round) || finished) {
 	    var index = obj.roundIndex - 1;
 	    if (index > rounds.length-1) {
@@ -39,9 +39,7 @@ Template.game.helpers({
 	}
     },
     round: function() {
-	var game = Games.findOne();
-	if (!game) {return 1};
-	return game.round;
+	return currentRound();
     },
     gameOver: function() {
 	var game = Games.findOne();
@@ -52,10 +50,8 @@ Template.game.helpers({
 	return game && game.state == 'abandoned';
     },
     choseAction: function() {
-	var game = Games.findOne();
-	if (!game) {return};
-	return Rounds.findOne({userId: Meteor.userId(),
-			       roundIndex: game.round});
+	return Actions.findOne({userId: Meteor.userId(),
+				roundIndex: currentRound()});
     },
     results: function() {
 	return gameResults();
