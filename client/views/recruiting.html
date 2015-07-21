@@ -2,29 +2,42 @@
 
 <h4>Welcome</h4>
 
-<p>The purpose of this HIT is to grant qualifications for a long-term research project. The research project will consist of 20 sessions. Each session will start at the same time each business day (Monday through Friday) and will last about 30 minutes. We will have one session per day over the course of at least 4 weeks. We expect the experiment to start the week of July 27, 2015 and run at least through August 21, 2015.</p>
+<p>This HIT will grant you a qualification for a long-term research study,
+consisting of 20 sessions where you will play a game with other workers.  Each
+session will start at the same time every weekday (Monday through Friday) and
+take about 30 minutes, and the sessions will take place over  the course of
+about 4 weeks. We expect the experiment to start the week of July 27, 2015 and
+run at least through August 21, 2015.</p>
 
-<p>If you choose to participate in the experiment, we will need to you to be present for <b>every</b> session. If, at any point, you miss more than 2 sessions (leaving early counts as an absence), you will be unable to continue participation in the experiment. As part of this HIT we will ask about your availability and we will hold the experiment during the time that most workers will be available. We will then contact you when the experiment begins, after which point we will ask that you come to Amazon Mechanical Turk once per day at the specified time to complete a session. Because the experiment involves interacting with other Turkers in real-time, it is important that you arrive to each session <b>exactly on-time.</b></p>
+<p>If you choose to participate in the study, <b>we ask you to be present for
+every session</b>. If you miss more than 2 sessions, you will no longer be
+allowed to participate.</p>
 
-<p>After reading these instructions, you will be asked to take and pass a short quiz that tests your understanding of the rules of the game (as described below). You will be given two attempts to pass the quiz. If you fail twice, you will not be allowed to participate in the experiment. After passing the quiz, you will fill out a form describing your availability.</p>
+<p>In this HIT, we will ask about your availability and schedule the sessions at
+a time when the most workers are available. If you agree to participate, we will
+contact you when the study begins and specify the time that you should arrive on
+each day. Since the study involves interacting with other workers in real-time,
+it is important that you <b>arrive on time and start the HIT
+immediately</b>.</p>
 
-<h4>Payment</h4>
-<p>You will receive a base payment of 25 cents for each of the 20 sessions. You will then earn additional compensation, based on number of points you earn during each session, in the form of a bonus paid on Amazon Mechanical Turk. Your score for the session is the sum of your points from each game. We will convert your score to dollars at the rate of 4 points = 1 cent. We expect this to be equivalent to a rate of <strong>$6/hr</strong>. At the end of the 20 sessions, you will receive an <strong>additional bonus payment of $10</strong>.</p>
+<p>Once you read these instructions, you will see a short quiz that tests your
+understanding of the rules of the game (as described below). If you fail  the
+quiz twice, you will not be able to participate in the study.</p>
 
 <h4>The Game</h4>
-<p>In each session you will play a sequence of up to 20 games (the exact number depends on the availability of other players). In each game, you will be randomly paired with another player. A game consists of a sequence of 10 rounds. In each round, you will choose between two different actions (Choice 1 and Choice 2). You will have one minute to make your decision. After both you and your opponent have made a decision, you will each receive a certain number of points. The table below shows the number of points associated with each possible combination of your choice and the choice of your opponent in each round:</p>
+<p>In each session you will play a sequence of up to {{numGames}} games where
+you will be randomly paired with another player.</p>
 
-{{> payoffTable}}
+{{> payoffInstructions}}
 
-<p>In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive. Another way to understand the table is as follows:</p>
+<p>You will then return the next day to complete another session, and so on for
+20 sessions over the course of 4 weeks </p>
 
-<ul>
-<li> If both you and your opponent select <span class="green">Choice 1</span>, you each earn {{payoffs.R}} points.</li>
-<li> If you select <span class="green">Choice 1</span> and your opponent selects <span class="red">Choice 2</span>, you earn {{payoffs.S}} points and your opponent earns {{payoffs.T}} points.</li>
-<li> If you select <span class="red">Choice 2</span> and your opponent selects <span class="green">Choice 1</span>, you earn {{payoffs.T}} points and your opponent earns {{payoffs.S}} points.</li>
-<li> If both you and your opponent select <span class="red">Choice 2</span>, you each earn {{payoffs.P}} points.</li>
-</ul>
-
-<p>After you have completed 10 rounds, the game ends, and you will be randomly matched with another opponent for the next game. When you have completed 20 games (or as many as possible given the availability of other players), the session will end. You will then return the next day to complete another session, and so forth for 20 sessions over the course of 4 weeks.</p>
-
+<h4>Payment</h4>
+<p>You will receive a base payment of 25 cents for each of the 20 sessions. For
+each session, you will also earn a bonus based on the total number of  points
+you receive. We will convert your score to dollars at the rate of 4 points = 1
+cent. We expect this to be equivalent to a rate of <strong>$6/hr</strong>. At
+the end of the 20 sessions, you will receive an <strong>additional bonus
+payment of $10</strong>.</p>
 </template>
