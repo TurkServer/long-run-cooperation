@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-lg-9">
       <h4>Game {{gameNum}} (out of {{numGames}})</h4>
-        <p>Each game consists of {{numRounds}} rounds. In each round, you will select between <span class="green">Choice 1</span> and <span class="red">Choice 2</span>. The table below shows the number of points associated with each possible combination of your choice and the choice of your opponent. In each cell, the first number is the number of points you will receive, and the second number is the number of points your opponent will receive.
+        <p>Each game consists of {{numRounds}} rounds. In each round, you will select between <span class="green">Choice 1</span> and <span class="red">Choice 2</span>. The table below shows the number of points associated with each possible combination of your choice and the choice of your partner. In each cell, the first number is the number of points you will receive, and the second number is the number of points your partner will receive.
 	  {{> payoffTable}}
 	</p>
 
@@ -12,9 +12,9 @@
       	  <tr>
       	    <td><strong>Round</strong></td>
       	    <td><strong>Your Choice</strong></td>
-      	    <td><strong>Opponent's Choice</strong></td>
+      	    <td><strong>Partner's Choice</strong></td>
       	    <td><strong>Your Points</strong></td>
-      	    <td><strong>Opponent's Points</strong></td>
+      	    <td><strong>Partner's Points</strong></td>
       	  </tr>
       	  {{#each results}}
       	  <tr>
@@ -39,12 +39,12 @@
       {{else}}
 
       {{#if gameAbandoned}}
-      <p>Either you or your opponent did not choose an action in time, so the game was terminated.</p>
+      <p>Either you or your partner did not choose an action in time, so the game was terminated.</p>
       <button type="button" class="btn btn-primary endgame">Return to Waiting Room</button>
       {{else}}
       
       {{#if choseAction}}
-      <p>Waiting for your opponent to make a decision. After one minute, the game will be terminated.</p> 
+      <p>Waiting for your partner to make a decision. After one minute, the game will be terminated.</p> 
       {{else}}
       <p>Make a choice for round {{round}}. You have one minute. After that, the game will be terminated.</p>
       {{/if}}
