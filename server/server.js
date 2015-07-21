@@ -1,5 +1,6 @@
 Meteor.publish('users', function() { return Meteor.users.find(); });
 Meteor.publish('rounds', function() { return Rounds.find(); });
+Meteor.publish('actions', function() { return Actions.find(); });
 Meteor.publish('games', function() { return Games.find(); });
 Meteor.publish('recruiting', function() { return Recruiting.find(); });
 Meteor.publish('sessions', function(userId) { 
@@ -66,9 +67,21 @@ Meteor.methods({
     },
 });
 
+Partitioner.directOperation(function() {
+    Rounds.find({actions: 2, ended: false}).observe({
+	added: function(doc) {
+	    Partitioner.bindGroup(doc._groupId, function() {
+		endRound(doc.index);
+	    });
+	    Rounds.update({_id: doc._id},
+			  {$set: {ended: true}});
+	},		 
+    });
+});
+
 var initGame = function() {
-    Games.insert({round: 1,
-		  state: 'active'});
+    Games.insert({state: 'active'});
+    newRound(1);
     startTimer();
 }
 
@@ -78,54 +91,38 @@ var initRecruiting = function() {
 }
 
 var startTimer = function() {
-    start = new Date();
-    end = new Date(start.getTime() + roundWait*60000);
+    var start = new Date();
+    var end = new Date(start.getTime() + roundWait*60000);
     TurkServer.Timers.startNewRound(start, end);
 }
 
 var chooseActionInternal = function(userId, action) {
-    var round = Games.findOne().round;
-    var upsert = Rounds.upsert({userId: userId,
-				roundIndex: round},
-			       {$setOnInsert: {timestamp: new Date(),
-					       action: action}});
+    var round = currentRound();
+    var upsert = Actions.upsert({userId: userId,
+				 roundIndex: round},
+				{$setOnInsert: {
+				    timestamp: new Date(),
+				    action: action}});
     if (!('insertedId' in upsert)) { return; }
-    var rounds = Rounds.find({roundIndex: round}).fetch();
-    var timestamps = {};
-    var otherId;
-    if (rounds.length == 2) {
-	_.each(rounds, function(round) {
-	    timestamps[round.userId] = round.timestamp;
-	    if (round.userId != userId) {
-		otherId = round.userId;
-	    }
-	});
-	if (timestamps[userId] > timestamps[otherId]) {
-	    endRound(rounds, round);
-	} else if (timestamps[userId].getTime() == timestamps[otherId].getTime()) {
-	    // if they really pressed the button at the same time,
-	    // just remove both objects and let them click again
-	    // but don't compare the two Date objects directly:
-	    // http://stackoverflow.com/a/493018
-	    Rounds.remove({userId: userId,
-			   roundIndex: round});
-	}
-    }
+    Rounds.update({index: round},
+		  {$inc: {actions: 1}})
 }
 
-var endRound = function(rounds, round) {
+var endRound = function(round) {
+    var actionObjs = Actions.find({roundIndex: round}).fetch();
     var userIds = [];
     var actions = {};
-    _.each(rounds, function(round) {
+    var asst;
+    _.each(actionObjs, function(round) {
 	userIds.push(round.userId);
 	actions[round.userId] = round.action;
     });
     var payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
     for (var i=0; i<=1; i++) {
-	Rounds.update({roundIndex: round,
+	Actions.update({roundIndex: round,
 		       userId: userIds[i]},
 		      {$set: {payoff: payoffs[i]}});
-	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+	asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
 	Sessions.update({assignmentId: asst.assignmentId},
 			{$inc: {bonus: payoffs[i]*conversion}});
     }
@@ -137,9 +134,15 @@ var endRound = function(rounds, round) {
 	}
 	endGame('finished');
     } else {
-	Games.update({}, {$inc: {round: 1}});
+	newRound(round+1);
 	startTimer();
     }
+}
+
+var newRound = function(round) {
+    Rounds.insert({index: round,
+		   actions: 0,
+		   ended: false});
 }
 
 var endGame = function(state) {

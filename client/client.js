@@ -14,6 +14,7 @@ Tracker.autorun(function() {
     var group = TurkServer.group();
     Meteor.subscribe('users', group);
     Meteor.subscribe('rounds', group);
+    Meteor.subscribe('actions', group);
     Meteor.subscribe('games', group);
     Meteor.subscribe('recruiting', group);
     Meteor.subscribe('sessions', Meteor.userId());
