@@ -29,15 +29,6 @@ gameResults = function() {
 }
 
 Template.game.helpers({
-    roundWait: function() {
-	return roundWait;
-    },
-    numGames: function() {
-	return numGames;
-    },
-    numRounds: function() {
-	return numRounds;
-    },
     gameNum: function() {
 	var session = Sessions.findOne({assignmentId: assignmentId()});
 	var game = Games.findOne();
