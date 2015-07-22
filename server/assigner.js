@@ -47,6 +47,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 		  // see http://stackoverflow.com/questions/8566667/split-javascript-array-in-chunks-using-underscore-js
 		  var pairs = _.groupBy(shuffledAssts, function(element, index) {return Math.floor(index/2)});
 		  var instances = [];
+		  var leftOut = [];
 		  for (var key in pairs) {
 		      var assts = pairs[key];
 		      if (assts.length == 2) {
@@ -57,15 +58,19 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 			      var asst = assts[i];
 			      _this.lobby.pluckUsers([asst.userId]);
 			      instance.addAssignment(asst);
-			  }
+			  } 
+		      } else {
+			  leftOut.push(pairs[key][0].userId);
 		      }
 		  }
 		  GameGroups.insert({
 		      'counter': _this.counter,
+		      'batchId': _this.lobby.batchId,
 		      'timestamp': started,
 		      'users': _.map(lobbyAssts, function(asst) {
 			  return asst.userId;
 		      }),
+		      'leftOut': leftOut,
 		      'instances': instances
 		  });
 	      }
