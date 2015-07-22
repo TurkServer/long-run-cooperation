@@ -1,5 +1,5 @@
-Rounds = new Mongo.Collection('rounds'); // one per round in each game 
 Actions = new Mongo.Collection('actions'); // one per action in each game
+Rounds = new Mongo.Collection('rounds'); // one per round in each game 
 Games = new Mongo.Collection('games'); 
 Recruiting = new Mongo.Collection('recruiting'); 
 Sessions = new Mongo.Collection('sessions'); // one per assignment (user/HIT)

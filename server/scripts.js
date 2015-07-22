@@ -1,3 +1,9 @@
+var sleep = Meteor.wrapAsync(function(time, cb) {
+    return Meteor.setTimeout((function() {
+	return cb(void 0);
+    }), time);
+});
+
 Meteor.methods({
     'recalculateBonuses': function() {
 	TurkServer.checkAdmin();
@@ -33,6 +39,7 @@ Meteor.methods({
     },
     'testAssigner': function() {
 	TurkServer.checkAdmin();
+	clearDB();
 	console.log('testAssigner');
 	var batchid = Batches.findOne({name: 'main'})._id;
 	for (var i=0; i<11; i++) {
@@ -40,20 +47,24 @@ Meteor.methods({
 	    asst._enterLobby();
 	    LobbyStatus.update({_id: userId}, {$set: {status: true}});
 	}
+	for (var j=0; j<numGames; j++) {
+	    Meteor.call('ts-admin-lobby-event', batchid, 'next-game');
+	    var gameGroup = GameGroups.findOne({counter: j+1});
+	    console.log('Number of users in lobby: ' + gameGroup.users.length);
+	    console.log('Left out user: ' + gameGroup.leftOut);
+	    Meteor.call('ts-admin-stop-all-experiments', batchid);
+	    LobbyStatus.update({}, {$set: {status: true}}, {multi: true})
+	}
     },
     'testGame': function() {
 	TurkServer.checkAdmin();
+	clearDB();
 	console.log('testGame');
 	var batchid = Batches.findOne({name: 'main'})._id;
 	var batch = TurkServer.Batch.getBatch(batchid);
 	var asst1;
 	var asst2;
 	var instance;
-	var clientFunc = function(userId) {
-	    for (var i=0; i<200; i++) {
-		testingFuncs.chooseActionInternal(userId, 1);
-	    }
-	};
 	var addSession = function(asst) {
 	    Sessions.insert({userId: asst.userId,
 			     assignmentId: asst.assignmentId,
@@ -70,8 +81,33 @@ Meteor.methods({
 	    instance.addAssignment(asst1);
 	    instance.addAssignment(asst2);
 	    Partitioner.bindGroup(instance.groupId, function() {
-		Meteor.defer(function() {clientFunc(asst1.userId)});
-		Meteor.defer(function() {clientFunc(asst2.userId)});
+		var user1 = asst1.userId;
+		var user2 = asst2.userId;
+		var groupId = instance.groupId;
+		Meteor.defer(function() {
+		    Meteor.defer(function() {
+			testingFuncs.chooseActionInternal(user1, 1);
+		    });
+		    Meteor.defer(function() {
+			testingFuncs.chooseActionInternal(user2, 1);
+		    });
+		    var handle = Rounds.find({ended: true}).observe({
+			added: function(doc) {
+			    if (doc.index == numRounds) {
+				handle.stop();
+				return;
+			    }
+			    Partitioner.bindGroup(groupId, function() {
+				Meteor.defer(function() {
+				    testingFuncs.chooseActionInternal(user1, 1);
+				});
+				Meteor.defer(function() {
+				    testingFuncs.chooseActionInternal(user2, 1);
+				});
+			    });
+			}
+		    });
+		});
 	    });
 	}
     }
@@ -90,3 +126,16 @@ var addTestUser = function (batchid) {
     });
     return asst;
 }
+
+var clearDB = function() {
+    Partitioner.directOperation(function() {
+	Meteor.users.remove({'username': {$ne: 'admin'}});
+	Actions.remove({});
+	Rounds.remove({});
+	Games.remove({});
+	Sessions.remove({});
+	RoundTimers.remove({});
+	Experiments.remove({});
+    });
+}
+

@@ -103,13 +103,19 @@ var chooseActionInternal = function(userId, action) {
 				{$setOnInsert: {
 				    timestamp: new Date(),
 				    action: action}});
-    if (!('insertedId' in upsert)) { return; }
+    if (!upsert.insertedId) {
+	console.log('Ignored action from ' + userId);
+	return;
+    }
     Rounds.update({index: round},
 		  {$inc: {actions: 1}})
 }
 
 var endRound = function(round) {
     var actionObjs = Actions.find({roundIndex: round}).fetch();
+    if (actionObjs.length !== 2) {
+	console.log(actionObjs);
+    }
     var userIds = [];
     var actions = {};
     var asst;
@@ -120,9 +126,9 @@ var endRound = function(round) {
     var payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
     for (var i=0; i<=1; i++) {
 	Actions.update({roundIndex: round,
-		       userId: userIds[i]},
-		      {$set: {payoff: payoffs[i]}});
-	asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+			userId: userIds[i]},
+		       {$set: {payoff: payoffs[i]}});
+	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
 	Sessions.update({assignmentId: asst.assignmentId},
 			{$inc: {bonus: payoffs[i]*conversion}});
     }

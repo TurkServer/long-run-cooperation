@@ -65,7 +65,6 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 		  }
 		  GameGroups.insert({
 		      'counter': _this.counter,
-		      'batchId': _this.lobby.batchId,
 		      'timestamp': started,
 		      'users': _.map(lobbyAssts, function(asst) {
 			  return asst.userId;
