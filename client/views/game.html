@@ -16,7 +16,7 @@
       	    <td><strong>Your Points</strong></td>
       	    <td><strong>Partner's Points</strong></td>
       	  </tr>
-      	  {{#each results}}
+      	  {{#each results.rounds}}
       	  <tr>
       	    <td>{{round_}}</td>
       	    <td><span class="{{pcolor}}">{{pchoice}}</span></td>
@@ -27,8 +27,8 @@
       	  {{/each}}
       	  <tr>
       	    <td colspan="3" class="align-right"><strong>Total Points</strong></td>
-      	    <td>{{payoffs.you}}</td>
-      	    <td>{{payoffs.opponent}}</td>
+      	    <td>{{results.payoffs.you}}</td>
+      	    <td>{{results.payoffs.opponent}}</td>
       	  </tr>
       	</tbody>
       </table>
