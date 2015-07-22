@@ -3,28 +3,6 @@ color = function(action) {
 }
 
 gameResults = function() {
-    var game = Games.findOne();
-    if (!game) {return;}
-    var round = currentRound();
-    var finished = game.state == 'finished';
-    var rounds = [];
-    Actions.find({}, {sort: {roundIndex: 1}}).forEach(function(obj) {
-	if ((obj.roundIndex < round) || finished) {
-	    var index = obj.roundIndex - 1;
-	    if (index > rounds.length-1) {
-		rounds.push({round_: index + 1});
-	    }
-	    if (obj.userId == Meteor.userId()) {
-		rounds[index]['pchoice'] = obj.action;
-		rounds[index]['pcolor'] = color(obj.action);
-		rounds[index]['pscore'] = obj.payoff;
-	    } else {
-		rounds[index]['ochoice'] = obj.action;		    
-		rounds[index]['ocolor'] = color(obj.action);
-		rounds[index]['oscore'] = obj.payoff;
-	    }
-	}
-    });
     return rounds;
 }
 
@@ -54,19 +32,34 @@ Template.game.helpers({
 				roundIndex: currentRound()});
     },
     results: function() {
-	return gameResults();
-    },
-    payoffs: function() {
-	var r = gameResults();
-	var object = {'you': 0, 
-		      'opponent': 0};
-	if (!r) {return object;}
-	for (var i=0; i<r.length; i++) {
-	    var round = r[i];
-	    object['you'] += round['pscore'];
-	    object['opponent'] += round['oscore'];
-	}
-	return object;
+	var game = Games.findOne();
+	if (!game) {return;}
+	var round = currentRound();
+	var finished = game.state == 'finished';
+	var rounds = [];
+	var payoffs = {you: 0, 
+		       opponent: 0};
+	Actions.find({}, {sort: {roundIndex: 1}}).forEach(function(obj) {
+	    if ((obj.roundIndex < round) || finished) {
+		var index = obj.roundIndex - 1;
+		if (index > rounds.length-1) {
+		    rounds.push({round_: index + 1});
+		}
+		if (obj.userId == Meteor.userId()) {
+		    rounds[index].pchoice = obj.action;
+		    rounds[index].pcolor = color(obj.action);
+		    rounds[index].pscore = obj.payoff;
+		    payoffs.you += obj.payoff;
+		} else {
+		    rounds[index].ochoice = obj.action;		    
+		    rounds[index].ocolor = color(obj.action);
+		    rounds[index].oscore = obj.payoff;
+		    payoffs.opponent += obj.payoff;
+		}
+	    }
+	});
+	return {rounds: rounds,
+		payoffs: payoffs};
     }
 });
 
