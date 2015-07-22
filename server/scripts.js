@@ -1,6 +1,7 @@
 Meteor.methods({
     'recalculateBonuses': function() {
 	TurkServer.checkAdmin();
+	console.log('recalculateBonuses');
 	Assignments.find().forEach(function(asst) {
 	    var asstObj = TurkServer.Assignment.getAssignment(asst._id);
 	    var userId = asstObj.userId;
@@ -20,6 +21,7 @@ Meteor.methods({
     },
     'payBonuses': function() {
 	TurkServer.checkAdmin();
+	console.log('payBonuses');
 	Assignments.find({
 	    "bonusPayment": {$gt: 0},
 	    "bonusPaid": {$exists: false},
@@ -31,6 +33,7 @@ Meteor.methods({
     },
     'testAssigner': function() {
 	TurkServer.checkAdmin();
+	console.log('testAssigner');
 	var batchid = Batches.findOne({name: 'main'})._id;
 	for (var i=0; i<11; i++) {
 	    var asst = addTestUser(batchid);
@@ -40,13 +43,14 @@ Meteor.methods({
     },
     'testGame': function() {
 	TurkServer.checkAdmin();
+	console.log('testGame');
 	var batchid = Batches.findOne({name: 'main'})._id;
 	var batch = TurkServer.Batch.getBatch(batchid);
 	var asst1;
 	var asst2;
 	var instance;
 	var clientFunc = function(userId) {
-	    for (var i=0; i<100; i++) {
+	    for (var i=0; i<200; i++) {
 		testingFuncs.chooseActionInternal(userId, 1);
 	    }
 	};
