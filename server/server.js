@@ -114,6 +114,7 @@ var chooseActionInternal = function(userId, action) {
 var endRound = function(round) {
     var actionObjs = Actions.find({roundIndex: round}).fetch();
     if (actionObjs.length !== 2) {
+	console.log('More/less than 2 action objects: ');
 	console.log(actionObjs);
     }
     var userIds = [];
