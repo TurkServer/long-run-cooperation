@@ -8,15 +8,20 @@ Meteor.publish('sessions', function(userId) {
 });
 
 Meteor.startup(function () {
-    Batches.upsert({name: 'main'}, {name: 'main', active: true});
+    Batches.upsert({name: 'pilot'}, {name: 'pilot', active: true});
+    Batches.upsert({name: 'experiment'}, {name: 'experiment', active: true});
     Batches.upsert({name: 'recruiting'}, {name: 'recruiting', active: true});
 
     TurkServer.ensureTreatmentExists({name: 'main'});
     TurkServer.ensureTreatmentExists({name: 'recruiting'});
 
-    var batchid = Batches.findOne({name: 'main'})._id;
+    var batchid = Batches.findOne({name: 'pilot'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
-    Batches.update({name: 'main'}, {$addToSet: {treatments: 'main'}});
+    Batches.update({name: 'pilot'}, {$addToSet: {treatments: 'main'}});
+
+    var batchid = Batches.findOne({name: 'experiment'})._id;
+    TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
+    Batches.update({name: 'experiment'}, {$addToSet: {treatments: 'main'}});
 
     var batchid = Batches.findOne({name: 'recruiting'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
@@ -157,5 +162,4 @@ var endGame = function(state) {
     TurkServer.Instance.currentInstance().teardown(false);
 }
 
-testingFuncs = {}
 testingFuncs.chooseActionInternal = chooseActionInternal;
