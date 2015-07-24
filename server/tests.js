@@ -1,3 +1,5 @@
+
+
 var sleep = Meteor.wrapAsync(function(time, cb) {
     return Meteor.setTimeout((function() {
 	return cb(void 0);
@@ -9,7 +11,7 @@ Meteor.methods({
 	TurkServer.checkAdmin();
 	clearDB();
 	console.log('testAssigner');
-	var batchid = Batches.findOne({name: 'main'})._id;
+	var batchId = Batches.findOne({name: 'pilot'})._id;
 	Meteor.call('ts-admin-lobby-event', batchId, 'reset-lobby');
 	for (var i=0; i<11; i++) {
 	    var asst = addTestUser(batchId);
@@ -21,11 +23,11 @@ Meteor.methods({
 	    var gameGroup = GameGroups.findOne({counter: j+1});
 	    console.log('Number of users in lobby: ' + gameGroup.users.length);
 	    console.log('Left out user: ' + gameGroup.leftOut);
-	    Meteor.call('ts-admin-stop-all-experiments', batchid);
+	    Meteor.call('ts-admin-stop-all-experiments', batchId);
 	    sleep(100);
 	}
 	Meteor.call('ts-admin-lobby-event', batchId, 'exit-survey');
-	assert(GameGroups.find().count() == 20, 'Wrong number of GameGroups.');
+	assert(GameGroups.find().count() == numGames, 'Wrong number of GameGroups.');
 	assert(LobbyStatus.find().count() == 0, 'People still in lobby.');
     },
     'testGame': function() {
@@ -33,14 +35,15 @@ Meteor.methods({
 	TurkServer.checkAdmin();
 	clearDB();
 	console.log('testGame');
-	var batchId = Batches.findOne({name: 'main'})._id;
+	var batchId = Batches.findOne({name: 'pilot'})._id;
 	var batch = TurkServer.Batch.getBatch(batchId);
 	Meteor.call('ts-admin-lobby-event', batchId, 'reset-lobby');
 	var lobbyHandle = LobbyStatus.find().observe({
 	    added: function(doc) {
 		var number = LobbyStatus.find().count();
 		if (number == numUsers) {
-		    Meteor.call('ts-admin-lobby-event', batchId, 'next-game');
+		    testingFuncs.assignFunc(batch.assigner);
+		    //Meteor.call('ts-admin-lobby-event', batchId, 'next-game');
 		    game();
 		}
 	    }
