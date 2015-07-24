@@ -48,12 +48,19 @@ Meteor.methods({
 		}
 	    }
 	});
-	var finishedHandle = Sessions.find({games: numGames}).observe({
+	var finishedHandle = Meteor.users.find({'turkserver.state': 'exitsurvey'}).observe({
 	    added: function(doc) {
-		number = Sessions.find({games: numGames}).count();
+		number = Meteor.users.find({'turkserver.state': 'exitsurvey'}).count();
 		if (number == numUsers) {
 		    finishedHandle.stop();
 		    lobbyHandle.stop();
+		    Assignments.find().forEach(function(asst) {
+			var asstObj = TurkServer.Assignment.getAssignment(asst._id);
+			var session = Sessions.findOne({assignmentId: asstObj.assignmentId});
+			var bonus = session.bonus;
+			asstObj.setPayment(parseFloat(bonus.toFixed(2)));
+			asstObj.setCompleted();
+		    });
 		    console.log('Done with testGame.')
 		}
 	    }
@@ -64,8 +71,15 @@ Meteor.methods({
 	    LobbyStatus.update({_id: userId}, {$set: {status: true}});
 	}
     },
-    analyze: function() {
+    analyze: function(real) {
 	console.log('Running tests ...');
+	var numUsers = Meteor.users.find({'username': {$ne: 'admin'}}).count();
+	var allSessions = Sessions.find().count();
+	var finishedSessions = Sessions.find({games: numGames}).count();
+	if (!real) {
+	    assert(finishedSessions == numUsers, 'Wrong number of finished session objects: ' + finishedSessions + ', ' + numUsers);
+	}
+	assert(allSessions == numUsers, 'Wrong number of session objects: ' + allSessions + ', ' + numUsers);
 	gameGroups = GameGroups.find().fetch();
 	assert(gameGroups.length == numGames, 'Wrong number of game groups.');
 	var gameGroupIndices = _.map(gameGroups, function(gameGroup) {
@@ -97,7 +111,9 @@ Meteor.methods({
 	    });
 	});
 	Sessions.find().forEach(function(session) {
-	    assert(session.games == numGames, 'Wrong game number in session.');
+	    if (!real) {
+		assert(session.games == numGames, 'Wrong game number in session.');
+	    }
 	    var bonus = session.bonus;
 	    var points = 0;
 	    Partitioner.directOperation(function() {
@@ -105,7 +121,7 @@ Meteor.methods({
 		    points += action.payoff;
 		});
 	    });
-	    assert(nearlyEqual(bonus, points*conversion), 'Wrong bonus: ' + session.userId);			    
+	    assert(nearlyEqual(bonus, points*conversion), 'Wrong bonus: ' + session.userId + ', ' + bonus + ', ' + points*conversion);			    
 	});
 	console.log('Done!');
     },
