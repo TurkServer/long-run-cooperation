@@ -1,5 +1,3 @@
-
-
 var sleep = Meteor.wrapAsync(function(time, cb) {
     return Meteor.setTimeout((function() {
 	return cb(void 0);
@@ -7,17 +5,33 @@ var sleep = Meteor.wrapAsync(function(time, cb) {
 });
 
 Meteor.methods({
+    'clearDB': function() {
+	console.log('clearDB');
+	Partitioner.directOperation(function() {
+	    Meteor.users.remove({'username': {$ne: 'admin'}});
+	    GameGroups.remove({});
+	    Actions.remove({});
+	    Rounds.remove({});
+	    Games.remove({});
+	    Sessions.remove({});
+	    RoundTimers.remove({});
+	    Experiments.remove({});
+	    Assignments.remove({});
+	});
+    },
+    'addUsers': function(numUsers) {
+	console.log('addUsers: ' + numUsers);
+	var batchId = Batches.findOne({name: 'pilot'})._id;
+	addUsers(numUsers);
+    },
     'testAssigner': function() {
+	var numUsers = 11;
 	TurkServer.checkAdmin();
-	clearDB();
 	console.log('testAssigner');
 	var batchId = Batches.findOne({name: 'pilot'})._id;
 	Meteor.call('ts-admin-lobby-event', batchId, 'reset-lobby');
-	for (var i=0; i<11; i++) {
-	    var asst = addTestUser(batchId);
-	    asst._enterLobby();
-	    LobbyStatus.update({_id: userId}, {$set: {status: true}});
-	}
+	addUsers(numUsers);
+	addAssignments(batchId);
 	for (var j=0; j<numGames; j++) {
 	    Meteor.call('ts-admin-lobby-event', batchId, 'next-game');
 	    var gameGroup = GameGroups.findOne({counter: j+1});
@@ -33,14 +47,13 @@ Meteor.methods({
     'testGame': function() {
 	var numUsers = 10;
 	TurkServer.checkAdmin();
-	clearDB();
 	console.log('testGame');
 	var batchId = Batches.findOne({name: 'pilot'})._id;
 	var batch = TurkServer.Batch.getBatch(batchId);
 	Meteor.call('ts-admin-lobby-event', batchId, 'reset-lobby');
-	var lobbyHandle = LobbyStatus.find().observe({
+	var lobbyHandle = LobbyStatus.find({'status': true}).observe({
 	    added: function(doc) {
-		var number = LobbyStatus.find().count();
+		var number = LobbyStatus.find({'status': true}).count();
 		if (number == numUsers) {
 		    testingFuncs.assignFunc(batch.assigner);
 		    //Meteor.call('ts-admin-lobby-event', batchId, 'next-game');
@@ -54,7 +67,7 @@ Meteor.methods({
 		if (number == numUsers) {
 		    finishedHandle.stop();
 		    lobbyHandle.stop();
-		    Assignments.find().forEach(function(asst) {
+		    Assignments.find({'status': 'assigned'}).forEach(function(asst) {
 			var asstObj = TurkServer.Assignment.getAssignment(asst._id);
 			var session = Sessions.findOne({assignmentId: asstObj.assignmentId});
 			var bonus = session.bonus;
@@ -65,70 +78,26 @@ Meteor.methods({
 		}
 	    }
 	});
-	for (var i=0; i<numUsers; i++) {
-	    var asst = addTestUser(batchId);
-	    asst._enterLobby();
-	    LobbyStatus.update({_id: userId}, {$set: {status: true}});
-	}
+	addAssignments(batchId);
     },
-    analyze: function(real) {
+    analyze: function() {
 	console.log('Running tests ...');
 	var numUsers = Meteor.users.find({'username': {$ne: 'admin'}}).count();
-	var allSessions = Sessions.find().count();
-	var finishedSessions = Sessions.find({games: numGames}).count();
-	if (!real) {
-	    assert(finishedSessions == numUsers, 'Wrong number of finished session objects: ' + finishedSessions + ', ' + numUsers);
+	var games = GameGroups.find({}, {sort: {timestamp: 1}}).fetch();
+	var assignments = Assignments.find({}, {sort: {timestamp: 1}}).fetch();
+	var gameGroups = _.groupBy(games, function(element, index) {return Math.floor(index/numGames)});
+	var assignGroups = _.groupBy(assignments, function(element, index) {return Math.floor(index/numUsers)});
+	assert(gameGroups.length == assignGroups.length, 'gameGroups and assignGroups disagree on number of days: ' + gameGroups.length + ', ' + assignGroups.length);
+	for (var key in gameGroups) {
+	    console.log('Analyzing day: ' + key)
+	    analyzeWrapper(gameGroups[key], assignGroups[key])
 	}
-	assert(allSessions == numUsers, 'Wrong number of session objects: ' + allSessions + ', ' + numUsers);
-	gameGroups = GameGroups.find().fetch();
-	assert(gameGroups.length == numGames, 'Wrong number of game groups.');
-	var gameGroupIndices = _.map(gameGroups, function(gameGroup) {
-	    return gameGroup.counter;
-	});
-	gameGroupIndices.sort(function(a,b) {return a-b});
-	assert(arraysEqual(gameGroupIndices, _.range(1,numGames+1)), 'Wrong game group counters: ' + gameGroupIndices);
-	Experiments.direct.find().forEach(function(instance) {
-	    var groupId = instance._id;
-	    Partitioner.bindGroup(groupId, function() {
-		var rounds = Rounds.find().fetch();
-		assert(rounds.length == numRounds, 'Wrong number of rounds.');
-		var roundIndices = _.map(rounds, function(round) {
-		    return round.index;
-		});
-		roundIndices.sort(function(a,b) {return a-b});
-		assert(arraysEqual(roundIndices, _.range(1,11)), 'Wrong round indices: ' + roundIndices)
-		var game = Games.findOne();
-		assert(game.state == 'finished', 'Game is not finished.');
-		var users = instance.users;
-		for (var i=0;i<2;i++) {
-		    for (var k=1;k<=numRounds;k++) {
-			var actions = Actions.find({userId: users[i],
-						    roundIndex: k}).fetch();
-			assert(actions.length == 1, 'Wrong action count: ' + users[i] + ', ' + k);
-			assert('payoff' in actions[0], 'No payoff in action: ' + users[i] + ', ' + k);
-		    }
-		}
-	    });
-	});
-	Sessions.find().forEach(function(session) {
-	    if (!real) {
-		assert(session.games == numGames, 'Wrong game number in session.');
-	    }
-	    var bonus = session.bonus;
-	    var points = 0;
-	    Partitioner.directOperation(function() {
-		Actions.find({'userId': session.userId}).forEach(function(action) {
-		    points += action.payoff;
-		});
-	    });
-	    assert(nearlyEqual(bonus, points*conversion), 'Wrong bonus: ' + session.userId + ', ' + bonus + ', ' + points*conversion);			    
-	});
 	console.log('Done!');
-    },
+    }
 });
 
 var game = function() {
-    var gameGroup = GameGroups.findOne({}, {sort: {counter: -1}});
+    var gameGroup = GameGroups.findOne({}, {sort: {timestamp: -1}});
     var groupIds = gameGroup.instances;
     for (var j=0; j<groupIds.length; j++) {
 	groupId = groupIds[j];
@@ -164,31 +133,84 @@ var game = function() {
     }
 }
 
-var addTestUser = function (batchId) {
-    workerId = Random.id();
-    userId = Accounts.insertUserDoc({}, {workerId: workerId});
-    asst = TurkServer.Assignment.createAssignment({
-	batchId: batchId,
-	hitId: Random.id(),
-	assignmentId: Random.id(),
-	workerId: workerId,
-	acceptTime: new Date(),
-	status: "assigned"
+var analyzeWrapper = function(gameGroups, assignments) {
+    var numUsers = assignments.length;
+    var instances = _.map(gameGroups, function(group) {
+	return group.instances;
     });
-    return asst;
+    instances = _.flatten(instances);
+    assert(instances.length == (numGames*(numUsers/2)), 'Wrong number of instances: ' + instances.length);
+    _.each(instances, function(instance) {
+	testInstance(instance);
+    });
+    _.each(assignments, function(asst) {
+	testAsst(asst);
+    });
 }
 
-var clearDB = function() {
+var testInstance = function(groupId) {
+    var instance = Experiments.findOne({_id: groupId});
+    Partitioner.bindGroup(groupId, function() {
+	var rounds = Rounds.find().fetch();
+	assert(rounds.length == numRounds, 'Wrong number of rounds.');
+	var roundIndices = _.map(rounds, function(round) {
+	    return round.index;
+	});
+	roundIndices.sort(function(a,b) {return a-b});
+	assert(arraysEqual(roundIndices, _.range(1,11)), 'Wrong round indices: ' + roundIndices)
+	var game = Games.findOne();
+	assert(game.state == 'finished', 'Game is not finished.');
+	var users = instance.users;
+	for (var i=0;i<2;i++) {
+	    for (var k=1;k<=numRounds;k++) {
+		var actions = Actions.find({userId: users[i],
+					    roundIndex: k}).fetch();
+		assert(actions.length == 1, 'Wrong action count: ' + users[i] + ', ' + k);
+		assert('payoff' in actions[0], 'No payoff in action: ' + users[i] + ', ' + k);
+	    }
+	}
+    });
+}
+
+var testAsst = function(asst) {
+    var sessions = Sessions.find({assignmentId: asst.assignmentId});
+    assert(sessions.count() == 1, 'Sessions and assignments not 1-1: ' + asst.assignmentId);
+    var session = sessions.fetch()[0]
+    if (session.games != numGames) {
+	console.log('Session not finished: ' + session._id);
+    }
+    var instances = _.map(asst.instances, function(instance) {
+	return instance.id;
+    });
+    var bonus = session.bonus;
+    var points = 0;
     Partitioner.directOperation(function() {
-	Meteor.users.remove({'username': {$ne: 'admin'}});
-	GameGroups.remove({});
-	Actions.remove({});
-	Rounds.remove({});
-	Games.remove({});
-	Sessions.remove({});
-	RoundTimers.remove({});
-	Experiments.remove({});
-	Assignments.remove({});
+	Actions.find({userId: session.userId, _groupId: {$in: instances}}).forEach(function(action) {
+	    points += action.payoff;
+	});
+    }); 
+    assert(nearlyEqual(bonus, points*conversion), 'Wrong bonus: ' + session.userId + ', ' + bonus + ', ' + points*conversion);			    
+}
+
+
+var addUsers = function (number) {
+    for (var i=0; i<number; i++) {
+	Accounts.insertUserDoc({}, {workerId: Random.id()});
+    }
+}
+
+var addAssignments = function(batchId) {
+    Meteor.users.find({'username': {$ne: 'admin'}}).forEach(function(user) {
+	var asst = TurkServer.Assignment.createAssignment({
+	    batchId: batchId,
+	    hitId: Random.id(),
+	    assignmentId: Random.id(),
+	    workerId: user.workerId,
+	    acceptTime: new Date(),
+	    status: "assigned"
+	});
+	asst._enterLobby();
+	LobbyStatus.update({_id: user._id}, {$set: {status: true}});
     });
 }
 
