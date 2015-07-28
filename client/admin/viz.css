@@ -1,0 +1,16 @@
+path {
+    fill-rule: evenodd;
+    opacity: 0.4;
+}
+
+.action {
+    stroke: lightgrey;
+}
+
+.action.a1 {
+    fill: green;
+}
+
+.action.a2 {
+    fill: red;
+}
