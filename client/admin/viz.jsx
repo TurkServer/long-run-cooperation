@@ -18,19 +18,16 @@ function getColorScale(userIds) {
   if ( userIds.length <= 20 ) return d3.scale.category20().domain(userIds);
 
   // http://stackoverflow.com/questions/20847161/colors-on-d3-js
-  const colorScales = [
-    d3.scale.linear()
-      .interpolate(d3.interpolateHcl)
-      .range(["#9AF768", "#F27A4D"]),
-    d3.scale.linear()
-      .interpolate(d3.interpolateHcl)
-      .range(["#112231","#3C769D"])
-  ];
+  // https://gist.github.com/mbostock/310c99e53880faec2434
+  const generator = d3.scale.cubehelix()
+    .domain([0, .5, 1])
+    .range([
+      d3.hsl(-100, 0.75, 0.35),
+      d3.hsl(  80, 1.50, 0.80),
+      d3.hsl( 260, 0.75, 0.35)
+    ]);
 
-  const colors = userIds.map( (u, i) => {
-    return colorScales[i%2](Math.random())
-  });
-
+  const colors = userIds.map( (u, i) => { return generator(Math.random()) });
   return d3.scale.ordinal().domain(userIds).range(colors);
 }
 
