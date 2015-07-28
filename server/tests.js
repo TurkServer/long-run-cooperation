@@ -45,7 +45,7 @@ Meteor.methods({
 	assert(LobbyStatus.find().count() == 0, 'People still in lobby.');
     },
     'testGame': function() {
-	var numUsers = 10;
+	var numUsers = Meteor.users.find({'username': {$ne: 'admin'}}).count();
 	TurkServer.checkAdmin();
 	console.log('testGame');
 	var batchId = Batches.findOne({name: 'pilot'})._id;
