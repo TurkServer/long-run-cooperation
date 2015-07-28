@@ -27,6 +27,7 @@ Meteor.startup(function () {
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
 
+    Sessions._ensureIndex({assignmentId: 1});
 });
 
 TurkServer.initialize(function() {
@@ -52,7 +53,6 @@ Meteor.methods({
 	inst.sendUserToLobby(Meteor.userId());
     },
     chooseAction: function(action) {
-	var timestamp = new Date();
 	chooseActionInternal(Meteor.userId(), action);
     },
     setPayment: function() {
