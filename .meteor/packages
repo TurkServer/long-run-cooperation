@@ -21,3 +21,4 @@ underscore
 twbs:bootstrap
 d3js:d3
 grigio:babel
+meteorhacks:kadira-profiler
