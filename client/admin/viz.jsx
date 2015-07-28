@@ -16,7 +16,22 @@ function flatten(arrayOfArrays) {
 function getColorScale(userIds) {
   if ( userIds.length <= 10 ) return d3.scale.category10().domain(userIds);
   if ( userIds.length <= 20 ) return d3.scale.category20().domain(userIds);
-  throw new Error("Need to implement more than 20 colors");
+
+  // http://stackoverflow.com/questions/20847161/colors-on-d3-js
+  const colorScales = [
+    d3.scale.linear()
+      .interpolate(d3.interpolateHcl)
+      .range(["#9AF768", "#F27A4D"]),
+    d3.scale.linear()
+      .interpolate(d3.interpolateHcl)
+      .range(["#112231","#3C769D"])
+  ];
+
+  const colors = userIds.map( (u, i) => {
+    return colorScales[i%2](Math.random())
+  });
+
+  return d3.scale.ordinal().domain(userIds).range(colors);
 }
 
 Template.viz.onRendered(function() {
@@ -64,8 +79,6 @@ Template.viz.onRendered(function() {
       });
     }
   }
-
-  console.log(links);
 
   const sankey = d3.sankey()
     .size([width, height])
