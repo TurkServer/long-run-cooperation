@@ -1,3 +1,4 @@
+
 // Set up route for visualization
 Router.map( function() {
   this.route('viz', {
@@ -13,8 +14,8 @@ function flatten(arrayOfArrays) {
 }
 
 function getColorScale(userIds) {
-  if ( userIds.length < 10 ) return d3.scale.category10().domain(userIds);
-  if ( userIds.length < 20 ) return d3.scale.category20().domain(userIds);
+  if ( userIds.length <= 10 ) return d3.scale.category10().domain(userIds);
+  if ( userIds.length <= 20 ) return d3.scale.category20().domain(userIds);
   throw new Error("Need to implement more than 20 colors");
 }
 
