@@ -2,6 +2,7 @@ accounts-base@1.2.0
 accounts-password@1.1.1
 accounts-ui@1.1.5
 accounts-ui-unstyled@1.1.7
+aldeed:template-extension@3.4.3
 autoupdate@1.2.1
 base64@1.0.3
 benjaminrh:event-hooks@1.4.3
@@ -49,13 +50,12 @@ minimongo@1.0.8
 mizzao:autocomplete@0.5.1
 mizzao:bootboxjs@4.3.0
 mizzao:partitioner@0.5.6
-mizzao:timesync@0.3.2
+mizzao:timesync@0.3.3
 mizzao:turkserver@0.0.0
 mizzao:user-status@0.6.5
 mobile-status-bar@1.0.3
 momentjs:moment@2.10.3
 mongo@1.1.0
-mrt:moment@2.8.1
 natestrauser:x-editable-bootstrap@1.5.2_2
 npm-bcrypt@0.7.8_2
 observe-sequence@1.0.6
