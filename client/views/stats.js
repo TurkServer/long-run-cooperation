@@ -1,21 +1,30 @@
 var allPlayerStats = function(sessions) {
-    stats = {'games': 0, 'bonus': 0};
+    var stats = {games: 0, bonus: 0};
     sessions.forEach(function(obj) {
-	stats['games'] += obj.games;
-	stats['bonus'] += obj.bonus;
+	stats.games += obj.games;
+	stats.bonus += obj.bonus;
     });
-    stats['bonus'] = stats['bonus'].toFixed(2);
+    stats.bonus = stats.bonus.toFixed(2);
     return stats;
 }
 
 Template.stats.helpers({
     todayStats: function() {
-	stats = {};
-	var session = Sessions.findOne({assignmentId: assignmentId()});
-	if (!session) {return;}
-	stats['games'] = session.games;
-	stats['bonus'] = session.bonus.toFixed(2);
+	var asst = Assignments.findOne();
+	var game = Games.findOne();
+	if (!asst || !game) {return};
+	var stats = {bonus: 0};
+	var num = asst.instances.length;
+	if (game.state == 'finished') {
+	    stats.games = num;
+	} else {
+	    stats.games = num - 1;
+	}
+	if (asst.bonusPayment) {
+	    stats.bonus = asst.bonusPayment.toFixed(2);
+	}
 	return stats;
+	return {}
     },
     allStats: function() {
 	var sessions = Sessions.find({userId: Meteor.userId()});
@@ -27,6 +36,6 @@ Template.stats.helpers({
     numOpponentGames: function() {
 	var sessions = Sessions.find({userId: oppId()});
 	var stats = allPlayerStats(sessions);
-	return stats['games'];
+	return stats.games;
     },
 });
