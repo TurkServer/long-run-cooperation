@@ -114,6 +114,7 @@ var submitHITInternal = function(userId) {
     Meteor.users.update({_id: userId},
 			{$inc: {numGames: numGames,
 				bonus: bonus}});
+    asst.setPayment(parseFloat(bonus.toFixed(2)));
 }
 
 var endRound = function(round) {
