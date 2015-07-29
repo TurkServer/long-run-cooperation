@@ -4,10 +4,12 @@ import matplotlib.pyplot as plt
 import itertools
 import random
 import numpy
+from collections import defaultdict
 
 client = MongoClient()
 db = client.meteor
 
+num_games = 10
 
 def mean(l):
     return float(sum(l))/len(l)
@@ -16,26 +18,35 @@ def mean(l):
 def active_users():
     gamegroups = sorted(db.gamegroups.find(), key=lambda x: x['counter'])
     num = [len(game['users']) for game in gamegroups]
-    plt.plot(range(1,21), num)
+    plt.plot(range(1,num_games+1), num)
     plt.ylabel('Number of active users')
     plt.xlabel('Game counter')
-    plt.xlim((1,20))
-    plt.xticks(range(1,21))
-    plt.ylim((1,22))
-    plt.yticks(range(22))
+    plt.xlim((1,num_games))
+    plt.xticks(range(1,num_games+1))
+    plt.ylim((1,num_games+2))
+    plt.yticks(range(num_games+2))
     plt.show()
 
 
+def user_lifetime():
+    users = defaultdict(list)
+    gamegroups = sorted(db.gamegroups.find(), key=lambda x: x['counter'])
+    for gamegroup in gamegroups:
+        counter = gamegroup['counter']
+        for user in gamegroup['users']:
+            users[user].append(counter)
+    return users
+        
 def plotOne():
     coops = coopWrapper()
     games = [game['instances'] for game in sorted(db.gamegroups.find(), key=lambda x: x['counter'])]
     gameCoops = [[mean(coops.get(instanceId, [1])) for instanceId in games] for games in games]
     y = [mean(x) for x in gameCoops]
-    plt.plot(range(1,21), y)
+    plt.plot(range(1,num_games+1), y)
     plt.ylabel('Fraction of Cooperation')
     plt.xlabel('Game counter')
-    plt.xlim((1,20))
-    plt.xticks(range(1,21))
+    plt.xlim((1,num_games))
+    plt.xticks(range(1,num_games+1))
     plt.show()
 
 
@@ -52,10 +63,15 @@ def plotTwo():
         gameGroupRoundCoop = [mean(x) for x in gameGroupRoundCoop]
         for roundIndex, l in enumerate(roundCoops):
             roundCoops[roundIndex].append(gameGroupRoundCoop[roundIndex])
-    y1 = [mean(x[:11]) for x in roundCoops]
-    y2 = [mean(x[11:]) for x in roundCoops]
-    plt.plot(range(1,11), y1, label='Games 1-10')
-    plt.plot(range(1,11), y2, label='Games 11-20')
+    if 0:
+        half = num_games/2 + 1
+        y1 = [mean(x[:half]) for x in roundCoops]
+        y2 = [mean(x[half:]) for x in roundCoops]
+        plt.plot(range(1,11), y1, label='Games 1-5')
+        plt.plot(range(1,11), y2, label='Games 6-10')
+    else:
+        y = [mean(x) for x in roundCoops]
+        plt.plot(range(1,11), y)
     plt.ylabel('Fraction of Cooperation')
     plt.xlabel('Round')
     plt.xlim((1,10))
@@ -72,13 +88,13 @@ def coopWrapper():
     for instance in instances:
         instanceId = instance['_id']
         game = db.games.find_one({'_groupId': instanceId})
-        if game['round'] == 10:
+        if game['state'] == 'finished':
             coops[instanceId] = gameCoop(instanceId)
     return coops
 
 
 def gameCoop(instanceId):
-    roundObjs = sorted(db.rounds.find({'_groupId': instanceId}), key=lambda x: x['roundIndex'])
+    roundObjs = sorted(db.actions.find({'_groupId': instanceId}), key=lambda x: x['roundIndex'])
     rounds = [list(actions) for _, actions in itertools.groupby(roundObjs, key=lambda x: x['roundIndex'])]
     roundCoop = []
     for index, actions in enumerate(rounds):
