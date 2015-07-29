@@ -23,26 +23,6 @@ Meteor.methods({
 	var batchId = Batches.findOne({name: 'pilot'})._id;
 	addUsers(numUsers);
     },
-    'testAssigner': function() {
-	var numUsers = 11;
-	TurkServer.checkAdmin();
-	console.log('testAssigner');
-	var batchId = Batches.findOne({name: 'pilot'})._id;
-	Meteor.call('ts-admin-lobby-event', batchId, 'reset-lobby');
-	addUsers(numUsers);
-	addAssignments(batchId);
-	for (var j=0; j<numGames; j++) {
-	    Meteor.call('ts-admin-lobby-event', batchId, 'next-game');
-	    var gameGroup = GameGroups.findOne({counter: j+1});
-	    console.log('Number of users in lobby: ' + gameGroup.users.length);
-	    console.log('Left out user: ' + gameGroup.leftOut);
-	    Meteor.call('ts-admin-stop-all-experiments', batchId);
-	    sleep(100);
-	}
-	Meteor.call('ts-admin-lobby-event', batchId, 'exit-survey');
-	assert(GameGroups.find().count() == numGames, 'Wrong number of GameGroups.');
-	assert(LobbyStatus.find().count() == 0, 'People still in lobby.');
-    },
     'testGame': function() {
 	var numUsers = Meteor.users.find({'username': {$ne: 'admin'}}).count();
 	TurkServer.checkAdmin();
@@ -55,7 +35,6 @@ Meteor.methods({
 		var number = LobbyStatus.find({'status': true}).count();
 		if (number == numUsers) {
 		    testingFuncs.assignFunc(batch.assigner);
-		    //Meteor.call('ts-admin-lobby-event', batchId, 'next-game');
 		    game();
 		}
 	    }
