@@ -14,10 +14,7 @@ Template.timepicker.events({
 		     times: [tmpl.find("select[name=pickTime1]").value,
 			     tmpl.find("select[name=pickTime2]").value,
 			     tmpl.find("select[name=pickTime3]").value]};
-	    results = {"participation": e.target.participation.value,
-		       "money": e.target.money.value,
-		       "prisoner's dilemma": e.target.pd.value,
-		       "public goods" : e.target.pg.value}
+	    results = {"participation": e.target.participation.value};
 	    TurkServer.submitExitSurvey(results, panel);
 	}
     }
