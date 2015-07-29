@@ -19,7 +19,7 @@ Template.stats.helpers({
 	var user = Meteor.user();
 	if ('numGames' in user && 'bonus' in user) {
 	    stats.all.games = user.numGames + stats.today.games;
-	    var bonus = asst.bonusPayment + user.bonus;
+	    var bonus = parseFloat(stats.today.bonus) + user.bonus;
 	    stats.all.bonus = bonus.toFixed(2);
 	} else {
 	    stats.all.games = stats.today.games;
