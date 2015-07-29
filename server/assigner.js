@@ -50,13 +50,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   }
 
   PairAssigner.prototype.userJoined = function(asst) {
-      if (asst.getInstances().length == 0) { // first instance of the day
-	  Sessions.upsert({userId: asst.userId,
-			   assignmentId: asst.assignmentId},
-			  {$setOnInsert: {
-			      games: 0,
-			      bonus: 0}});
-      } else {
+      if (asst.getInstances().length > 0) {
 	  LobbyStatus.update({_id: asst.userId}, {$set: {status: true}});
       }
       if (this.counter >= numGames) { 
