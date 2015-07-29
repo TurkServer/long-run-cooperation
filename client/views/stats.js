@@ -1,17 +1,29 @@
 Template.stats.helpers({
-    todayStats: function() {
+    stats: function() {
+	var stats = {today: {games: 0,
+			     bonus: 0},
+		     all: {games: 0,
+			   bonus: 0}};
 	var asst = Assignments.findOne();
 	var game = Games.findOne();
 	if (!asst || !game) {return};
-	var stats = {bonus: 0};
 	var num = asst.instances.length;
 	if (game.state == 'finished') {
-	    stats.games = num;
+	    stats.today.games = num;
 	} else {
-	    stats.games = num - 1;
+	    stats.today.games = num - 1;
 	}
 	if (asst.bonusPayment) {
-	    stats.bonus = asst.bonusPayment.toFixed(2);
+	    stats.today.bonus = asst.bonusPayment.toFixed(2);
+	}
+	var user = Meteor.user();
+	if ('games' in user && 'bonus' in user) {
+	    stats.all.games = user.games + stats.today.games;
+	    var bonus = asst.bonusPayment + user.bonus;
+	    stats.all.bonus = bonus.toFixed(2);
+	} else {
+	    stats.all.games = stats.today.games;
+	    stats.all.bonus = stats.today.bonus;
 	}
 	return stats;
     },
