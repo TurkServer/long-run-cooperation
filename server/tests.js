@@ -68,6 +68,7 @@ Meteor.methods({
 		    lobbyHandle.stop();
 		    Assignments.find({'status': 'assigned'}).forEach(function(asst) {
 			var asstObj = TurkServer.Assignment.getAssignment(asst._id);
+			testingFuncs.submitHITInternal(asstObj.userId);
 			asstObj.setCompleted();
 		    });
 		    console.log('Done with testGame.')

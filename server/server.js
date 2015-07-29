@@ -50,6 +50,9 @@ Meteor.methods({
     chooseAction: function(action) {
 	chooseActionInternal(Meteor.userId(), action);
     },
+    submitHIT: function() {
+	submitHITInternal(Meteor.userId());
+    },
     goToQuiz: function() {
 	Recruiting.update({}, {$set: {'state': 'quiz'}});
     },
@@ -103,6 +106,16 @@ var chooseActionInternal = function(userId, action) {
 		  {$inc: {actions: 1}})
 }
 
+var submitHITInternal = function(userId) {
+    var asst = TurkServer.Assignment.getCurrentUserAssignment(userId);
+    var asstObj = Assignments.findOne({_id: asst.asstId});
+    var numGames = asstObj.instances.length;
+    var bonus = asstObj.bonusPayment;
+    Meteor.users.update({_id: userId},
+			{$inc: {numGames: numGames,
+				bonus: bonus}});
+}
+
 var endRound = function(round) {
     var actionObjs = Actions.find({roundIndex: round}).fetch();
     if (actionObjs.length !== 2) {
@@ -144,3 +157,4 @@ var endGame = function(state) {
 }
 
 testingFuncs.chooseActionInternal = chooseActionInternal;
+testingFuncs.submitHITInternal = submitHITInternal;
