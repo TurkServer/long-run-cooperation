@@ -74,24 +74,24 @@ Partitioner.directOperation(function() {
     });
 });
 
-var initGame = function() {
+function initGame() {
     Games.insert({state: 'active'});
     newRound(1);
     startTimer();
 }
 
-var initRecruiting = function() {
+function initRecruiting() {
     Recruiting.insert({state: 'consent',
 		       attempts: 0});
 }
 
-var startTimer = function() {
+function startTimer() {
     var start = new Date();
     var end = new Date(start.getTime() + roundWait*60000);
     TurkServer.Timers.startNewRound(start, end);
 }
 
-var chooseActionInternal = function(userId, action) {
+function chooseActionInternal(userId, action) {
     var round = currentRound();
     var upsert = Actions.upsert({userId: userId,
 				 roundIndex: round},
@@ -106,7 +106,7 @@ var chooseActionInternal = function(userId, action) {
 		  {$inc: {actions: 1}})
 }
 
-var submitHITInternal = function(userId) {
+function submitHITInternal(userId) {
     var asst = TurkServer.Assignment.getCurrentUserAssignment(userId);
     var asstObj = Assignments.findOne({_id: asst.asstId});
     var numGames = asstObj.instances.length;
@@ -117,7 +117,7 @@ var submitHITInternal = function(userId) {
     asst.setPayment(parseFloat(bonus.toFixed(2)));
 }
 
-var endRound = function(round) {
+function endRound(round) {
     var actionObjs = Actions.find({roundIndex: round}).fetch();
     if (actionObjs.length !== 2) {
 	console.log('More/less than 2 action objects: ');
@@ -146,13 +146,13 @@ var endRound = function(round) {
     Rounds.update({index: round}, {$set: {results: results, ended: true}});
 }
 
-var newRound = function(round) {
+function newRound(round) {
     Rounds.insert({index: round,
 		   actions: 0,
 		   ended: false});
 }
 
-var endGame = function(state) {
+function endGame(state) {
     Games.update({}, {$set: {state: state}});
     TurkServer.Instance.currentInstance().teardown(false);
 }
