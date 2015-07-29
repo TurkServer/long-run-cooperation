@@ -3,9 +3,6 @@ Meteor.publish('rounds', function() { return Rounds.find(); });
 Meteor.publish('actions', function() { return Actions.find(); });
 Meteor.publish('games', function() { return Games.find(); });
 Meteor.publish('recruiting', function() { return Recruiting.find(); });
-Meteor.publish('sessions', function(userId) { 
-    return Sessions.find({userId: userId}); 
-});
 
 Meteor.startup(function () {
     Batches.upsert({name: 'pilot'}, {name: 'pilot', active: true});
@@ -26,8 +23,6 @@ Meteor.startup(function () {
     var batchid = Batches.findOne({name: 'recruiting'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
-
-    Sessions._ensureIndex({assignmentId: 1});
 });
 
 TurkServer.initialize(function() {

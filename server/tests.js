@@ -13,7 +13,6 @@ Meteor.methods({
 	    Actions.remove({});
 	    Rounds.remove({});
 	    Games.remove({});
-	    Sessions.remove({});
 	    RoundTimers.remove({});
 	    Experiments.remove({});
 	    Assignments.remove({});
@@ -136,7 +135,7 @@ var analyzeWrapper = function(gameGroups, assignments) {
 	return group.instances;
     });
     instances = _.flatten(instances);
-    assert(instances.length == (numGames*(numUsers/2)), 'Wrong number of instances: ' + instances.length);
+    assert(instances.length == (numGames*Math.floor(numUsers/2)), 'Wrong number of instances: ' + instances.length);
     _.each(instances, function(instance) {
 	testInstance(instance);
     });
@@ -181,7 +180,8 @@ var testAsst = function(asst) {
 	    points += round.results[userId].payoff;
 	});
     }); 
-    assert(nearlyEqual(bonus, points*conversion), 'Wrong bonus: ' + userId + ', ' + bonus + ', ' + points*conversion);			    
+    assert(nearlyEqual(bonus, points*conversion),
+	   'Wrong bonus: ' + userId + ', ' + bonus + ', ' + points*conversion);			    
 }
 
 

@@ -17,9 +17,4 @@ Tracker.autorun(function() {
     Meteor.subscribe('actions', group);
     Meteor.subscribe('games', group);
     Meteor.subscribe('recruiting', group);
-    Meteor.subscribe('sessions', Meteor.userId());
-});
-
-Tracker.autorun(function() {
-    Meteor.subscribe('sessions', oppId());
 });
