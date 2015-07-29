@@ -12,6 +12,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
       PairAssigner.__super__.initialize.apply(this, arguments);
 
       this.counter = this.setCounter();
+      this.day = null;
 
       this.lobby.events.on("reset-lobby", (function(_this) {
 	  return function() {
@@ -20,6 +21,17 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 	  }
       })(this));
 
+      this.lobby.events.on("inc-day", (function(_this) {
+	  return function() {
+	      var gameGroup = GameGroups.findOne({}, {sort: {day: -1}});
+	      if (gameGroup && gameGroup.day) {
+		  _this.day = gameGroup.day + 1;
+	      } else {
+		  _this.day = 1;
+	      }
+	      console.log('Set day at ' + _this.day + '.');
+	  }
+      })(this));
 
       this.lobby.events.on("exit-survey", (function(_this) {
 	  return function() {
@@ -50,13 +62,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
   }
 
   PairAssigner.prototype.userJoined = function(asst) {
-      if (asst.getInstances().length == 0) { // first instance of the day
-	  Sessions.upsert({userId: asst.userId,
-			   assignmentId: asst.assignmentId},
-			  {$setOnInsert: {
-			      games: 0,
-			      bonus: 0}});
-      } else {
+      if (asst.getInstances().length > 0) {
 	  LobbyStatus.update({_id: asst.userId}, {$set: {status: true}});
       }
       if (this.counter >= numGames) { 
@@ -106,7 +112,8 @@ var assignFunc = function(_this) {
 		return asst.userId;
 	    }),
 	    'leftOut': leftOut,
-	    'instances': instances
+	    'instances': instances,
+	    'day': _this.day
 	});
     }
 }

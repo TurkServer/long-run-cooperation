@@ -1,7 +1,9 @@
 <template name="quiz">
 <div class="col-md-12">
   <h4>Quiz</h4>
-  <p>The table below shows the number of points associated with each possible combination of your choice and the choice of your partner. In each cell, the first number is the number of points you will receive, and the second number is the number of points your partner will receive.
+  <p>The table below shows the number of points associated with each possible combination of your choice and the choice of your partner.</p>
+
+    <p>In each cell, the first number is the number of points you will receive, and the second number is the number of points your partner will receive.
     {{> payoffTable}}
   </p>
 
@@ -13,7 +15,7 @@
     {{/each}}
 
     {{#if incorrect}}
-    <div class="alert alert-warning" role="alert">There is a mistake in one or both of your answers. Please try one more time.</div>
+    <div class="alert alert-warning" role="alert">There is a mistake in one or more of your answers. Please try one more time.</div>
     {{/if}}
     <button type="submit" class="btn btn-primary submit">Submit</button>
   </form>

@@ -1,17 +1,25 @@
 var Questions = new Meteor.Collection(null)
-var question1 = {text: '1. If you choose 1 and your partner chooses 1, how much payoff will you receive?',
+var question1 = {text: '1. If you make choice 1 and your partner makes choice 1, how much payoff will you receive?',
 		 answer: payoffs.R,
 		 correct: false,
 		 answered: false};
-var question2 = {text: '2. If you choose 1 and your partner chooses 2, how much payoff will you receive?',
+var question2 = {text: '2. If you make choice 1 and your partner makes choice 2, how much payoff will you receive?',
 		 answer: payoffs.S,
 		 correct: false,
 		 answered: false};
-var question3  = {text: '3. If you choose 2 and your partner chooses 1, how much payoff will you receive?',
+var question3 = {text: '3. If you make choice 1 and your partner makes choice 2, how much payoff will your partner receive?',
+		 answer: payoffs.T,
+		 correct: false,
+		 answered: false};
+var question4  = {text: '4. If you make choice 2 and your partner makes choice 1, how much payoff will you receive?',
 		  answer: payoffs.T,
 		  correct: false,
 		  answered: false};
-var question4  = {text: '4. If you choose 2 and your partner chooses 2, how much payoff will you receive?',
+var question5  = {text: '5. If you make choice 2 and your partner makes choice 1, how much payoff will your partner?',
+		  answer: payoffs.S,
+		  correct: false,
+		  answered: false};
+var question6  = {text: '6. If you make choice 2 and your partner makes choice 2, how much payoff will you receive?',
 		  answer: payoffs.P,
 		  correct: false,
 		  answered: false};
@@ -19,6 +27,8 @@ Questions.insert(question1);
 Questions.insert(question2);
 Questions.insert(question3);
 Questions.insert(question4);
+Questions.insert(question5);
+Questions.insert(question6);
 
 Template.quiz.helpers({
     questions: function() {
@@ -31,7 +41,7 @@ Template.quiz.helpers({
 });
 
 Template.quiz.events({
-    "submit .quiz": function (e) {
+    "submit .quiz": _.debounce(function (e) {
 	e.preventDefault();
 	var form = e.target;
 	Questions.find().forEach(function(obj) {
@@ -52,7 +62,7 @@ Template.quiz.events({
 		Meteor.call('endQuiz');
 	    }
 	}
-    },
+    }, 1000, true)
 });
 
 Template.question.helpers({

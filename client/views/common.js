@@ -17,3 +17,9 @@ Template.registerHelper("roundWait", function() {
 Template.registerHelper("payoffs", function() {
   return payoffs;
 });
+
+Template.registerHelper("printPoints", function(amount) {
+  if (amount == 0) return "no points";
+  if (amount == 1) return "1 point";
+  else return amount + " points";
+});
