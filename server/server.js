@@ -3,9 +3,6 @@ Meteor.publish('rounds', function() { return Rounds.find(); });
 Meteor.publish('actions', function() { return Actions.find(); });
 Meteor.publish('games', function() { return Games.find(); });
 Meteor.publish('recruiting', function() { return Recruiting.find(); });
-Meteor.publish('sessions', function(userId) { 
-    return Sessions.find({userId: userId}); 
-});
 
 Meteor.startup(function () {
     Batches.upsert({name: 'pilot'}, {name: 'pilot', active: true});
@@ -26,8 +23,6 @@ Meteor.startup(function () {
     var batchid = Batches.findOne({name: 'recruiting'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
-
-    Sessions._ensureIndex({assignmentId: 1});
 });
 
 TurkServer.initialize(function() {
@@ -55,11 +50,8 @@ Meteor.methods({
     chooseAction: function(action) {
 	chooseActionInternal(Meteor.userId(), action);
     },
-    setPayment: function() {
-	var asst = TurkServer.Assignment.currentAssignment();
-	var session = Sessions.findOne({assignmentId: asst.assignmentId});
-	var bonus = session.bonus;
-	asst.setPayment(parseFloat(bonus.toFixed(2)));
+    submitHIT: function() {
+	submitHITInternal(Meteor.userId());
     },
     goToQuiz: function() {
 	Recruiting.update({}, {$set: {'state': 'quiz'}});
@@ -78,9 +70,7 @@ Partitioner.directOperation(function() {
 	    Partitioner.bindGroup(doc._groupId, function() {
 		endRound(doc.index);
 	    });
-	    Rounds.update({_id: doc._id},
-			  {$set: {ended: true}});
-	},		 
+	}
     });
 });
 
@@ -116,6 +106,16 @@ var chooseActionInternal = function(userId, action) {
 		  {$inc: {actions: 1}})
 }
 
+var submitHITInternal = function(userId) {
+    var asst = TurkServer.Assignment.getCurrentUserAssignment(userId);
+    var asstObj = Assignments.findOne({_id: asst.asstId});
+    var numGames = asstObj.instances.length;
+    var bonus = asstObj.bonusPayment;
+    Meteor.users.update({_id: userId},
+			{$inc: {numGames: numGames,
+				bonus: bonus}});
+}
+
 var endRound = function(round) {
     var actionObjs = Actions.find({roundIndex: round}).fetch();
     if (actionObjs.length !== 2) {
@@ -123,32 +123,26 @@ var endRound = function(round) {
 	console.log(actionObjs);
     }
     var userIds = [];
-    var actions = {};
-    var asst;
-    _.each(actionObjs, function(round) {
-	userIds.push(round.userId);
-	actions[round.userId] = round.action;
+    var actions = [];
+    _.each(actionObjs, function(obj) {
+	userIds.push(obj.userId);
+	actions.push(obj.action);
     });
-    var payoffs = payoffMap[actions[userIds[0]]][actions[userIds[1]]];
+    var payoffs = payoffMap[actions[0]][actions[1]];
+    var results = {};
+    results[userIds[0]] = {action: actions[0], payoff: payoffs[0]};
+    results[userIds[1]] = {action: actions[1], payoff: payoffs[1]};
     for (var i=0; i<=1; i++) {
-	Actions.update({roundIndex: round,
-			userId: userIds[i]},
-		       {$set: {payoff: payoffs[i]}});
-	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
-	Sessions.update({assignmentId: asst.assignmentId},
-			{$inc: {bonus: payoffs[i]*conversion}});
-    }
+    	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+    	asst.addPayment(payoffs[i]*conversion);
+    };
     if (round == numRounds) {
-	for (var i=0; i<=1; i++) {
-	    asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
-	    Sessions.update({assignmentId: asst.assignmentId},
-			    {$inc: {games: 1}});
-	}
 	endGame('finished');
     } else {
 	newRound(round+1);
 	startTimer();
     }
+    Rounds.update({index: round}, {$set: {results: results, ended: true}});
 }
 
 var newRound = function(round) {
@@ -163,3 +157,4 @@ var endGame = function(state) {
 }
 
 testingFuncs.chooseActionInternal = chooseActionInternal;
+testingFuncs.submitHITInternal = submitHITInternal;

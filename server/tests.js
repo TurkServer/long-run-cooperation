@@ -13,7 +13,6 @@ Meteor.methods({
 	    Actions.remove({});
 	    Rounds.remove({});
 	    Games.remove({});
-	    Sessions.remove({});
 	    RoundTimers.remove({});
 	    Experiments.remove({});
 	    Assignments.remove({});
@@ -69,9 +68,7 @@ Meteor.methods({
 		    lobbyHandle.stop();
 		    Assignments.find({'status': 'assigned'}).forEach(function(asst) {
 			var asstObj = TurkServer.Assignment.getAssignment(asst._id);
-			var session = Sessions.findOne({assignmentId: asstObj.assignmentId});
-			var bonus = session.bonus;
-			asstObj.setPayment(parseFloat(bonus.toFixed(2)));
+			testingFuncs.submitHITInternal(asstObj.userId);
 			asstObj.setCompleted();
 		    });
 		    console.log('Done with testGame.')
@@ -139,7 +136,7 @@ var analyzeWrapper = function(gameGroups, assignments) {
 	return group.instances;
     });
     instances = _.flatten(instances);
-    assert(instances.length == (numGames*(numUsers/2)), 'Wrong number of instances: ' + instances.length);
+    assert(instances.length == (numGames*Math.floor(numUsers/2)), 'Wrong number of instances: ' + instances.length);
     _.each(instances, function(instance) {
 	testInstance(instance);
     });
@@ -151,7 +148,7 @@ var analyzeWrapper = function(gameGroups, assignments) {
 var testInstance = function(groupId) {
     var instance = Experiments.findOne({_id: groupId});
     Partitioner.bindGroup(groupId, function() {
-	var rounds = Rounds.find().fetch();
+	var rounds = Rounds.find({ended: true}).fetch();
 	assert(rounds.length == numRounds, 'Wrong number of rounds.');
 	var roundIndices = _.map(rounds, function(round) {
 	    return round.index;
@@ -166,30 +163,26 @@ var testInstance = function(groupId) {
 		var actions = Actions.find({userId: users[i],
 					    roundIndex: k}).fetch();
 		assert(actions.length == 1, 'Wrong action count: ' + users[i] + ', ' + k);
-		assert('payoff' in actions[0], 'No payoff in action: ' + users[i] + ', ' + k);
 	    }
 	}
     });
 }
 
 var testAsst = function(asst) {
-    var sessions = Sessions.find({assignmentId: asst.assignmentId});
-    assert(sessions.count() == 1, 'Sessions and assignments not 1-1: ' + asst.assignmentId);
-    var session = sessions.fetch()[0]
-    if (session.games != numGames) {
-	console.log('Session not finished: ' + session._id);
-    }
+    var asstObj = TurkServer.Assignment.getAssignment(asst._id);
+    var userId = asstObj.userId;
     var instances = _.map(asst.instances, function(instance) {
 	return instance.id;
     });
-    var bonus = session.bonus;
+    var bonus = asst.bonusPayment;
     var points = 0;
     Partitioner.directOperation(function() {
-	Actions.find({userId: session.userId, _groupId: {$in: instances}}).forEach(function(action) {
-	    points += action.payoff;
+	Rounds.find({_groupId: {$in: instances}}).forEach(function(round) {
+	    points += round.results[userId].payoff;
 	});
     }); 
-    assert(nearlyEqual(bonus, points*conversion), 'Wrong bonus: ' + session.userId + ', ' + bonus + ', ' + points*conversion);			    
+    assert(nearlyEqual(bonus, points*conversion),
+	   'Wrong bonus: ' + userId + ', ' + bonus + ', ' + points*conversion);			    
 }
 
 
