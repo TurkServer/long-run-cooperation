@@ -31,7 +31,7 @@ Template.quiz.helpers({
 });
 
 Template.quiz.events({
-    "submit .quiz": function (e) {
+    "submit .quiz": _.debounce(function (e) {
 	e.preventDefault();
 	var form = e.target;
 	Questions.find().forEach(function(obj) {
@@ -52,7 +52,7 @@ Template.quiz.events({
 		Meteor.call('endQuiz');
 	    }
 	}
-    },
+    }, 1000, true)
 });
 
 Template.question.helpers({

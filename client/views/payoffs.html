@@ -12,16 +12,15 @@
         the second how many points your partner will receive. In other words:</p>
 
     <ul>
-        <li> If both you and your partner select <span class="green">Choice 1</span>,
-            you each earn {{payoffs.R}} points.</li>
-        <li> If you select <span class="green">Choice 1</span> and your partner selects <span class="red">Choice 2</span>, you earn {{payoffs.S}} points and your partner earns {{payoffs.T}} points.</li>
-        <li> If you select <span class="red">Choice 2</span> and your partner selects <span class="green">Choice 1</span>, you earn {{payoffs.T}} points and your partner earns {{payoffs.S}} points.</li>
+        <li> If both you and your partner select <span class="green">Choice 1</span>, you each earn {{printPoints payoffs.R}}.</li>
+        <li> If you select <span class="green">Choice 1</span> and your partner selects <span class="red">Choice 2</span>, you earn {{printPoints payoffs.S}} and your partner earns {{printPoints payoffs.T}}.</li>
+        <li> If you select <span class="red">Choice 2</span> and your partner selects <span class="green">Choice 1</span>, you earn {{printPoints payoffs.T}} and your partner earns {{printPoints payoffs.S}}.</li>
         <li> If both you and your partner select <span class="red">Choice 2</span>, you
-            each earn {{payoffs.P}} points.</li>
+            each earn {{printPoints payoffs.P}}.</li>
     </ul>
 
     <p>Each game ends after {{numRounds}} rounds, and you will be randomly
-        matched with another partner for the next game. Once you have completed {{numGames}} games (or as many as possible given the availability of other players), you will be able to submit the HIT.</p>
+        matched with another partner for the next game. Once you have completed {{numGames}} games (possibly fewer, given the availability of other players), you will be able to submit the HIT.</p>
 
 </template>
 

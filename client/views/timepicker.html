@@ -2,7 +2,7 @@
 <div class="col-md-12">
   <form class="survey">
     {{#if failed}}
-    <p>You have used up your two tries to pass the quiz. While you will be unable to participate in the study, you will still be paid for this recruiting HIT. Please click the button below to submit the HIT.</p>
+    <p>You have used up your two tries to pass the quiz. While you will be unable to participate in the study, you will still be paid for completing this HIT. Please click the button below to submit the HIT.</p>
     {{else}}
     <p>Congratulations! You passed the quiz and are eligible for our study. Please help us to schedule the study by answering the questions below. </p>
 
@@ -27,15 +27,17 @@
         have you played?
       <input class="form-control" name="pg">
     </div>
-<p>Please pick up to three different times (on a typical weekday) when you can be present for an hour. Note that you must be able to participate in a HIT <strong>every day</strong> at the times you select. We expect the experiment to start the week of August 3, 2015 and run at least through August 28, 2015. If you miss more than 2 sessions, you will not be able to continue participating in the study.</p>
+<p>Please pick <i>up to</i> three different times (on a typical weekday) when you can be present for an hour. Note that you must be able to participate in a HIT <strong>every day</strong> at the times you select. We expect the study to
+    start the week of August 3, 2015 and run at least through August 28, 2015. If you miss more than 2 sessions, you will not be able to continue participating in the study.</p>
 
     {{> tsTimePicker}}
     <div class="checkbox">
       <label class="checkbox">
-        <input name="contact" type="checkbox">I am able to participate in a HIT every day at the times above. Please grant me a qualification and contact me via Amazon Mechanical Turk for information on the decision-making experiments.
+        <input name="contact" type="checkbox"><b>I am able to participate in a HIT every day at the times above. Please grant me a qualification and contact me via Amazon Mechanical Turk about further participation.</b>
       </label>
     </div>
     {{/if}}
+
     <p>Because this is a research project, we ask that you do not discuss the details of the study with other workers.</p>
     <button type="submit" class="btn btn-primary">Submit the HIT</button>
   </form>
