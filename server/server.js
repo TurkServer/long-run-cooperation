@@ -1,4 +1,7 @@
-Meteor.publish('users', function() { return Meteor.users.find({}, {fields:{numGames:1, bonus:1}}); });
+Meteor.publish('users', function() {
+    return Meteor.users.find({}, {fields:{numGames:1, bonus:1}});
+});
+
 Meteor.publish('rounds', function() { return Rounds.find(); });
 Meteor.publish('actions', function() { return Actions.find(); });
 Meteor.publish('games', function() { return Games.find(); });
