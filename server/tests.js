@@ -1,4 +1,4 @@
-var abandonProb = 0.05;
+var abandonProb = 0.0;
 
 var sleep = Meteor.wrapAsync(function(time, cb) {
     return Meteor.setTimeout((function() {
@@ -36,7 +36,7 @@ Meteor.methods({
 	var lobbyHandle = LobbyStatus.find({'status': true}).observe({
 	    added: function(doc) {
 		var number = LobbyStatus.find({'status': true}).count();
-		if (number == numUsers) {
+		if (number >= numUsers) {
 		    testingFuncs.assignFunc(batch.assigner);
 		    game();
 		}
@@ -108,19 +108,36 @@ var game = function() {
 			instance.sendUserToLobby(user2)
 		    }
 		});
-		var roundsHandle = Rounds.find({ended: true}).observe({
+		var roundsStartHandle = Rounds.find().observe({
+		    added: function(doc) {
+			Partitioner.bindGroup(_groupId, function() {
+			    user1Action = Actions.findOne({userId: user1,
+							   roundIndex: doc.index});
+			    user2Action = Actions.findOne({userId: user2,
+							   roundIndex: doc.index});
+			    if (!user1Action) {
+				Meteor.defer(function() { clientFunc(user1); });
+			    }
+			    if (!user2Action) {
+				Meteor.defer(function() { clientFunc(user2); });
+			    }
+			});
+		    }
+		});
+		var roundsEndHandle = Rounds.find({ended: true}).observe({
 		    added: function(doc) {
 			if (doc.index == numRounds) {
-			    roundsHandle.stop();
+			    roundsEndHandle.stop();
+			    roundsStartHandle.stop();
 			    abandonedHandle.stop();
 			    instance.sendUserToLobby(user1);
 			    instance.sendUserToLobby(user2);
 			    return;
 			}
-			Partitioner.bindGroup(_groupId, function() {
-			    Meteor.defer(function() { clientFunc(user1); });
-			    Meteor.defer(function() { clientFunc(user2); });
-			});
+			// Partitioner.bindGroup(_groupId, function() {
+			//     Meteor.defer(function() { clientFunc(user1); });
+			//     Meteor.defer(function() { clientFunc(user2); });
+			// });
 		    }
 		});
 	    });
