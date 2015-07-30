@@ -102,14 +102,14 @@ var assignFunc = function(_this) {
 		    instance.addAssignment(asst);
 		} 
 	    } else {
-		leftOut.push(pairs[key][0].userId);
+		leftOut.push(pairs[key][0].asstId);
 	    }
 	}
 	GameGroups.insert({
 	    'counter': _this.counter,
 	    'timestamp': started,
-	    'users': _.map(lobbyAssts, function(asst) {
-		return asst.userId;
+	    'assignments': _.map(lobbyAssts, function(asst) {
+		return asst.asstId;
 	    }),
 	    'leftOut': leftOut,
 	    'instances': instances,

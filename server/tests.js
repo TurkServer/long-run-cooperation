@@ -30,6 +30,7 @@ Meteor.methods({
 	var batchId = Batches.findOne({name: 'pilot'})._id;
 	var batch = TurkServer.Batch.getBatch(batchId);
 	Meteor.call('ts-admin-lobby-event', batchId, 'reset-lobby');
+	Meteor.call('ts-admin-lobby-event', batchId, 'inc-day');
 	var lobbyHandle = LobbyStatus.find({'status': true}).observe({
 	    added: function(doc) {
 		var number = LobbyStatus.find({'status': true}).count();
@@ -59,14 +60,16 @@ Meteor.methods({
     analyze: function() {
 	console.log('Running tests ...');
 	var numUsers = Meteor.users.find({'username': {$ne: 'admin'}}).count();
-	var games = GameGroups.find({}, {sort: {timestamp: 1}}).fetch();
-	var assignments = Assignments.find({}, {sort: {timestamp: 1}}).fetch();
-	var gameGroups = _.groupBy(games, function(element, index) {return Math.floor(index/numGames)});
-	var assignGroups = _.groupBy(assignments, function(element, index) {return Math.floor(index/numUsers)});
-	assert(gameGroups.length == assignGroups.length, 'gameGroups and assignGroups disagree on number of days: ' + gameGroups.length + ', ' + assignGroups.length);
-	for (var key in gameGroups) {
-	    console.log('Analyzing day: ' + key)
-	    analyzeWrapper(gameGroups[key], assignGroups[key])
+	var numDays = (GameGroups.find().count()) / numGames;
+	for (var i=0; i<numDays; i++) {
+	    console.log('Analyzing day: ' + (i+1))
+	    var gameGroups = GameGroups.find({day: i+1}).fetch();
+	    var asstIds = _.map(gameGroups, function(group) {
+		return group.assignments;
+	    });
+	    asstIds = _.flatten(asstIds);
+	    var assignments = Assignments.find({_id: {$in: asstIds}}).fetch();
+	    analyzeWrapper(gameGroups, assignments)
 	}
 	console.log('Done!');
     }
@@ -117,10 +120,10 @@ var analyzeWrapper = function(gameGroups, assignments) {
     instances = _.flatten(instances);
     assert(instances.length == (numGames*Math.floor(numUsers/2)), 'Wrong number of instances: ' + instances.length);
     _.each(instances, function(instance) {
-	testInstance(instance);
+	testInstance(instance); //id
     });
     _.each(assignments, function(asst) {
-	testAsst(asst);
+	testAsst(asst); //obj
     });
 }
 
@@ -132,7 +135,7 @@ var testInstance = function(groupId) {
 	var roundIndices = _.map(rounds, function(round) {
 	    return round.index;
 	});
-	roundIndices.sort(function(a,b) {return a-b});
+	sort(roundIndices);
 	assert(arraysEqual(roundIndices, _.range(1,11)), 'Wrong round indices: ' + roundIndices)
 	var game = Games.findOne();
 	assert(game.state == 'finished', 'Game is not finished.');
@@ -209,4 +212,8 @@ function arraysEqual(a, b) {
 function nearlyEqual(a, b) {
     var diff = Math.abs(a-b);
     return diff < 0.00001;
+}
+
+function sort(list) {
+    list.sort(function(a,b) {return a-b});
 }
