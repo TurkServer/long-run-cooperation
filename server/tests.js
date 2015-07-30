@@ -1,3 +1,5 @@
+var abandonProb = 0.05;
+
 var sleep = Meteor.wrapAsync(function(time, cb) {
     return Meteor.setTimeout((function() {
 	return cb(void 0);
@@ -82,8 +84,12 @@ var game = function() {
 	groupId = groupIds[j];
 	Partitioner.bindGroup(groupId, function() {
 	    var clientFunc = function(userId) {
-		var choice = Math.random() < 0.5? 1 : 2;
-		testingFuncs.chooseActionInternal(userId, choice);
+		if (Math.random() > abandonProb) {
+		    var choice = Math.random() < 0.5? 1 : 2;
+		    testingFuncs.chooseActionInternal(userId, choice);
+		} else {
+		    console.log('Someone is abandoning.');
+		}
 	    }
 	    var users = Experiments.findOne({_id: groupId}).users;
 	    var user1 = users[0];
@@ -93,10 +99,20 @@ var game = function() {
 	    Meteor.defer(function() {
 		Meteor.defer(function() { clientFunc(user1); });
 		Meteor.defer(function() { clientFunc(user2); });
+		var abandonedHandle = Games.find({state: 'abandoned'}). observe({
+		    added: function(doc) {
+			console.log('Abandoned game.');
+			roundsHandle.stop();
+			abandonedHandle.stop();
+			instance.sendUserToLobby(user1);
+			instance.sendUserToLobby(user2)
+		    }
+		});
 		var roundsHandle = Rounds.find({ended: true}).observe({
 		    added: function(doc) {
 			if (doc.index == numRounds) {
 			    roundsHandle.stop();
+			    abandonedHandle.stop();
 			    instance.sendUserToLobby(user1);
 			    instance.sendUserToLobby(user2);
 			    return;
