@@ -54,12 +54,15 @@ Meteor.methods({
 	submitHITInternal(Meteor.userId());
     },
     goToQuiz: function() {
+	TurkServer.log({event: 'goToQuiz'});
 	Recruiting.update({}, {$set: {'state': 'quiz'}});
     },
     incQuiz: function() {
+	TurkServer.log({event: 'quizAttempt'});
 	Recruiting.update({}, {$inc: {'attempts': 1}});
     },
     endQuiz: function() {
+	TurkServer.log({event: 'passedQuiz'});
 	TurkServer.Instance.currentInstance().teardown();
     },
 });
