@@ -18,6 +18,10 @@ Template.registerHelper("payoffs", function() {
   return payoffs;
 });
 
+Template.registerHelper("basePayment", function() {
+  return basePayment;
+});
+
 Template.registerHelper("printPoints", function(amount) {
   if (amount == 0) return "no points";
   if (amount == 1) return "1 point";
