@@ -75,7 +75,7 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 
 })(TurkServer.Assigner);
 
-var assignFunc = function(_this) {
+function assignFunc(_this) {
     var started = new Date();
     var allLobbyAssts = _this.lobby.getAssignments();
     var lobbyAssts = _.filter(allLobbyAssts, function(asst) {
@@ -91,19 +91,21 @@ var assignFunc = function(_this) {
 	var instances = [];
 	var leftOut = [];
 	for (var key in pairs) {
-	    var assts = pairs[key];
-	    if (assts.length == 2) {
-		var instance = _this.batch.createInstance(['main'])
-		instance.setup();
-		instances.push(instance.groupId);
-		for (var i=0; i<2; i++) {
-		    var asst = assts[i];
-		    _this.lobby.pluckUsers([asst.userId]);
-		    instance.addAssignment(asst);
-		} 
-	    } else {
-		leftOut.push(pairs[key][0].asstId);
-	    }
+		var assts = pairs[key];
+		if (assts.length == 2) {
+			var instance = _this.batch.createInstance(['main'])
+			instance.setup();
+			instances.push(instance.groupId);
+			for (var i=0; i<2; i++) {
+				var asst = assts[i];
+				_this.lobby.pluckUsers([asst.userId]);
+				instance.addAssignment(asst);
+			}
+		} else {
+			leftOut.push(pairs[key][0].asstId);
+		}
+		// Allow server to catch up
+		sleep(100);
 	}
 	GameGroups.insert({
 	    'counter': _this.counter,
