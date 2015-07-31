@@ -18,5 +18,14 @@ Tracker.autorun(function() {
     Meteor.subscribe('rounds', group);
     Meteor.subscribe('actions', group);
     Meteor.subscribe('games', group);
-    Meteor.subscribe('recruiting', group);
+});
+
+Tracker.autorun(function() {
+    var group = TurkServer.group();
+    if (group == null) return;
+
+    var batch = TurkServer.batch();
+    if (batch && batch.treatments.indexOf('recruiting') >= 0) {
+	Meteor.subscribe('recruiting', group);
+    }
 });
