@@ -43,4 +43,7 @@ Template.stats.helpers({
 	}
 	return stats;
     },
+    opponent: function() {
+	return Meteor.users.find().count() == 2;
+    }
 });
