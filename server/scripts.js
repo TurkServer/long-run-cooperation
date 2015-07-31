@@ -36,12 +36,8 @@ Meteor.methods({
 	console.log('grantQuals');
 	var batchId = Batches.findOne({name: 'recruiting'})._id;
 	var quals = 0;
-	Assignments.find({
-	    batchId: batchId,
-	    status: 'completed',
-	    'exitdata.participation': {$exists: true}
-	}).forEach(function(asst) {
-	    var asstObj = TurkServer.Assignment.getAssignment(asst._id);
+	var assts = getPanel();
+	_.each(assts, function(asst) {
 	    var worker = Workers.findOne({_id: asst.workerId});
 	    if (worker && !worker.contact) {
 		// should he be included?
@@ -51,6 +47,25 @@ Meteor.methods({
 	    quals += 1;
 	});
 	console.log("Quals granted: " + quals);
+    },
+    'emailPanel': function(emailId) {
+	var assts = getPanel();
+	var workerIds = _.map(assts, function(asst) {
+	    return asst.workerId;
+	});
+	WorkerEmails.update({_id: emailId},
+			    {$set: {recipients: workerIds}});
+    },
+    'emailPanelHardcoded': function() {
+	var assts = getPanel();
+	var workerIds = _.map(assts, function(asst) {
+	    return asst.workerId;
+	});
+	var subject = 'Information on the Month-Long Research Study HIT';
+	var message = '...'
+	WorkerEmails.insert({subject: subject,
+			     message: message,
+			     recipients: workerIds});
     },
     'chooseSecondTime': function() {
 	TurkServer.checkAdmin();
@@ -72,3 +87,12 @@ Meteor.methods({
 	console.log(times);
     }
 });
+
+function getPanel() {
+    var batchId = Batches.findOne({name: 'recruiting'})._id;
+    return Assignments.find({
+	batchId: batchId,
+	status: 'completed',
+	'exitdata.participation': {$exists: true}
+    }).fetch();
+}
