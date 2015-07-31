@@ -50,8 +50,13 @@ Meteor.methods({
 	var inst = TurkServer.Instance.currentInstance();
 	inst.sendUserToLobby(Meteor.userId());
     },
-    chooseAction: function(action) {
-	chooseActionInternal(Meteor.userId(), action);
+    chooseAction: function(action, round) {
+	var serverRound = currentRound();
+	if (round === serverRound) {
+	    chooseActionInternal(Meteor.userId(), action, round);
+	} else {
+	    console.log('Client/server round discrepancy; chooseAction ignored from ' + Meteor.userId());
+	}
     },
     submitHIT: function() {
 	submitHITInternal(Meteor.userId());
@@ -97,15 +102,14 @@ function startTimer() {
     TurkServer.Timers.startNewRound(start, end);
 }
 
-function chooseActionInternal(userId, action) {
-    var round = currentRound();
+function chooseActionInternal(userId, action, round) {
     var upsert = Actions.upsert({userId: userId,
 				 roundIndex: round},
 				{$setOnInsert: {
 				    timestamp: new Date(),
 				    action: action}});
     if (!upsert.insertedId) {
-	console.log('Ignored action from ' + userId);
+	console.log('Insert failed; chooseActionInternal ignored from ' + userId);
 	return;
     }
     Rounds.update({index: round},

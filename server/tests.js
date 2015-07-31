@@ -80,7 +80,7 @@ var game = function() {
 	    var clientFunc = function(userId) {
 		if (Math.random() > abandonProb) {
 		    var choice = Math.random() < 0.5? 1 : 2;
-		    testingFuncs.chooseActionInternal(userId, choice);
+		    testingFuncs.chooseActionInternal(userId, choice, currentRound());
 		} else {
 		    console.log('Someone is abandoning.');
 		}
