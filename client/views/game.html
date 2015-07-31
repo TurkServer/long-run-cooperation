@@ -1,6 +1,9 @@
 <template name="game">
   <div class="row">
     <div class="col-lg-9">
+      {{#if loading}}
+      {{> spinner}}
+      {{else}}
       <h4>Game {{gameNum}} (out of {{numGames}})</h4>
         <p>Each game consists of {{numRounds}} rounds. In each round, you will select between <span class="green">Choice 1</span> and <span class="red">Choice 2</span>. The table below shows the number of points associated with each possible combination of your choice and the choice of your partner. In each cell, the first number is the number of points you will receive, and the second number is the number of points your partner will receive.
 	  {{> payoffTable}}
@@ -58,5 +61,6 @@
     <div class="col-md-3">
       {{> stats}}
     </div>
+    {{/if}}
   </div>
 </template>

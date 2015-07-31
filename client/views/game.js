@@ -7,6 +7,9 @@ gameResults = function() {
 }
 
 Template.game.helpers({
+    loading: function() {
+	return !currentRound();
+    },
     gameNum: function() {
 	var asst = Assignments.findOne();
 	var game = Games.find();
