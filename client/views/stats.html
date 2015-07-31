@@ -6,6 +6,8 @@
   Number of games played overall: {{stats.all.games}}<br/>
   Bonus earned overall: ${{stats.all.bonus}}<br/><br/>
 
+  {{#if stats.opponent.games}}
   <h4> Opponent Statistics </h4>
   Number of games played: {{stats.opponent.games}}
+  {{/if}}
 </template>

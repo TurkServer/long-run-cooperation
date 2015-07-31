@@ -32,10 +32,14 @@ Template.stats.helpers({
 		opponent = user;
 	    }
 	});
-	if ('numGames' in opponent) {
-	    stats.opponent.games = opponent.numGames + stats.today.games;
+	if (opponent) {
+	    if ('numGames' in opponent) {
+		stats.opponent.games = opponent.numGames + stats.today.games;
+	    } else {
+		stats.opponent.games = stats.today.games;
+	    }
 	} else {
-	    stats.opponent.games = stats.today.games;
+	    stats.opponent.games = null;
 	}
 	return stats;
     },
