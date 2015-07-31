@@ -1,11 +1,5 @@
 var abandonProb = 0.0;
 
-var sleep = Meteor.wrapAsync(function(time, cb) {
-    return Meteor.setTimeout((function() {
-	return cb(void 0);
-    }), time);
-});
-
 Meteor.methods({
     'clearDB': function() {
 	console.log('clearDB');

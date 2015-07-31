@@ -143,6 +143,7 @@ function endRound(round) {
     	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
     	asst.addPayment(payoffs[i]*conversion);
     };
+    sleep(100);
     if (round == numRounds) {
 	endGame('finished');
     } else {
