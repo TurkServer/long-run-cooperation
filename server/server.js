@@ -47,41 +47,54 @@ TurkServer.Timers.onRoundEnd(function(reason) {
 
 Meteor.methods({
     goToLobby: function() {
-	var inst = TurkServer.Instance.currentInstance();
-	inst.sendUserToLobby(Meteor.userId());
+        var userId = Meteor.userId();
+        var inst = TurkServer.Instance.currentInstance();
+
+        if( inst == null ) {
+            console.log("No instance for " + userId, "; ignoring goToLobby");
+            return;
+        }
+        inst.sendUserToLobby(Meteor.userId());
     },
     chooseAction: function(action, round) {
-	var serverRound = currentRound();
-	if (round === serverRound) {
-	    chooseActionInternal(Meteor.userId(), action, round);
-	} else {
-	    console.log('Client/server round discrepancy; chooseAction ignored from ' + Meteor.userId());
-	}
+        var serverRound = currentRound();
+        if (round === serverRound) {
+            chooseActionInternal(Meteor.userId(), action, round);
+        } else {
+            console.log('Client/server round discrepancy; chooseAction ignored from ' + Meteor.userId());
+        }
     },
     submitHIT: function() {
-	submitHITInternal(Meteor.userId());
+        submitHITInternal(Meteor.userId());
     },
     goToQuiz: function() {
-	TurkServer.log({event: 'goToQuiz'});
-	Recruiting.update({}, {$set: {'state': 'quiz'}});
+        TurkServer.log({event: 'goToQuiz'});
+        Recruiting.update({}, {$set: {'state': 'quiz'}});
     },
     incQuiz: function() {
-	TurkServer.log({event: 'quizAttempt'});
-	Recruiting.update({}, {$inc: {'attempts': 1}});
+        TurkServer.log({event: 'quizAttempt'});
+        Recruiting.update({}, {$inc: {'attempts': 1}});
     },
     endQuiz: function() {
-	TurkServer.log({event: 'passedQuiz'});
-	TurkServer.Instance.currentInstance().teardown();
+        TurkServer.log({event: 'passedQuiz'});
+        TurkServer.Instance.currentInstance().teardown();
     },
 });
 
 Partitioner.directOperation(function() {
-    Rounds.find({actions: 2, ended: false}).observe({
-	added: function(doc) {
-	    Partitioner.bindGroup(doc._groupId, function() {
-		endRound(doc.index);
-	    });
-	}
+    Rounds.find(
+      {actions: 2, ended: false},
+      // This ensures that both _groupId and index are available
+      // while allowing us to still use a more efficient observeChanges
+      { fields: {
+          _groupId: 1,
+          index: 1
+      }}).observeChanges({
+        added: function(id, fields) {
+            Partitioner.bindGroup(fields._groupId, function() {
+                endRound(fields.index);
+            });
+        }
     });
 });
 
