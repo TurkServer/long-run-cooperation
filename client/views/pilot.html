@@ -1,13 +1,22 @@
 <template name="pilot">
 <h4>Welcome</h4>
-<p>In this HIT you will play a sequence of up to {{numGames}} games where you
-    will be randomly paired with another player.</p>
+<p>This HIT is for today's session of the month-long research study for which you were granted a qualification. There will be 20 sessions in total, and each will take about 20-30 minutes. The sessions will take place at 2:00pm every weekday (Monday through Friday) from August 3, 2015 to August 28, 2015.</p>
+
+<p>Remember that <b>you will need to be present for
+every session</b>. If you miss more than 2 sessions, you will no longer be
+allowed to participate.</p>
 
 {{> realTimeWarning}}
+
+<h4>The Game</h4>
+<p>In each session you will play a sequence of up to {{numGames}} games where
+you will be randomly paired with another player.</p>
 
 {{> payoffInstructions}}
 
 <h4>Payment</h4>
-<p>You will receive a base payment of {{basePayment}} cents. You will earn a bonus based on
-    the number of points you received, at the rate of 2 points = 1 cent.</p>
+<p>In each session, you will receive a base payment of {{basePayment}} cents. You will also earn a bonus based on the total number of points you receive during the session. We will convert your score to dollars at the rate of 2 points = 1
+cent. We expect this will allow you to earn a minimum of <strong>$9.00 per
+hour</strong>. You will receive an <strong>additional bonus payment of
+$20</strong> if you are still participating at the end of the 20 sessions. </p>
 </template>
