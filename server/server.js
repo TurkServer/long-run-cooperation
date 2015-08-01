@@ -61,7 +61,7 @@ Meteor.methods({
         if (round === serverRound) {
             chooseActionInternal(Meteor.userId(), action, round);
         } else {
-            console.log('Client/server round discrepancy; chooseAction ignored from ' + Meteor.userId());
+            console.log('Client/server round discrepancy (client ' + round + ', server ' + serverRound + ')' +'; chooseAction ignored from ' + Meteor.userId());
         }
     },
     submitHIT: function() {
