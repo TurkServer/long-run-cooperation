@@ -1,5 +1,21 @@
 Meteor.methods({
-    'recalculateBonuses': function(setBonus) {
+    newBatch: function(name) {
+	Batches.upsert({name: name}, {name: name, active: true});
+	var batchId = Batches.findOne({name: name})._id;
+	TurkServer.Batch.getBatch(batchId).setAssigner(new TurkServer.Assigners.PairAssigner);
+	Batches.update({name: name}, {$addToSet: {treatments: 'main'}});
+	HITTypes.upsert({batchId: batchId},
+			{$set: {Title: 'Session for Month-Long Research Study',
+				Description: '...',
+				Keywords: 'study',
+			        Reward: 0.1,
+			        QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
+							  "ts6QjFu3SMis55ieq",
+							  "o2NKn4Ksd2n5AoqHD"],
+			        AssignmentDurationInSeconds: 7200,
+			        AutoApprovalDelayInSeconds: 60}});
+    },
+    recalculateBonuses: function(setBonus) {
 	TurkServer.checkAdmin();
 	console.log('recalculateBonuses');
 	Assignments.find().forEach(function(asst) {
@@ -19,7 +35,7 @@ Meteor.methods({
 	    }
 	});
     },
-    'payBonuses': function() {
+    payBonuses: function() {
 	TurkServer.checkAdmin();
 	console.log('payBonuses');
 	Assignments.find({
@@ -31,7 +47,7 @@ Meteor.methods({
 	    asstObj.payBonus('Bonus for the decision-making HIT.');
 	});
     },
-    'grantQuals': function(qualId) {
+    grantQuals: function(qualId) {
 	TurkServer.checkAdmin();
 	console.log('grantQuals');
 	var batchId = Batches.findOne({name: 'recruiting'})._id;
@@ -57,7 +73,7 @@ Meteor.methods({
 	});
 	console.log("Quals granted: " + quals);
     },
-    'revokeQual': function(userId, qualId) {
+    revokeQual: function(userId, qualId) {
 	var workers = getPanel();
 	_.each(workers, function(worker) {
 	    // logic to check if missed more than 2 days
@@ -65,7 +81,7 @@ Meteor.methods({
 	    //TurkServer.Util.assignQualification(worker._id, qualId, 1, false)
 	});
     },
-    'emailRecruits': function(emailId) {
+    emailRecruits: function(emailId) {
 	var assts = getRecruited();
 	var workerIds = _.map(assts, function(asst) {
 	    return asst.workerId;
@@ -73,7 +89,7 @@ Meteor.methods({
 	WorkerEmails.update({_id: emailId},
 			    {$set: {recipients: workerIds}});
     },
-    'emailRecruitsHardcoded': function() {
+    emailRecruitsHardcoded: function() {
 	var assts = getRecruited();
 	var workerIds = _.map(assts, function(asst) {
 	    return asst.workerId;
@@ -84,7 +100,7 @@ Meteor.methods({
 			     message: message,
 			     recipients: workerIds});
     },
-    'chooseSecondTime': function() {
+    chooseSecondTime: function() {
 	TurkServer.checkAdmin();
 	console.log('chooseTime');
 	var times = {};
