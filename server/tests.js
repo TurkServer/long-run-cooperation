@@ -193,7 +193,7 @@ var testAsst = function(asst) {
 	Rounds.find({_groupId: {$in: instances}}).forEach(function(round) {
 	    points += round.results[userId].payoff;
 	});
-    }); 
+    });
     assert(nearlyEqual(bonus, points*conversion),
 	   'Wrong bonus: ' + userId + ', ' + bonus + ', ' + points*conversion);			    
 }

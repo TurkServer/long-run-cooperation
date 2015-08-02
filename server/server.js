@@ -156,18 +156,21 @@ function endRound(round) {
     var results = {};
     results[userIds[0]] = {action: actions[0], payoff: payoffs[0]};
     results[userIds[1]] = {action: actions[1], payoff: payoffs[1]};
-    for (var i=0; i<=1; i++) {
-    	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
-    	asst.addPayment(payoffs[i]*conversion);
-    };
+    // don't need to do this here!
+    // do it at the end of the game
+    // for (var i=0; i<=1; i++) {
+    // 	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
+    // 	asst.addPayment(payoffs[i]*conversion);
+    // };
     sleep(100);
     if (round == numRounds) {
+	Rounds.update({index: round}, {$set: {results: results, ended: true}});
 	endGame('finished');
     } else {
 	newRound(round+1);
 	startTimer();
+	Rounds.update({index: round}, {$set: {results: results, ended: true}});
     }
-    Rounds.update({index: round}, {$set: {results: results, ended: true}});
 }
 
 function newRound(round) {
@@ -177,8 +180,23 @@ function newRound(round) {
 }
 
 function endGame(state) {
+    var instance = TurkServer.Instance.currentInstance();
+    var users = instance.users();
+    var payoffs = {};
+    payoffs[users[0]] = 0;
+    payoffs[users[1]] = 0;
+    Rounds.find({ended: true}).forEach(function(round) {
+	var results = round.results;
+	for (var userId in results) {
+	    payoffs[userId] += results[userId].payoff;
+	}
+    });
+    for (var userId in payoffs) {
+	var asst = TurkServer.Assignment.getCurrentUserAssignment(userId);
+	asst.addPayment(payoffs[userId]*conversion);
+    }
     Games.update({}, {$set: {state: state}});
-    TurkServer.Instance.currentInstance().teardown(false);
+    instance.teardown(false);
 }
 
 testingFuncs.chooseActionInternal = chooseActionInternal;
