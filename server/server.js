@@ -26,6 +26,16 @@ Meteor.startup(function () {
     var batchid = Batches.findOne({name: 'recruiting'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
+
+    HITTypes.upsert({Title: 'Session for Month-Long Research Study'},
+		    {$set: {Description: "This HIT is for today's session of the month-long research study for which you were granted a qualification.",
+			    Keywords: 'study',
+			    Reward: 0.1,
+			    QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
+						      "ts6QjFu3SMis55ieq",
+						      "o2NKn4Ksd2n5AoqHD"],
+			    AssignmentDurationInSeconds: 7200,
+			    AutoApprovalDelayInSeconds: 60}});
 });
 
 TurkServer.initialize(function() {

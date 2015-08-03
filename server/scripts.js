@@ -4,16 +4,8 @@ Meteor.methods({
 	var batchId = Batches.findOne({name: name})._id;
 	TurkServer.Batch.getBatch(batchId).setAssigner(new TurkServer.Assigners.PairAssigner);
 	Batches.update({name: name}, {$addToSet: {treatments: 'main'}});
-	HITTypes.upsert({batchId: batchId},
-			{$set: {Title: 'Session for Month-Long Research Study',
-				Description: '...',
-				Keywords: 'study',
-			        Reward: 0.1,
-			        QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
-							  "ts6QjFu3SMis55ieq",
-							  "o2NKn4Ksd2n5AoqHD"],
-			        AssignmentDurationInSeconds: 7200,
-			        AutoApprovalDelayInSeconds: 60}});
+	HITTypes.update({Title: 'Session for Month-Long Research Study'},
+			{$set: {batchId: batchId}});
     },
     recalculateBonuses: function(setBonus) {
 	TurkServer.checkAdmin();
@@ -56,7 +48,7 @@ Meteor.methods({
 	_.each(assts, function(asst) {
 	    var grantQual = true;
 	    var worker = Workers.findOne({_id: asst.workerId});
-	    if (worker && !worker.contact) {
+	    if (!worker.contact) {
 		grantQual = false;
 	    }
 	    var userId = Meteor.users.findOne({workerId: asst.workerId})._id;
