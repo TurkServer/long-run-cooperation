@@ -9,7 +9,6 @@ Meteor.publish('recruiting', function() { return Recruiting.find(); });
 
 Meteor.startup(function () {
     Batches.upsert({name: 'pilot'}, {name: 'pilot', active: true});
-    Batches.upsert({name: 'experiment'}, {name: 'experiment', active: true});
     Batches.upsert({name: 'recruiting'}, {name: 'recruiting', active: true});
 
     TurkServer.ensureTreatmentExists({name: 'main'});
@@ -19,23 +18,38 @@ Meteor.startup(function () {
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
     Batches.update({name: 'pilot'}, {$addToSet: {treatments: 'main'}});
 
-    var batchid = Batches.findOne({name: 'experiment'})._id;
-    TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
-    Batches.update({name: 'experiment'}, {$addToSet: {treatments: 'main'}});
-
     var batchid = Batches.findOne({name: 'recruiting'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
 
-    HITTypes.upsert({Title: 'Session for Month-Long Research Study'},
-		    {$set: {Description: "This HIT is for today's session of the month-long research study for which you were granted a qualification.",
-			    Keywords: 'study',
-			    Reward: 0.1,
-			    QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
-						      "ts6QjFu3SMis55ieq",
-						      "o2NKn4Ksd2n5AoqHD"],
-			    AssignmentDurationInSeconds: 7200,
-			    AutoApprovalDelayInSeconds: 60}});
+    Batches.remove({name: 'experiment'});
+
+    var hit1pm = {Title: hitTypeTitle1pm,
+		  Description: "This HIT is for today's 1 PM EDT session of the month-long research study for which you were granted a qualification.",
+		  Keywords: 'study',
+		  Reward: 0.1,
+		  QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
+					    "ts6QjFu3SMis55ieq",
+					    "o2NKn4Ksd2n5AoqHD"],
+		  AssignmentDurationInSeconds: 7200,
+		  AutoApprovalDelayInSeconds: 60};
+
+    var hit3pm = {Title: hitTypeTitle3pm,
+		  Description: "This HIT is for today's 3 PM EDT session of the month-long research study for which you were granted a qualification.",
+		  Keywords: 'study',
+		  Reward: 0.1,
+		  QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
+					    "ts6QjFu3SMis55ieq",
+					    "o2NKn4Ksd2n5AoqHD"],
+		  AssignmentDurationInSeconds: 7200,
+		  AutoApprovalDelayInSeconds: 60};
+    
+    HITTypes.upsert({Title: hitTypeTitle1pm},
+    		    {$setOnInsert: hit1pm});
+
+    HITTypes.upsert({Title: hitTypeTitle3pm},
+    		    {$setOnInsert: hit3pm});
+
 });
 
 TurkServer.initialize(function() {

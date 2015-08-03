@@ -1,10 +1,16 @@
 Meteor.methods({
+    addHITTypeQual: function(HITTypeId, qualId) {
+	HITTypes.update({_id: HITTypeId},
+			{$push: {QualificationRequirement: qualId}});
+    },
     newBatch: function(name) {
 	Batches.upsert({name: name}, {name: name, active: true});
 	var batchId = Batches.findOne({name: name})._id;
 	TurkServer.Batch.getBatch(batchId).setAssigner(new TurkServer.Assigners.PairAssigner);
 	Batches.update({name: name}, {$addToSet: {treatments: 'main'}});
-	HITTypes.update({Title: 'Session for Month-Long Research Study'},
+	HITTypes.update({Title: hitTypeTitle1pm},
+			{$set: {batchId: batchId}});
+	HITTypes.update({Title: hitTypeTitle3pm},
 			{$set: {batchId: batchId}});
     },
     recalculateBonuses: function(setBonus) {
@@ -39,12 +45,12 @@ Meteor.methods({
 	    asstObj.payBonus('Bonus for the decision-making HIT.');
 	});
     },
-    grantQuals: function(qualId) {
+    grantQuals: function(actuallyGrant, qualId1PM, qualId3PM) {
 	TurkServer.checkAdmin();
 	console.log('grantQuals');
 	var batchId = Batches.findOne({name: 'recruiting'})._id;
-	var quals = 0;
 	var assts = getRecruited();
+	var acceptAssts = [];
 	_.each(assts, function(asst) {
 	    var grantQual = true;
 	    var worker = Workers.findOne({_id: asst.workerId});
@@ -58,33 +64,45 @@ Meteor.methods({
 		grantQual = false;
 	    }
 	    if (grantQual) {
-		// value of 2 is approval
-		//TurkServer.Util.assignQualification(asst.workerId, qualId, 2, false)
-		quals += 1;
+		acceptAssts.push(asst);
 	    }
 	});
-	console.log("Quals granted: " + quals);
+	var shuffledAssts = _.shuffle(acceptAssts);
+	var midpt = Math.floor(shuffledAssts.length / 2);
+	var assts1pm = shuffledAssts.slice(0, midpt+1);
+	var assts3pm = shuffledAssts.slice(midpt+1, shuffledAssts.length);
+	if (actuallyGrant) {
+	    _.each(assts1pm, function(asst) {
+		TurkServer.Util.assignQualification(asst.workerId, qualId1PM, 1, false)
+	    });
+	    _.each(assts3pm, function(asst) {
+		TurkServer.Util.assignQualification(asst.workerId, qualId3PM, 1, false)
+	    });
+	}
+	console.log("Total: " + acceptAssts.length);
+	console.log("1 PM Group: " + assts1pm.length);
+	console.log("3 PM Group: " + assts3pm.length);
     },
     revokeQual: function(userId, qualId) {
-	var workers = getPanel();
+	var workers = getQualified(qualId);
 	_.each(workers, function(worker) {
 	    // logic to check if missed more than 2 days
 	    // value of 1 is revocation
-	    //TurkServer.Util.assignQualification(worker._id, qualId, 1, false)
+	    // TurkServer.Util.assignQualification(worker._id, qualId, 1, false)
 	});
     },
-    emailRecruits: function(emailId) {
-	var assts = getRecruited();
-	var workerIds = _.map(assts, function(asst) {
-	    return asst.workerId;
+    emailPanel: function(emailId, qualId) {
+	var workers = getQualified(qualId);
+	var workerIds = _.map(workers, function(worker) {
+	    return worker._id;
 	});
 	WorkerEmails.update({_id: emailId},
 			    {$set: {recipients: workerIds}});
     },
-    emailRecruitsHardcoded: function() {
-	var assts = getRecruited();
-	var workerIds = _.map(assts, function(asst) {
-	    return asst.workerId;
+    emailPanelHardcoded: function(qualId) {
+	var workers = getQualified(qualId);
+	var workerIds = _.map(workers, function(worker) {
+	    return worker._id;
 	});
 	var subject = 'Information on the Month-Long Research Study HIT';
 	var message = '...'
@@ -122,7 +140,7 @@ function getRecruited() {
     }).fetch();
 }
 
-function getPanel(qualId) {
+function getQualified(qualId) {
     return Workers.find({
 	quals: {$elemMatch: {id: qualId, value: 2}}
     }).fetch();

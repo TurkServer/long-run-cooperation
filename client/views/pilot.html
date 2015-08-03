@@ -1,6 +1,9 @@
 <template name="pilot">
 <h4>Welcome</h4>
-<p>This HIT is for today's session of the month-long research study for which you were granted a qualification. There will be 20 sessions in total, and each will take about 20-30 minutes. The sessions will take place at 2:00pm every weekday (Monday through Friday) from August 3, 2015 to August 28, 2015.</p>
+<p>This HIT is for today's session of the month-long research study for which you were granted a qualification. There will be 20 sessions in total, and each will take about 20-30 minutes. The sessions will take place at every weekday (Monday through Friday) from August 4, 2015 to August 31, 2015.</p>
+
+<p>In each session you will play a sequence of up to {{numGames}} games where
+you will be randomly paired with another player. You will be playing with the same group of people every day.</p>
 
 <p>Remember that <b>you will need to be present for
 every session</b>. If you miss more than 2 sessions, you will no longer be
@@ -9,8 +12,6 @@ allowed to participate.</p>
 {{> realTimeWarning}}
 
 <h4>The Game</h4>
-<p>In each session you will play a sequence of up to {{numGames}} games where
-you will be randomly paired with another player.</p>
 
 {{> payoffInstructions}}
 
