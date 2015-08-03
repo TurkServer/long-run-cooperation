@@ -29,17 +29,24 @@ Meteor.methods({
 	    }
 	});
     },
-    payBonuses: function() {
+    payBonuses: function(batchName, actuallyPay) {
 	TurkServer.checkAdmin();
 	console.log('payBonuses');
+	var paid = 0;
+	var batchId = Batches.findOne({name: batchName})._id;
 	Assignments.find({
-	    "bonusPayment": {$gt: 0},
-	    "bonusPaid": {$exists: false},
-	    "status": "completed"
+	    bonusPayment: {$gt: 0},
+	    bonusPaid: {$exists: false},
+	    status: "completed",
+	    batchId: batchId
 	}).forEach(function(asst) {
 	    var asstObj = TurkServer.Assignment.getAssignment(asst._id);
-	    asstObj.payBonus('Bonus for the decision-making HIT.');
+	    paid += 1;
+	    if (actuallyPay) {
+		asstObj.payBonus("Bonus for today's session of the month long research study.");
+	    }
 	});
+	console.log(paid + ' Turkers were paid.');
     },
     grantQuals: function(actuallyGrant, qualId1PM, qualId3PM) {
 	TurkServer.checkAdmin();
