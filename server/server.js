@@ -15,12 +15,15 @@ Meteor.startup(function () {
     TurkServer.ensureTreatmentExists({name: 'recruiting'});
 
     var batchid = Batches.findOne({name: 'pilot'})._id;
-    TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.PairAssigner);
     Batches.update({name: 'pilot'}, {$addToSet: {treatments: 'main'}});
 
     var batchid = Batches.findOne({name: 'recruiting'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
+
+    Batches.find({name: {$ne: 'recruiting'}}).forEach(function(batch) {
+	TurkServer.Batch.getBatch(batch._id).setAssigner(new TurkServer.Assigners.PairAssigner);
+    });
 
     var hit1pm = {Title: hitTypeTitle1pm,
 		  Description: "This HIT is for today's 1 PM EDT session of the month-long research study for which you were granted a qualification.",
