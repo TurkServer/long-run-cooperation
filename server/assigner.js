@@ -12,24 +12,11 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
       PairAssigner.__super__.initialize.apply(this, arguments);
 
       this.counter = this.setCounter();
-      this.day = null;
 
       this.lobby.events.on("reset-lobby", (function(_this) {
 	  return function() {
 	      _this.counter = 0;
 	      console.log('Reset counter.');
-	  }
-      })(this));
-
-      this.lobby.events.on("inc-day", (function(_this) {
-	  return function() {
-	      var gameGroup = GameGroups.findOne({}, {sort: {day: -1}});
-	      if (gameGroup && gameGroup.day) {
-		  _this.day = gameGroup.day + 1;
-	      } else {
-		  _this.day = 1;
-	      }
-	      console.log('Set day at ' + _this.day + '.');
 	  }
       })(this));
 
@@ -115,7 +102,7 @@ function assignFunc(_this) {
 	    }),
 	    'leftOut': leftOut,
 	    'instances': instances,
-	    'day': _this.day
+	    'batchId': _this.batch.batchId
 	});
     }
 }
