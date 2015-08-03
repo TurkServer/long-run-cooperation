@@ -4,8 +4,7 @@ Template.stats.helpers({
 	var stats = {today: {games: 0,
 			     bonus: 0},
 		     all: {games: 0,
-			   bonus: 0},
-		     opponent: {games: 0}};
+			   bonus: 0}};
 	var asst = Assignments.findOne();
 	var game = Games.findOne();
 	if (!asst || !game) {return};
@@ -36,24 +35,6 @@ Template.stats.helpers({
 	    stats.all.games = stats.today.games;
 	    stats.all.bonus = stats.today.bonus;
 	}
-	var opponent;
-	Meteor.users.find().forEach(function(user) {
-	    if (user._id != userId) {
-		opponent = user;
-	    }
-	});
-	if (opponent) {
-	    if ('numGames' in opponent) {
-		stats.opponent.games = opponent.numGames + stats.today.games;
-	    } else {
-		stats.opponent.games = stats.today.games;
-	    }
-	} else {
-	    stats.opponent.games = null;
-	}
 	return stats;
     },
-    opponent: function() {
-	return Meteor.users.find().count() == 2;
-    }
 });
