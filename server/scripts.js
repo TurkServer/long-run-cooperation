@@ -91,24 +91,17 @@ Meteor.methods({
 	    // TurkServer.Util.assignQualification(worker._id, qualId, 1, false)
 	});
     },
-    emailPanel: function(emailId, qualId) {
-	var workers = getQualified(qualId);
+    getQualifiedWorkers: function(time) {
+	var workers = getQualified(time);
+	console.log(workers.length + ' workers have that qualification.');
+    },
+    emailPanel: function(emailId, time) {
+	var workers = getQualified(time);
 	var workerIds = _.map(workers, function(worker) {
 	    return worker._id;
 	});
 	WorkerEmails.update({_id: emailId},
 			    {$set: {recipients: workerIds}});
-    },
-    emailPanelHardcoded: function(qualId) {
-	var workers = getQualified(qualId);
-	var workerIds = _.map(workers, function(worker) {
-	    return worker._id;
-	});
-	var subject = 'Information on the Month-Long Research Study HIT';
-	var message = '...'
-	WorkerEmails.insert({subject: subject,
-			     message: message,
-			     recipients: workerIds});
     },
     chooseSecondTime: function() {
 	TurkServer.checkAdmin();
@@ -140,8 +133,10 @@ function getRecruited() {
     }).fetch();
 }
 
-function getQualified(qualId) {
+function getQualified(time) {
+    var map = {1: Meteor.settings.Qual1PM,
+	       3: Meteor.settings.Qual3PM};
     return Workers.find({
-	quals: {$elemMatch: {id: qualId, value: 2}}
+	quals: {$elemMatch: {id: map[time], value: 1}}
     }).fetch();
 }
