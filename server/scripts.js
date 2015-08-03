@@ -1,8 +1,4 @@
 Meteor.methods({
-    addHITTypeQual: function(HITTypeId, qualId) {
-	HITTypes.update({_id: HITTypeId},
-			{$push: {QualificationRequirement: qualId}});
-    },
     newBatch: function(name) {
 	Batches.upsert({name: name}, {name: name, active: true});
 	var batchId = Batches.findOne({name: name})._id;
@@ -83,12 +79,11 @@ Meteor.methods({
 	console.log("1 PM Group: " + assts1pm.length);
 	console.log("3 PM Group: " + assts3pm.length);
     },
-    revokeQual: function(userId, qualId) {
-	var workers = getQualified(qualId);
+    revokeQuals: function(time) {
+	var workers = getQualified(time);
 	_.each(workers, function(worker) {
-	    // logic to check if missed more than 2 days
-	    // value of 1 is revocation
-	    // TurkServer.Util.assignQualification(worker._id, qualId, 1, false)
+	    // logic to check if we need to revoke qual
+	    revokeQual(worker._id, time);
 	});
     },
     getQualifiedWorkers: function(time) {
@@ -139,4 +134,15 @@ function getQualified(time) {
     return Workers.find({
 	quals: {$elemMatch: {id: map[time], value: 1}}
     }).fetch();
+}
+
+function revokeQual(workerId, time) {
+    var map = {1: Meteor.settings.Qual1PM,
+	       3: Meteor.settings.Qual3PM};
+    var qualId = map[time];
+    TurkServer.mturk('RevokeQualification', 
+    		     {SubjectId: workerId,
+    		      QualificationTypeId: qualId});
+    Workers.update({_id: workerId},
+		   {$pull: {quals: {id: qualId, value: 1}}});
 }

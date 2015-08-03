@@ -22,8 +22,6 @@ Meteor.startup(function () {
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
 
-    Batches.remove({name: 'experiment'});
-
     var hit1pm = {Title: hitTypeTitle1pm,
 		  Description: "This HIT is for today's 1 PM EDT session of the month-long research study for which you were granted a qualification.",
 		  Keywords: 'study',
