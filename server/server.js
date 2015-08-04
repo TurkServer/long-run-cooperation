@@ -32,7 +32,7 @@ Meteor.startup(function () {
 		  QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
 					    "ts6QjFu3SMis55ieq",
 					    "o2NKn4Ksd2n5AoqHD",
-					    "ReQs9QpvESGsjwZJp"],
+					    "ugCPk8gwGEfZ2XzKG"],
 		  AssignmentDurationInSeconds: 7200,
 		  AutoApprovalDelayInSeconds: 60};
 
@@ -43,7 +43,7 @@ Meteor.startup(function () {
 		  QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
 					    "ts6QjFu3SMis55ieq",
 					    "o2NKn4Ksd2n5AoqHD",
-					    "APfjRm4tnpzhxkdNT"],
+					    "ZYvKSTEFJJ4jfWYHf"],
 		  AssignmentDurationInSeconds: 7200,
 		  AutoApprovalDelayInSeconds: 60};
     
