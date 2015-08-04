@@ -124,7 +124,7 @@ Meteor.methods({
 	WorkerEmails.update({_id: emailId},
 			    {$set: {recipients: workerIds}});
     },
-    grantNewQuals: function(actuallyGrant, qualId1pm, qualId3pm) {
+    grantNewQuals: function(actuallyGrant, qualId1PM, qualId3PM) {
 	workers1pm = getFirstDay(1);
 	workers3pm = getFirstDay(3);
 	if (actuallyGrant) {
