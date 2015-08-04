@@ -124,6 +124,20 @@ Meteor.methods({
 	WorkerEmails.update({_id: emailId},
 			    {$set: {recipients: workerIds}});
     },
+    grantNewQuals: function(actuallyGrant, qualId1pm, qualId3pm) {
+	workers1pm = getFirstDay(1);
+	workers3pm = getFirstDay(3);
+	if (actuallyGrant) {
+	    _.each(workers1pm, function(workerId) {
+		TurkServer.Util.assignQualification(workerId, qualId1PM, 1, false)
+	    });
+	    _.each(workers3pm, function(asst) {
+		TurkServer.Util.assignQualification(workerId, qualId3PM, 1, false)
+	    });
+	}
+	console.log("1 PM Group: " + workers1pm.length);
+	console.log("3 PM Group: " + workers3pm.length);
+    },
     chooseSecondTime: function() {
 	TurkServer.checkAdmin();
 	console.log('chooseTime');
@@ -160,6 +174,20 @@ function getQualified(time) {
     return Workers.find({
 	quals: {$elemMatch: {id: map[time], value: 1}}
     }).fetch();
+}
+
+function getFirstDay(time) {
+    var batchId = Batches.findOne({name: 'Day1'})._id;
+    var thresh = new Date("2015-08-04T17:30:00.000Z");
+    if (time == 1) {
+	var assignments = Assignments.find({batchId: batchId, acceptTime: {$lt: thresh}}).fetch();
+    } else if (time == 3) {
+	var assignments = Assignments.find({batchId: batchId, acceptTime: {$gt: thresh}}).fetch();
+    }
+    var workers = _.map(assignments, function(asst) {
+	return asst.workerId;
+    });
+    return workers;
 }
 
 function revokeQual(workerId, time) {
