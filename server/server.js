@@ -26,7 +26,7 @@ Meteor.startup(function () {
     });
 
     var hit1pm = {Title: hitTypeTitle1pm,
-		  Description: "This HIT is for today's 1 PM EDT session of the month-long research study for which you were granted a qualification.",
+		  Description: "This HIT is for today's 1 PM ET session of the month-long research study for which you were granted a qualification.",
 		  Keywords: 'study',
 		  Reward: 0.1,
 		  QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
@@ -37,7 +37,7 @@ Meteor.startup(function () {
 		  AutoApprovalDelayInSeconds: 60};
 
     var hit3pm = {Title: hitTypeTitle3pm,
-		  Description: "This HIT is for today's 3 PM EDT session of the month-long research study for which you were granted a qualification.",
+		  Description: "This HIT is for today's 3 PM ET session of the month-long research study for which you were granted a qualification.",
 		  Keywords: 'study',
 		  Reward: 0.1,
 		  QualificationRequirement:["zkwuvJ9BX9BGWZod4", 
