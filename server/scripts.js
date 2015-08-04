@@ -1,4 +1,9 @@
 Meteor.methods({
+    clearUserGroups: function() {
+	Meteor.users.find({group: {$exists: true}}).forEach(function(user) {
+	    Partitioner.clearUserGroup(user._id);
+	});
+    },
     newBatch: function(name) {
 	Batches.upsert({name: name}, {name: name, active: true});
 	var batchId = Batches.findOne({name: name})._id;
