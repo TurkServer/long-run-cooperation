@@ -71,5 +71,5 @@ Template.game.events({
     },
     "click .endgame": _.debounce(function(e) {
 	Meteor.call('goToLobby');
-    }, 1000, true);
+    }, 1000, true)
 });

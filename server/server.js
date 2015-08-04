@@ -84,6 +84,9 @@ Meteor.methods({
         inst.sendUserToLobby(Meteor.userId());
     },
     chooseAction: function(action, round) {
+	if (isNaN(action)) {
+	    throw new Error("Action from " + Meteor.userId() + " is NaN");
+	}
         var serverRound = currentRound();
         if (round === serverRound) {
             chooseActionInternal(Meteor.userId(), action, round);
