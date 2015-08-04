@@ -1,4 +1,4 @@
-var abandonProb = 0.0;
+var abandonProb = 0.01;
 
 Meteor.methods({
     'clearDB': function() {
@@ -57,20 +57,19 @@ Meteor.methods({
 	    addAssignments(batchId);
 	}
     },
-    analyze: function() {
+    analyze: function(batchName) {
 	console.log('Running tests ...');
-	var numUsers = Meteor.users.find({'username': {$ne: 'admin'}}).count();
-	var numDays = (GameGroups.find().count()) / numGames;
-	for (var i=0; i<numDays; i++) {
-	    console.log('Analyzing day: ' + (i+1))
-	    var gameGroups = GameGroups.find({day: i+1}).fetch();
-	    var asstIds = _.map(gameGroups, function(group) {
-		return group.assignments;
-	    });
-	    asstIds = _.flatten(asstIds);
-	    var assignments = Assignments.find({_id: {$in: asstIds}}).fetch();
-	    analyzeWrapper(gameGroups, assignments)
-	}
+	var batchId = Batches.findOne({name: batchName})._id;
+	var instances = Experiments.find({batchId: batchId}).fetch();
+	var assignments = Assignments.find({batchId: batchId}).fetch();
+	console.log('Testing ' + instances.length + ' instances.');
+	_.each(instances, function(instance) {
+	    testInstance(instance);
+	});
+	console.log('Testing ' + assignments.length + ' assignments.');
+	_.each(assignments, function(asst) {
+	    testAsst(asst);
+	});
 	console.log('Done!');
     }
 });
@@ -100,7 +99,8 @@ var game = function() {
 		var abandonedHandle = Games.find({state: 'abandoned'}). observe({
 		    added: function(doc) {
 			console.log('Abandoned game.');
-			roundsHandle.stop();
+			roundsStartHandle.stop();
+			roundsEndHandle.stop();
 			abandonedHandle.stop();
 			instance.sendUserToLobby(user1);
 			instance.sendUserToLobby(user2)
@@ -143,39 +143,24 @@ var game = function() {
     }
 }
 
-var analyzeWrapper = function(gameGroups, assignments) {
-    var numUsers = assignments.length;
-    var instances = _.map(gameGroups, function(group) {
-	return group.instances;
-    });
-    instances = _.flatten(instances);
-    assert(instances.length == (numGames*Math.floor(numUsers/2)), 'Wrong number of instances: ' + instances.length);
-    _.each(instances, function(instance) {
-	testInstance(instance); //id
-    });
-    _.each(assignments, function(asst) {
-	testAsst(asst); //obj
-    });
-}
-
-var testInstance = function(groupId) {
-    var instance = Experiments.findOne({_id: groupId});
+var testInstance = function(instance) {
+    var groupId = instance._id;
     Partitioner.bindGroup(groupId, function() {
 	var rounds = Rounds.find({ended: true}).fetch();
-	assert(rounds.length == numRounds, 'Wrong number of rounds.');
+	warn(rounds.length == numRounds, 'Instance ' + groupId + ': wrong number of rounds: ' + rounds.length);
 	var roundIndices = _.map(rounds, function(round) {
 	    return round.index;
 	});
 	sort(roundIndices);
-	assert(arraysEqual(roundIndices, _.range(1,11)), 'Wrong round indices: ' + roundIndices)
+	warn(arraysEqual(roundIndices, _.range(1,11)), 'Instance ' + groupId + ': wrong round indices: ' + roundIndices)
 	var game = Games.findOne();
-	assert(game.state == 'finished', 'Game is not finished.');
+	warn(game.state == 'finished', 'Instance ' + groupId + ': ' + game.state);
 	var users = instance.users;
 	for (var i=0;i<2;i++) {
 	    for (var k=1;k<=numRounds;k++) {
 		var actions = Actions.find({userId: users[i],
 					    roundIndex: k}).fetch();
-		assert(actions.length == 1, 'Wrong action count: ' + users[i] + ', ' + k);
+		warn(actions.length == 1, 'Instance ' + groupId + ': wrong action count (' + actions.length + '): ' + users[i] + ', round' + k);
 	    }
 	}
     });
@@ -191,11 +176,16 @@ var testAsst = function(asst) {
     var points = 0;
     Partitioner.directOperation(function() {
 	Rounds.find({_groupId: {$in: instances}}).forEach(function(round) {
-	    points += round.results[userId].payoff;
+	    try {
+		points += round.results[userId].payoff;
+	    } catch (e) {
+		points += 0;
+	    }
 	});
     });
-    assert(nearlyEqual(bonus, points*conversion),
-	   'Wrong bonus: ' + userId + ', ' + bonus + ', ' + points*conversion);			    
+    var newBonus = points*conversion;
+    warn(nearlyEqual(bonus, newBonus),
+	 'Wrong bonus: ' + asst._id + ', ' + bonus + ', ' + points*conversion + ', ' + parseFloat(newBonus.toFixed(2)));
 }
 
 
@@ -218,6 +208,12 @@ var addAssignments = function(batchId) {
 	asst._enterLobby();
 	LobbyStatus.update({_id: user._id}, {$set: {status: true}});
     });
+}
+
+function warn(condition, message) {
+    if (!condition) {
+	console.log(message);
+    }
 }
 
 function assert(condition, failure) {
