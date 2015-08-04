@@ -9,6 +9,20 @@ Meteor.methods({
 	HITTypes.update({Title: hitTypeTitle3pm},
 			{$set: {batchId: batchId}});
     },
+    getGameCount: function(name) {
+	var batchId = Batches.findOne({name: name})._id;
+	var batch = TurkServer.Batch.getBatch(batchId);
+	var assigner = batch.assigner;
+	console.log('Game counter: ' + assigner.counter);
+	
+    },
+    setGameCount: function(name, count) {
+	var batchId = Batches.findOne({name: name})._id;
+	var batch = TurkServer.Batch.getBatch(batchId);
+	var assigner = batch.assigner;
+	assigner.counter = count;
+	console.log('Game counter set at: ' + assigner.counter);
+    },
     recalculateBonuses: function(setBonus) {
 	TurkServer.checkAdmin();
 	console.log('recalculateBonuses');
