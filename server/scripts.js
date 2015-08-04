@@ -131,7 +131,7 @@ Meteor.methods({
 	    _.each(workers1pm, function(workerId) {
 		TurkServer.Util.assignQualification(workerId, qualId1PM, 1, false)
 	    });
-	    _.each(workers3pm, function(asst) {
+	    _.each(workers3pm, function(workerId) {
 		TurkServer.Util.assignQualification(workerId, qualId3PM, 1, false)
 	    });
 	}
