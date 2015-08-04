@@ -68,6 +68,7 @@ TurkServer.Timers.onRoundEnd(function(reason) {
 	var game = Games.findOne();
 	if (game.state != 'finished') {
 	    endGame('abandoned');
+	    console.log("Instance " + game._groupId + " was abandoned.");
 	}
     }
 });
