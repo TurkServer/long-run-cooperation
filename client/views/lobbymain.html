@@ -4,7 +4,9 @@
     {{#if notReady}}
     {{> pilot}}
     <p>Click the button below to begin playing. You will then enter a waiting room, and once enough players have joined, the first game will begin.</p>
-    <button class="btn btn-primary begin">Begin</button>
+    <div class="center">
+    <button class="btn-lg btn-primary begin">Begin</button>
+    </div>
     {{else}}
     <p>
       {{#if plural}}
@@ -18,11 +20,7 @@
 
     <p>However, if you are left out for <strong>multiple</strong> games in a row, please email <a href="mailto:t-lilidw@microsoft.com">t-lilidw@microsoft.com</a>.</p>
 
-
     <p>If you experience any technical difficulties or bugs, please email <a href="mailto:t-lilidw@microsoft.com">t-lilidw@microsoft.com</a>.</p>
-
-
-
 
     {{/if}}
   </div>

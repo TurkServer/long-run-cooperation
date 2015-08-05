@@ -69,3 +69,7 @@ label {
 .action {
     margin-right: 100px;
 }
+
+.center {
+    text-align: center;
+}
