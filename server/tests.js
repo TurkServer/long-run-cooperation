@@ -96,7 +96,7 @@ var game = function() {
 	    Meteor.defer(function() {
 		Meteor.defer(function() { clientFunc(user1); });
 		Meteor.defer(function() { clientFunc(user2); });
-		var abandonedHandle = Games.find({state: 'abandoned'}). observe({
+		var abandonedHandle = Games.find({state: 'abandoned'}).observe({
 		    added: function(doc) {
 			console.log('Abandoned game.');
 			roundsStartHandle.stop();
@@ -146,18 +146,18 @@ var game = function() {
 var testInstance = function(instance) {
     var groupId = instance._id;
     Partitioner.bindGroup(groupId, function() {
+	var game = Games.findOne();
+	warn(game.state == 'finished', 'Instance ' + groupId + ': ' + game.state);
 	var rounds = Rounds.find({ended: true}).fetch();
-	warn(rounds.length == numRounds, 'Instance ' + groupId + ': wrong number of rounds: ' + rounds.length);
+	warn(rounds.length == numRounds, 'Instance ' + groupId + ': number of rounds: ' + rounds.length);
 	var roundIndices = _.map(rounds, function(round) {
 	    return round.index;
 	});
 	sort(roundIndices);
-	warn(arraysEqual(roundIndices, _.range(1,11)), 'Instance ' + groupId + ': wrong round indices: ' + roundIndices)
-	var game = Games.findOne();
-	warn(game.state == 'finished', 'Instance ' + groupId + ': ' + game.state);
+	warn(arraysEqual(roundIndices, _.range(1,rounds.length+1)), 'Instance ' + groupId + ': wrong round indices: ' + roundIndices)
 	var users = instance.users;
 	for (var i=0;i<2;i++) {
-	    for (var k=1;k<=numRounds;k++) {
+	    for (var k=1;k<=rounds.length;k++) {
 		var actions = Actions.find({userId: users[i],
 					    roundIndex: k}).fetch();
 		warn(actions.length == 1, 'Instance ' + groupId + ': wrong action count (' + actions.length + '): ' + users[i] + ', round' + k);
@@ -185,7 +185,7 @@ var testAsst = function(asst) {
     });
     var newBonus = points*conversion;
     warn(nearlyEqual(bonus, newBonus),
-	 'Wrong bonus: ' + asst._id + ', ' + bonus + ', ' + points*conversion + ', ' + parseFloat(newBonus.toFixed(2)));
+	 'Wrong bonus: ' + asst._id + ', ' + userId + ', ' + bonus + ', ' + points*conversion + ', ' + parseFloat(newBonus.toFixed(2)));
 }
 
 
