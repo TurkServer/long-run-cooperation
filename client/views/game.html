@@ -39,14 +39,14 @@
       {{#if gameOver}}
       <div class="center">
 	<strong>Game Over.</strong><br/>
-	<button type="button" class="btn-lg btn-primary endgame">Return to Waiting Room</button>
+	<button type="button" class="btn btn-primary endgame">Return to Waiting Room</button>
       </div>
       {{else}}
 
       {{#if gameAbandoned}}
       <p>Either you or your partner did not choose an action in time, so the game was terminated.</p>
       <div class="center">
-	<button type="button" class="btn-lg btn-primary endgame">Return to Waiting Room</button>
+	<button type="button" class="btn btn-primary endgame">Return to Waiting Room</button>
       </div>
       {{else}}
       
@@ -58,8 +58,8 @@
 
       <p>Time remaining: {{tsRoundRemainingTime}} </p>
       <div class="center">
-	<button type="button" value="1" class="btn-lg btn-success action {{#if choseAction}}disabled{{/if}}" disabled={{choseAction}}>Choice 1</button>
-	<button type="button" value="2" class="btn-lg btn-danger action {{#if choseAction}}disabled{{/if}}" disabled={{choseAction}}>Choice 2</button>
+	<button type="button" value="1" class="btn btn-success action {{#if choseAction}}disabled{{/if}}" disabled={{choseAction}}>Choice 1</button>
+	<button type="button" value="2" class="btn btn-danger action {{#if choseAction}}disabled{{/if}}" disabled={{choseAction}}>Choice 2</button>
       </div>
       {{/if}}
       {{/if}}
