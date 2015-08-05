@@ -1,13 +1,17 @@
-Tracker.autorun(function() {
-  if (TurkServer.inLobby()) {
-    var batch = TurkServer.batch();
-    Meteor.subscribe('lobby', batch && batch._id);
-    Router.go('/lobby');
-  } else if (TurkServer.inExperiment()) {
-    Router.go('/experiment');
-  } else if (TurkServer.inExitSurvey()) {
-    Router.go('/survey');
-  }
+Meteor.startup(function() {
+    Meteor.defer(function() {
+	Tracker.autorun(function() {
+	    if (TurkServer.inLobby()) {
+		var batch = TurkServer.batch();
+		Meteor.subscribe('lobby', batch && batch._id);
+		Router.go('/lobby');
+	    } else if (TurkServer.inExperiment()) {
+		Router.go('/experiment');
+	    } else if (TurkServer.inExitSurvey()) {
+		Router.go('/survey');
+	    }
+	});
+    });
 });
 
 Tracker.autorun(function() {
