@@ -65,3 +65,7 @@ label {
     height: 150px;
     overflow: auto;
 }
+
+.action {
+    margin-right: 20px;
+}
