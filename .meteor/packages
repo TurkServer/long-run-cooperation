@@ -21,6 +21,4 @@ underscore
 twbs:bootstrap
 d3js:d3
 grigio:babel
-msavin:mongol
-msavin:jetsetter
 sacha:spin
