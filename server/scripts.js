@@ -1,15 +1,20 @@
 Meteor.methods({
-    forceGoToLobby: function(instanceId, userId) {
+    forceGoToLobby: function(instanceId) {
 	var inst = TurkServer.Instance.getInstance(instanceId);
 	if (!inst.isEnded()) {
 	    console.log('Instance has not ended yet.');
+	    return;
 	}
-	var userGroup = Partitioner.getUserGroup(userId);
-	if (userGroup != instanceId) {
-	    console.log('User is not in that instance.');
-	}
-	inst.sendUserToLobby(userId);
-	console.log('forceGoToLobby was successful.');
+	var users = inst.users();
+	_.each(users, function(user) {
+	    var userGroup = Partitioner.getUserGroup(user);
+	    if (userGroup != instanceId) {
+		console.log('User ' + user + ' is not in that instance.');
+	    } else {
+		inst.sendUserToLobby(user);
+		console.log('forceGoToLobby for ' + user + ' was successful.');
+	    }
+	})
     },
     clearUserGroups: function() {
 	var cleared = 0;
