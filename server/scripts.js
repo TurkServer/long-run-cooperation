@@ -9,11 +9,15 @@ Meteor.methods({
 	    console.log('User is not in that instance.');
 	}
 	inst.sendUserToLobby(userId);
+	console.log('forceGoToLobby was successful.');
     },
     clearUserGroups: function() {
+	var cleared = 0;
 	Meteor.users.find({group: {$exists: true}}).forEach(function(user) {
+	    cleared += 1;
 	    Partitioner.clearUserGroup(user._id);
 	});
+	console.log(cleared + ' users groups were cleared.');
     },
     newBatch: function(name) {
 	Batches.upsert({name: name}, {name: name, active: true});
