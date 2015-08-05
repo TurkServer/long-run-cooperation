@@ -25,12 +25,12 @@ Template.stats.helpers({
 	    });
 	    bonus += payoff*conversion;
 	}
-	stats.today.bonus = bonus.toFixed(2);
+	stats.today.bonus = bonus.toFixed(3);
 	var user = Meteor.user();
 	if ('numGames' in user && 'bonus' in user) {
 	    stats.all.games = user.numGames + stats.today.games;
 	    var bonus = parseFloat(stats.today.bonus) + user.bonus;
-	    stats.all.bonus = bonus.toFixed(2);
+	    stats.all.bonus = bonus.toFixed(3);
 	} else {
 	    stats.all.games = stats.today.games;
 	    stats.all.bonus = stats.today.bonus;
