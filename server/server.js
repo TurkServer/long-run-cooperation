@@ -68,7 +68,6 @@ TurkServer.Timers.onRoundEnd(function(reason) {
 	var game = Games.findOne();
 	if (game.state != 'finished') {
 	    endGame('abandoned');
-	    console.log("Instance " + game._groupId + " was abandoned.");
 	}
     }
 });
@@ -225,6 +224,9 @@ function endGame(state) {
     for (var userId in payoffs) {
 	var asst = TurkServer.Assignment.getCurrentUserAssignment(userId);
 	asst.addPayment(payoffs[userId]*conversion);
+    }
+    if (state == 'abandoned') {
+	console.log("Instance " + instance.groupId + " was abandoned.");
     }
     Games.update({}, {$set: {state: state}});
     instance.teardown(false);
