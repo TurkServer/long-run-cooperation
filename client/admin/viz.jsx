@@ -4,7 +4,7 @@ Router.map( function() {
   this.route('viz', {
     path: 'viz/:batchId',
     waitOn: function() {
-      return Meteor.subscribe("vizData");
+      return Meteor.subscribe("vizData", this.params.batchId);
     }
   });
 });
