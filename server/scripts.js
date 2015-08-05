@@ -48,6 +48,26 @@ Meteor.methods({
 	assigner.counter = count;
 	console.log('Game counter set at: ' + assigner.counter);
     },
+    payExtraBonuses: function(workerIds, amt, message, actuallyGrant) {
+	_.each(workerIds, function(workerId) {
+	    var assignments = Assignments.find({workerId: workerId}, {sort: {acceptTime: -1}}).fetch();
+	    var recentAsst = assignments[0];
+	    var data = {
+		WorkerId: workerId,
+		AssignmentId: recentAsst.assignmentId,
+		BonusAmount: {
+		    Amount: amt,
+		    CurrencyCode: "USD"
+		},
+		Reason: message
+	    };
+	    console.log(data);
+	    if (actuallyGrant) {
+		TurkServer.mturk("GrantBonus", data);
+	    }
+	    console.log('Paid ' + workerId);
+	});
+    },
     payBonuses: function(batchName, actuallyPay) {
 	TurkServer.checkAdmin();
 	console.log('payBonuses');
