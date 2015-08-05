@@ -99,7 +99,11 @@ Meteor.methods({
 	console.log(workers.length + ' workers have that qualification.');
     },
     emailPanel: function(emailId, time) {
-	var workers = getQualified(time);
+	if (time == 'both') {
+	    var workers = getQualified(1).concat(getQualified(3));
+	} else {
+	    var workers = getQualified(time);
+	}
 	var workerIds = _.map(workers, function(worker) {
 	    return worker._id;
 	});
