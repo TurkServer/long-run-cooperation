@@ -33,6 +33,31 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 
       this.lobby.events.on("next-game", (function(_this) {
 	  return function() {
+	      // first force all users in ended instances to go to lobby
+	      var now = new Date();
+	      var fiveMinAgo = new Date(now.getTime() - 5 * 60 * 1000);
+	      var recentInstances = Experiments.find({batchId: _this.batch.batchId, 
+						      endTime: {$gt: fiveMinAgo}});
+	      recentInstances.forEach(function(instance) {
+		  // all of these instances should be ended because endTime exists
+		  var instanceId = instance._id;
+		  var inst = TurkServer.Instance.getInstance(instanceId);
+		  var users = inst.users();
+		  _.each(users, function(user) {
+		      var userGroup = Partitioner.getUserGroup(user);
+		      if (userGroup == instanceId) {
+			  // user in ended instance
+			  inst.sendUserToLobby(user);
+			  // next line *will* get called eventually in userJoined,
+			  // but not fast enough for the newly added people to be
+			  // assigned in this round; thus we do it manually here too
+			  // better solution?
+			  LobbyStatus.update({_id: user}, {$set: {status: true}});
+			  console.log('Forcing ' + user + ' to go to the lobby.');
+		      }
+		  })
+	      });
+	      // then run assigner
 	      assignFunc(_this);
 	  };
       })(this));
