@@ -67,7 +67,8 @@ Template.game.helpers({
 
 Template.game.events({
     "click .action": function(e) {
-	Meteor.call('chooseAction', parseInt(e.target.value), currentRound());
+	var target = e.target || e.srcElement;
+	Meteor.call('chooseAction', parseInt(target.value), currentRound());
     },
     "click .endgame": _.debounce(function(e) {
 	Meteor.call('goToLobby');
