@@ -43,17 +43,19 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 		  var instanceId = instance._id;
 		  var inst = TurkServer.Instance.getInstance(instanceId);
 		  var users = inst.users();
-		  _.each(users, function(user) {
-		      var userGroup = Partitioner.getUserGroup(user);
-		      if (userGroup == instanceId) {
+		  _.each(users, function(userId) {
+		      var user = Meteor.users.findOne(userId);
+		      var isOnline = user && user.status && user.status.online;
+		      var userGroup = Partitioner.getUserGroup(userId);
+		      if (userGroup == instanceId && isOnline) {
 			  // user in ended instance
-			  inst.sendUserToLobby(user);
+			  inst.sendUserToLobby(userId);
 			  // next line *will* get called eventually in userJoined,
 			  // but not fast enough for the newly added people to be
 			  // assigned in this round; thus we do it manually here too
 			  // better solution?
-			  LobbyStatus.update({_id: user}, {$set: {status: true}});
-			  console.log('Forcing ' + user + ' to go to the lobby.');
+			  LobbyStatus.update({_id: userId}, {$set: {status: true}});
+			  console.log('Forcing online user ' + userId + ' to go to the lobby.');
 		      }
 		  })
 	      });
