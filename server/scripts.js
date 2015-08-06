@@ -153,6 +153,26 @@ Meteor.methods({
 	WorkerEmails.update({_id: emailId},
 			    {$set: {recipients: workerIds}});
     },
+    emailGroup: function(emailId, group) {
+	WorkerEmails.update({_id: emailId},
+			    {$set: {recipients: group}});
+    },
+    batchDiffs: function(batch1, batch2) {
+	var batchId1 = Batches.findOne({name: batch1})._id;
+	var batchId2 = Batches.findOne({name: batch2})._id;	
+	var assts1 = Assignments.find({batchId: batchId1}).fetch();
+	var assts2 = Assignments.find({batchId: batchId2}).fetch();
+	var workerIds1 = _.map(assts1, function(asst) {return asst.workerId});
+	var workerIds2 = _.map(assts2, function(asst) {return asst.workerId});
+	var missing = _.difference(workerIds1, workerIds2);
+	var qualMap = {};
+	qualMap[Meteor.settings.Qual1PM] = '1PM';
+	qualMap[Meteor.settings.Qual3PM] = '3PM';
+	_.each(missing, function(workerId) {
+	    var qual = Workers.findOne({_id: workerId}).quals[1].id;
+	    console.log(workerId + ': ' + qualMap[qual]);
+	});
+    }
 });
 
 function getQualified(time) {
