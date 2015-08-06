@@ -1,5 +1,6 @@
 Meteor.methods({
     forceGoToLobby: function(instanceId) {
+	TurkServer.checkAdmin();
 	var inst = TurkServer.Instance.getInstance(instanceId);
 	if (!inst.isEnded()) {
 	    console.log('Instance has not ended yet.');
@@ -17,6 +18,7 @@ Meteor.methods({
 	})
     },
     clearUserGroups: function() {
+	TurkServer.checkAdmin();
 	var cleared = 0;
 	Meteor.users.find({group: {$exists: true}}).forEach(function(user) {
 	    cleared += 1;
@@ -25,6 +27,7 @@ Meteor.methods({
 	console.log(cleared + ' users groups were cleared.');
     },
     newBatch: function(name) {
+	TurkServer.checkAdmin();
 	Batches.upsert({name: name}, {name: name, active: true});
 	var batchId = Batches.findOne({name: name})._id;
 	TurkServer.Batch.getBatch(batchId).setAssigner(new TurkServer.Assigners.PairAssigner);
@@ -42,6 +45,7 @@ Meteor.methods({
 	
     },
     setGameCount: function(name, count) {
+	TurkServer.checkAdmin();
 	var batchId = Batches.findOne({name: name})._id;
 	var batch = TurkServer.Batch.getBatch(batchId);
 	var assigner = batch.assigner;
@@ -49,6 +53,7 @@ Meteor.methods({
 	console.log('Game counter set at: ' + assigner.counter);
     },
     payExtraBonuses: function(workerIds, amt, message, actuallyGrant) {
+	TurkServer.checkAdmin();
 	_.each(workerIds, function(workerId) {
 	    var assignments = Assignments.find({workerId: workerId}, {sort: {acceptTime: -1}}).fetch();
 	    var recentAsst = assignments[0];
@@ -64,9 +69,43 @@ Meteor.methods({
 	    console.log(data);
 	    if (actuallyGrant) {
 		TurkServer.mturk("GrantBonus", data);
+		console.log('Paid ' + workerId);
+	    } else {
+		console.log('Would have paid ' + workerId);
 	    }
-	    console.log('Paid ' + workerId);
 	});
+    },
+    payReturnedBonus: function(userId, batchName, actuallyPay) {
+	TurkServer.checkAdmin();
+	console.log('payReturnedBonuses');
+	var workerId = Meteor.users.findOne({_id: userId}).workerId;
+	var batchId = Batches.findOne({name: batchName})._id;
+	var assignments = Assignments.find({workerId: workerId,
+					    status: "completed"}, 
+					   {sort: {acceptTime: -1}}).fetch();
+	var recentAsst = assignments[0];
+	var returnedAsst = Assignments.findOne({
+	    workerId: workerId,
+	    bonusPayment: {$gt: 0},
+	    bonusPaid: {$exists: false},
+	    status: "returned",
+	    batchId: batchId
+	});
+	var amt = returnedAsst.bonusPayment.toFixed(2);
+	var data = {
+	    WorkerId: workerId,
+	    AssignmentId: recentAsst.assignmentId,
+	    BonusAmount: {
+		Amount: amt,
+		CurrencyCode: "USD"
+	    },
+	    Reason: "Bonus for today's session of the month long research study."
+	};
+	console.log(data);
+	if (actuallyPay) {
+	    TurkServer.mturk("GrantBonus", data);
+	    console.log('Paid.');
+	}
     },
     payBonuses: function(batchName, actuallyPay) {
 	TurkServer.checkAdmin();
@@ -85,7 +124,11 @@ Meteor.methods({
 		asstObj.payBonus("Bonus for today's session of the month long research study.");
 	    }
 	});
-	console.log(paid + ' Turkers were paid.');
+	if (actuallyPay) {
+	    console.log(paid + ' Turkers were paid.');
+	} else {
+	    console.log(paid + ' Turkers *would have been* paid.');
+	}
     },
     revokeQuals: function(time) {
 	var workers = getQualified(time);
