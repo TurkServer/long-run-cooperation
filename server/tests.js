@@ -184,8 +184,8 @@ var testAsst = function(asst) {
 	});
     });
     var newBonus = points*conversion;
-    warn(nearlyEqual(bonus, newBonus),
-	 'Wrong bonus: ' + asst._id + ', ' + userId + ', ' + bonus + ', ' + points*conversion + ', ' + parseFloat(newBonus.toFixed(2)));
+    warn(bonus.toFixed(2) == newBonus.toFixed(2),
+	 'Wrong bonus: ' + asst._id + ', ' + userId + ', ' + bonus.toFixed(2) + ', ' + newBonus.toFixed(2));
 }
 
 
