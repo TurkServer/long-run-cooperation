@@ -66,7 +66,7 @@ TurkServer.initialize(function() {
 TurkServer.Timers.onRoundEnd(function(reason) {
     if (reason === TurkServer.Timers.ROUND_END_TIMEOUT) {
 	var game = Games.findOne();
-	if (game.state != 'finished') {
+	if (game.state == 'active') {
 	    endGame('abandoned');
 	}
     }
