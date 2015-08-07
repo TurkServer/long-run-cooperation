@@ -138,6 +138,7 @@ Meteor.methods({
 			  Reason: "You have missed two sessions of the month-long research study, and will therefore not be able to participate any more."});
 	Workers.update({_id: workerId},
 		       {$pull: {quals: {id: qualId, value: 1}}});
+	console.log('Revoked qual ' + qualId + ' for ' + workerId);
     },
     getQualifiedWorkers: function(time) {
 	var workers = getQualified(time);
