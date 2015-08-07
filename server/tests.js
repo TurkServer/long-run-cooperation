@@ -19,7 +19,7 @@ Meteor.methods({
 	var batchId = Batches.findOne({name: 'pilot'})._id;
 	addUsers(numUsers);
     },
-    'testGame': function(clientTest) {
+    'testGame': function() {
 	var numUsers = Meteor.users.find({'username': {$ne: 'admin'}}).count();
 	TurkServer.checkAdmin();
 	console.log('testGame');
@@ -32,30 +32,26 @@ Meteor.methods({
 		var number = LobbyStatus.find({'status': true}).count();
 		if (number >= numUsers) {
 		    testingFuncs.assignFunc(batch.assigner);
-		    if (!clientTest) {
-			game();
-		    }
+		    game();
 		}
 	    }
 	});
-	if (!clientTest) {
-	    var finishedHandle = Meteor.users.find({'turkserver.state': 'exitsurvey'}).observe({
-		added: function(doc) {
-		    number = Meteor.users.find({'turkserver.state': 'exitsurvey'}).count();
-		    if (number == numUsers) {
-			finishedHandle.stop();
-			lobbyHandle.stop();
-			Assignments.find({'status': 'assigned'}).forEach(function(asst) {
-			    var asstObj = TurkServer.Assignment.getAssignment(asst._id);
-			    testingFuncs.submitHITInternal(asstObj.userId);
-			    asstObj.setCompleted();
-			});
-			console.log('Done with testGame.')
-		    }
+	var finishedHandle = Meteor.users.find({'turkserver.state': 'exitsurvey'}).observe({
+	    added: function(doc) {
+		number = Meteor.users.find({'turkserver.state': 'exitsurvey'}).count();
+		if (number == numUsers) {
+		    finishedHandle.stop();
+		    lobbyHandle.stop();
+		    Assignments.find({'status': 'assigned'}).forEach(function(asst) {
+			var asstObj = TurkServer.Assignment.getAssignment(asst._id);
+			testingFuncs.submitHITInternal(asstObj.userId);
+			asstObj.setCompleted();
+		    });
+		    console.log('Done with testGame.')
 		}
-	    });
-	    addAssignments(batchId);
-	}
+	    }
+	});
+	addAssignments(batchId);
     },
     analyze: function(batchName) {
 	console.log('Running tests ...');
