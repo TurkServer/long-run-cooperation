@@ -144,6 +144,9 @@ var testInstance = function(instance) {
     Partitioner.bindGroup(groupId, function() {
 	var game = Games.findOne();
 	warn(game.state == 'finished', 'Instance ' + groupId + ': ' + game.state);
+	if (game.state == 'abandoned') {
+	    console.log(instance.users);
+	}
 	var rounds = Rounds.find({ended: true}).fetch();
 	warn(rounds.length == numRounds, 'Instance ' + groupId + ': number of rounds: ' + rounds.length);
 	var roundIndices = _.map(rounds, function(round) {
