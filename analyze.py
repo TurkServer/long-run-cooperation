@@ -12,7 +12,9 @@ db = client.meteor
 numRounds = 10
 numGames = 20
 
-batchMap = {batch['name']: batch['_id'] for batch in db.ts.batches.find()}
+batchMap = {batch['name']: batch['_id'] for batch in db.ts.batches.find() if 'Day' in batch['name']}
+batches = sorted(batchMap.keys())
+
 
 def getInstances(batchName, counter):
     gamegroups = list(db.gamegroups.find({'batchId': batchMap[batchName],
@@ -20,23 +22,33 @@ def getInstances(batchName, counter):
     instances = [gamegroup['instances'] for gamegroup in gamegroups]
     return list(itertools.chain.from_iterable(instances))
 
-def coopPerRound():
-    batches = ['Day1', 'Day2']
+
+def genMatrix():
     numSuperGames = len(batches) * 20;
     matrix = np.zeros((numRounds, numSuperGames))
-    gameCoops = []
+    roundFracList = []
     for batchName in batches:
         for counter in range(1, numGames+1):
             instances = removeAbandoned(getInstances(batchName, counter))
-            gameCoops.append([gameCoop(instance) for instance in instances])
-    for i, row in enumerate(gameCoops):
+            roundFracList.append([roundFracs(instance) for instance in instances])
+    for i, row in enumerate(roundFracList):
         matrix[:, i] = np.mean(row, axis=0)
     return matrix
 
-def plotRounds():
-    matrix = coopPerRound()
+
+def plotFirstDefects():
+    firstDefects = []
+    for batchName in batches:
+        for counter in range(1, numGames+1):
+            instances = removeAbandoned(getInstances(batchName, counter))
+            array = [x for x in [firstDefect(instance) for instance in instances] if x]
+            firstDefects.append(mean(array))
+    plt.plot(firstDefects)
+    plt.show()
+
+def plotRounds(matrix):
     numSuperGames = matrix.shape[1]
-    rounds = np.array([1, 8, 9, 10])-1
+    rounds = np.array([1, 7, 8, 9, 10])-1
     for i in rounds:
         line = matrix[i, :]
         plt.plot(range(1,numSuperGames+1), line, label='Round %d' % (i+1))
@@ -45,9 +57,12 @@ def plotRounds():
     plt.xlabel('Supergame')
     plt.show()
 
-def plotCoopPerRound():
-    matrix = coopPerRound()
-    for tup in [(0,5), (12,17), (25,30), (30,40)]:
+
+def plotCoopPerRound(matrix):
+    numSuperGames = matrix.shape[1]
+    endpoints = range(0, numSuperGames, 10)
+    tuples = [(endpt, endpt+10) for endpt in endpoints]
+    for tup in tuples:
         line = np.mean(matrix[:, tup[0]:tup[1]], axis=1)
         plt.plot(range(1,numRounds+1), line, label='Supergames %d-%d' % (tup[0]+1,tup[1]))
     plt.ylim((0, 1))
@@ -57,24 +72,25 @@ def plotCoopPerRound():
     plt.show()
 
 
-def plotCoopPerGame():
-    batches = ['Day1', 'Day2']
-    meanGameCoops = []
-    for batchName in batches:
-        for counter in range(1, numGames+1):
-            instances = removeAbandoned(getInstances(batchName, counter))
-            meanInstanceCoops = [mean(gameCoop(instance)) for instance in instances]
-            meanGameCoops.append(mean(meanInstanceCoops))
-    numSuperGames = len(batches) * 20;
-    plt.plot(range(1, numSuperGames+1), meanGameCoops)
+def plotCoopPerGame(matrix):
+    numSuperGames = matrix.shape[1]
+    plt.plot(range(1, numSuperGames+1), np.mean(matrix, axis=0))
     plt.ylabel('Fraction of Cooperation')
     plt.xlabel('Supergame')
-    plt.xlim((1, numGames,))
     plt.ylim((0, 1))
-    #plt.xticks(range(1, numSuperGames))
     plt.show()
 
-    
+
+def plotEachRound(matrix):
+    elems = matrix.shape[0]*matrix.shape[1]
+    reshaped = np.reshape(matrix, (1,elems), 'F')
+    plt.plot(reshaped[0])
+    plt.ylabel('Fraction of Cooperation')
+    plt.xlabel('Round')
+    plt.ylim((0, 1))
+    plt.show()
+
+
 def removeAbandoned(instances):
     notAbandoned = []
     for instanceId in instances:
@@ -87,17 +103,28 @@ def removeAbandoned(instances):
 def roundFracs(instanceId):
     roundObjs = sorted(db.actions.find({'_groupId': instanceId}), key=lambda x: x['roundIndex'])
     rounds = [list(actions) for _, actions in itertools.groupby(roundObjs, key=lambda x: x['roundIndex'])]
-    roundCoop = []
+    roundFrac = []
     for index, actions in enumerate(rounds):
         coops = sum([action['action'] == 1 for action in actions])
-        roundCoop.append(float(coops)/2)
-    return roundCoop
+        roundFrac.append(float(coops)/2)
+    return roundFrac
+
+
+def firstDefect(instanceId):
+    roundObjs = sorted(db.actions.find({'_groupId': instanceId}), key=lambda x: x['roundIndex'])
+    rounds = [list(actions) for _, actions in itertools.groupby(roundObjs, key=lambda x: x['roundIndex'])]
+    for index, actions in enumerate(rounds):
+        choices = [action['action'] for action in actions]
+        if 2 in choices:
+            return index + 1
+    return 11
 
 
 def randomInst():
-    instances = list(db.ts.experiments.find())
+    instances = list(db.ts.experiments.find({'batchId': batchMap['Day1']}))
     index = random.randint(0, len(instances))
     return instances[index]['_id']
+
 
 def mean(l):
     return float(sum(l))/len(l)
