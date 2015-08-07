@@ -52,6 +52,35 @@ Meteor.methods({
 	assigner.counter = count;
 	console.log('Game counter set at: ' + assigner.counter);
     },
+    recalculateBonus: function(userId, batchName, setBonus) {
+	TurkServer.checkAdmin();
+	var batchId = Batches.findOne({name: batchName})._id;
+	var workerId = Meteor.users.findOne({_id: userId}).workerId;
+	console.log('Recalculating bonus for: ' + workerId);
+    	var asst = Assignments.findOne({workerId: workerId, batchId: batchId});
+	console.log('Old bonus: ' + asst.bonusPayment);
+	var asstObj = TurkServer.Assignment.getAssignment(asst._id);
+	var instances = _.map(asst.instances, function(instance) {
+	    return instance.id;
+	});
+	var userId = asstObj.userId;
+	var points = 0;
+	Partitioner.directOperation(function() {
+	    Rounds.find({_groupId: {$in: instances}}).forEach(function(round) {
+		try {
+		    points += round.results[userId].payoff;
+		} catch (e) {
+		    points += 0;
+		}
+	    });
+	});
+	var bonus = points*conversion;
+	console.log('New bonus: ' + bonus);
+	if (setBonus) {
+	    asstObj.setPayment(parseFloat(bonus.toFixed(2)));
+	    console.log('Reset bonus.');
+	}
+    },
     payExtraBonuses: function(workerIds, amt, message, actuallyGrant) {
 	TurkServer.checkAdmin();
 	_.each(workerIds, function(workerId) {
