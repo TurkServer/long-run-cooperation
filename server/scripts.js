@@ -221,11 +221,14 @@ Meteor.methods({
 	    var absent = false;
 	    var workerGames = {};
 	    _.each(assignments, function(asst) {
-		var count = (asst.instances && asst.instances.length) || 0;
+		var instances = asst.instances || [];
+		var instanceIds = _.map(instances, function(inst) {return inst.id});
+		var count = Games.direct.find({_groupId: {$in: instanceIds},
+				               state: 'finished'}).count()
 		if (count < 15) { absent = true; }
 		workerGames[asst.batchId] = count;
 	    });
-	    if (assignments.length < (days - 1)) {
+	    if ((assignments.length < days) || absent) {
 		console.log(worker._id);
 		_.each(assignments, function(asst) {
 		    console.log(batchMap[asst.batchId] + ': ' + workerGames[asst.batchId]);
