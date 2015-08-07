@@ -18,18 +18,15 @@ Tracker.autorun(function() {
     var group = TurkServer.group();
     if (group == null) return;
 
-    Meteor.subscribe('users', group);
-    Meteor.subscribe('rounds', group);
-    Meteor.subscribe('actions', group);
-    Meteor.subscribe('games', group);
+    Meteor.subscribe('gameData', group);
 });
 
-Tracker.autorun(function() {
-    var group = TurkServer.group();
-    if (group == null) return;
+// Tracker.autorun(function() {
+//     var group = TurkServer.group();
+//     if (group == null) return;
 
-    var batch = TurkServer.batch();
-    if (batch && batch.treatments.indexOf('recruiting') >= 0) {
-	Meteor.subscribe('recruiting', group);
-    }
-});
+//     var batch = TurkServer.batch();
+//     if (batch && batch.treatments.indexOf('recruiting') >= 0) {
+// 	Meteor.subscribe('recruiting', group);
+//     }
+// });

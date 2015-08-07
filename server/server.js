@@ -1,11 +1,9 @@
-Meteor.publish('users', function() {
-    return Meteor.users.find({}, {fields:{numGames:1, bonus:1}});
+Meteor.publish('gameData', function() {
+    return [Meteor.users.find({}, {fields: {numGames: 1, bonus: 1}}),
+	    Rounds.find(), Actions.find(), Games.find()];
 });
 
-Meteor.publish('rounds', function() { return Rounds.find(); });
-Meteor.publish('actions', function() { return Actions.find(); });
-Meteor.publish('games', function() { return Games.find(); });
-Meteor.publish('recruiting', function() { return Recruiting.find(); });
+// Meteor.publish('recruiting', function() { return Recruiting.find(); });
 
 Meteor.startup(function () {
     Batches.upsert({name: 'pilot'}, {name: 'pilot', active: true});
