@@ -172,6 +172,10 @@ var testAsst = function(asst) {
 	return instance.id;
     });
     var bonus = asst.bonusPayment;
+    if (!bonus) {
+	console.log('No bonus for ' + userId);
+	return;
+    }
     var points = 0;
     Partitioner.directOperation(function() {
 	Rounds.find({_groupId: {$in: instances}}).forEach(function(round) {
