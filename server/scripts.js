@@ -130,12 +130,14 @@ Meteor.methods({
 	    console.log(paid + ' Turkers *would have been* paid.');
 	}
     },
-    revokeQuals: function(time) {
-	var workers = getQualified(time);
-	_.each(workers, function(worker) {
-	    // logic to check if we need to revoke qual
-	    revokeQual(worker._id, time);
-	});
+    revokeQual: function(workerId, qualId) {
+	TurkServer.checkAdmin();
+	TurkServer.mturk('RevokeQualification', 
+    			 {SubjectId: workerId,
+    			  QualificationTypeId: qualId,
+			  Reason: "You have missed two sessions of the month-long research study, and will therefore not be able to participate any more."});
+	Workers.update({_id: workerId},
+		       {$pull: {quals: {id: qualId, value: 1}}});
     },
     getQualifiedWorkers: function(time) {
 	var workers = getQualified(time);
@@ -172,7 +174,35 @@ Meteor.methods({
 	    var qual = Workers.findOne({_id: workerId}).quals[1].id;
 	    console.log(workerId + ': ' + qualMap[qual]);
 	});
-    }
+    },
+    getWorkerGames: function() {
+	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
+	var batchMap = {};
+	Batches.find().forEach(function(batch) {
+	    batchMap[batch._id] = batch.name;
+	});
+	var days = Object.keys(batchMap).length - 2;
+	var workers = getQualified(1).concat(getQualified(3));
+	_.each(workers, function(worker) {
+	    var workerId = worker._id;
+	    var assignments = Assignments.find({workerId: workerId,
+						batchId: {$ne: recruitingBatchId}},
+					       {sort: {acceptTime: 1}}).fetch();
+	    var absent = false;
+	    var workerGames = {};
+	    _.each(assignments, function(asst) {
+		var count = (asst.instances && asst.instances.length) || 0;
+		if (count < 15) { absent = true; }
+		workerGames[asst.batchId] = count;
+	    });
+	    if (assignments.length < (days - 1)) {
+		console.log(worker._id);
+		_.each(assignments, function(asst) {
+		    console.log(batchMap[asst.batchId] + ': ' + workerGames[asst.batchId]);
+		});
+	    }
+	});
+    },
 });
 
 function getQualified(time) {
@@ -181,16 +211,4 @@ function getQualified(time) {
     return Workers.find({
 	quals: {$elemMatch: {id: map[time], value: 1}}
     }).fetch();
-}
-
-
-function revokeQual(workerId, time) {
-    var map = {1: Meteor.settings.Qual1PM,
-	       3: Meteor.settings.Qual3PM};
-    var qualId = map[time];
-    TurkServer.mturk('RevokeQualification', 
-    		     {SubjectId: workerId,
-    		      QualificationTypeId: qualId});
-    Workers.update({_id: workerId},
-		   {$pull: {quals: {id: qualId, value: 1}}});
 }
