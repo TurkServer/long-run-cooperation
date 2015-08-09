@@ -1,0 +1,25 @@
+{
+    "public": {
+	"turkserver": {
+	    "autoLobby": false
+	}
+    },
+    "turkserver": {
+	"adminPassword": "",
+	"hits": {
+	    "acceptUnknownHits": true
+	},
+	"experiment": {
+	    "limit": {
+		"batch": 1
+	    }
+	},
+	"mturk": {
+	    "sandbox": true,
+	    "accessKeyId": "",
+	    "secretAccessKey": "",
+	    "externalUrl": "",
+	    "frameHeight": 800
+	}
+    }
+}
