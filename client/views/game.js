@@ -8,7 +8,7 @@ gameResults = function() {
 
 Template.game.helpers({
     loading: function() {
-	return !currentRound();
+	return !Games.findOne();
     },
     gameNum: function() {
 	var asst = Assignments.findOne();
@@ -41,7 +41,7 @@ Template.game.helpers({
 	var rounds = [];
 	var payoffs = {you: 0, 
 		       opponent: 0};
-	Rounds.find({ended: true}, {sort: {index: 1}})
+	RoundTimers.find({results: {$exists: true}}, {sort: {index: 1}})
 	    .forEach(function(obj) {
 		var round = {round_: obj.index};
 		var results = obj.results;

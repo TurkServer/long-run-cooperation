@@ -20,7 +20,7 @@ Template.stats.helpers({
 	// but not if the game is over, because then it has already been added to asst
 	if (game.state == 'active') {
 	    var payoff = 0;
-	    var rounds = Rounds.find({ended: true}).forEach(function(round){
+	    var rounds = RoundTimers.find({results: {$exists: true}}).forEach(function(round){
 		payoff += round.results[userId].payoff;
 	    });
 	    bonus += payoff*conversion;

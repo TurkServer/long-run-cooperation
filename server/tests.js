@@ -102,7 +102,7 @@ var game = function() {
 			instance.sendUserToLobby(user2)
 		    }
 		});
-		var roundsStartHandle = Rounds.find().observe({
+		var roundsStartHandle = RoundTimers.find().observe({
 		    added: function(doc) {
 			Partitioner.bindGroup(_groupId, function() {
 			    user1Action = Actions.findOne({userId: user1,
@@ -118,7 +118,7 @@ var game = function() {
 			});
 		    }
 		});
-		var roundsEndHandle = Rounds.find({ended: true}).observe({
+		var roundsEndHandle = RoundTimers.find({ended: true}).observe({
 		    added: function(doc) {
 			if (doc.index == numRounds) {
 			    roundsEndHandle.stop();
@@ -147,7 +147,7 @@ var testInstance = function(instance) {
 	if (game.state == 'abandoned') {
 	    console.log(instance.users);
 	}
-	var rounds = Rounds.find({ended: true}).fetch();
+	var rounds = RoundTimers.find({results: {$exists: true}}).fetch();
 	warn(rounds.length == numRounds, 'Instance ' + groupId + ': number of rounds: ' + rounds.length);
 	var roundIndices = _.map(rounds, function(round) {
 	    return round.index;
@@ -178,13 +178,10 @@ var testAsst = function(asst) {
     }
     var points = 0;
     Partitioner.directOperation(function() {
-	Rounds.find({_groupId: {$in: instances}}).forEach(function(round) {
-	    try {
-		points += round.results[userId].payoff;
-	    } catch (e) {
-		points += 0;
-	    }
-	});
+	RoundTimers.find({_groupId: {$in: instances},
+			  results: {$exists: true}}).forEach(function(round) {
+			      points += round.results[userId].payoff;
+			  });
     });
     var newBonus = points*conversion;
     warn(bonus.toFixed(2) == newBonus.toFixed(2),

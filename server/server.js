@@ -1,6 +1,6 @@
 Meteor.publish('gameData', function() {
     return [Meteor.users.find({}, {fields: {numGames: 1, bonus: 1}}),
-	    Rounds.find(), Actions.find(), Games.find()];
+	    Actions.find(), Games.find()];
 });
 
 // Meteor.publish('recruiting', function() { return Recruiting.find(); });
@@ -110,26 +110,25 @@ Meteor.methods({
 });
 
 Partitioner.directOperation(function() {
-    Rounds.find(
-      {actions: 2, ended: false},
-      // This ensures that both _groupId and index are available
-      // while allowing us to still use a more efficient observeChanges
-      { fields: {
-          _groupId: 1,
-          index: 1
-      }}).observeChanges({
-        added: function(id, fields) {
-            Partitioner.bindGroup(fields._groupId, function() {
-                endRound(fields.index);
-            });
-        }
-    });
+    RoundTimers.find(
+	{actions: 2, ended: false},
+	// This ensures that both _groupId and index are available
+	// while allowing us to still use a more efficient observeChanges
+	{ fields: {
+            _groupId: 1,
+            index: 1
+	}}).observeChanges({
+            added: function(id, fields) {
+		Partitioner.bindGroup(fields._groupId, function() {
+                    endRound(fields.index);
+		});
+            }
+	});
 });
 
 function initGame() {
     Games.insert({state: 'active'});
-    newRound(1);
-    startTimer();
+    startNewRound();
 }
 
 function initRecruiting() {
@@ -137,10 +136,10 @@ function initRecruiting() {
 		       attempts: 0});
 }
 
-function startTimer() {
+function startNewRound(data) {
     var start = new Date();
     var end = new Date(start.getTime() + roundWait*60000);
-    TurkServer.Timers.startNewRound(start, end);
+    TurkServer.Timers.startNewRound(start, end, data);
 }
 
 function chooseActionInternal(userId, action, round) {
@@ -153,8 +152,8 @@ function chooseActionInternal(userId, action, round) {
 	console.log('Insert failed; chooseActionInternal ignored from ' + userId);
 	return;
     }
-    Rounds.update({index: round},
-		  {$inc: {actions: 1}})
+    RoundTimers.update({index: round},
+		       {$inc: {actions: 1}})
 }
 
 function submitHITInternal(userId) {
@@ -190,21 +189,14 @@ function endRound(round) {
     // 	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
     // 	asst.addPayment(payoffs[i]*conversion);
     // };
-    sleep(100);
+    // sleep(100);
     if (round == numRounds) {
-	Rounds.update({index: round}, {$set: {results: results, ended: true}});
+	TurkServer.Timers.endCurrentRound({'results': results});
 	endGame('finished');
     } else {
-	newRound(round+1);
-	startTimer();
-	Rounds.update({index: round}, {$set: {results: results, ended: true}});
+	
+	startNewRound({'results': results});
     }
-}
-
-function newRound(round) {
-    Rounds.insert({index: round,
-		   actions: 0,
-		   ended: false});
 }
 
 function endGame(state) {
@@ -213,7 +205,7 @@ function endGame(state) {
     var payoffs = {};
     payoffs[users[0]] = 0;
     payoffs[users[1]] = 0;
-    Rounds.find({ended: true}).forEach(function(round) {
+    RoundTimers.find({results: {$exists: true}}).forEach(function(round) {
 	var results = round.results;
 	for (var userId in results) {
 	    payoffs[userId] += results[userId].payoff;
