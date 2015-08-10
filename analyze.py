@@ -5,31 +5,37 @@ import itertools
 import random
 import numpy as np
 from collections import defaultdict
+import os, sys
 
 client = MongoClient('localhost', 5001)
 db = client.meteor
 
-numRounds = 10
-numGames = 20
+NUMROUNDS = 10
+NUMGAMES = 20
+path = '/home/lili/Desktop/'
 
 batchMap = {batch['name']: batch['_id'] for batch in db.ts.batches.find() if 'Day' in batch['name']}
 batches = sorted(batchMap.keys())
 
 
-def getInstances(batchName, counter):
+def getInstances(batchName, counter, group=None):
     gamegroups = list(db.gamegroups.find({'batchId': batchMap[batchName],
                                           'counter': counter}));
+    if group == 1:
+        gamegroups = filter(lambda x: x['timestamp'].hour < 18, gamegroups)
+    elif group == 3:
+        gamegroups = filter(lambda x: x['timestamp'].hour >= 18, gamegroups)
     instances = [gamegroup['instances'] for gamegroup in gamegroups]
     return list(itertools.chain.from_iterable(instances))
 
 
-def genMatrix():
+def genMatrix(group=None):
     numSuperGames = len(batches) * 20;
-    matrix = np.zeros((numRounds, numSuperGames))
+    matrix = np.zeros((NUMROUNDS, numSuperGames))
     roundFracList = []
     for batchName in batches:
-        for counter in range(1, numGames+1):
-            instances = removeAbandoned(getInstances(batchName, counter))
+        for counter in range(1, NUMGAMES+1):
+            instances = removeAbandoned(getInstances(batchName, counter, group))
             roundFracList.append([roundFracs(instance) for instance in instances])
     for i, row in enumerate(roundFracList):
         matrix[:, i] = np.mean(row, axis=0)
@@ -39,14 +45,15 @@ def genMatrix():
 def plotFirstDefects():
     firstDefects = []
     for batchName in batches:
-        for counter in range(1, numGames+1):
+        for counter in range(1, NUMGAMES+1):
             instances = removeAbandoned(getInstances(batchName, counter))
             array = [x for x in [firstDefect(instance) for instance in instances] if x]
             firstDefects.append(mean(array))
     plt.plot(firstDefects)
     plt.show()
 
-def plotRounds(matrix):
+
+def plotRounds(matrix, path):
     numSuperGames = matrix.shape[1]
     rounds = np.array([1, 7, 8, 9, 10])-1
     for i in rounds:
@@ -55,21 +62,21 @@ def plotRounds(matrix):
     plt.legend(loc='lower left')
     plt.ylabel('Fraction of Cooperation')
     plt.xlabel('Supergame')
-    plt.show()
+    plt.savefig(path + 'coop_vs_supergame.png')
 
 
-def plotCoopPerRound(matrix):
+def plotCoopPerRound(matrix, path):
     numSuperGames = matrix.shape[1]
-    endpoints = range(0, numSuperGames, 10)
-    tuples = [(endpt, endpt+10) for endpt in endpoints]
+    endpoints = range(0, numSuperGames, 20)
+    tuples = [(endpt, endpt+20) for endpt in endpoints]
     for tup in tuples:
         line = np.mean(matrix[:, tup[0]:tup[1]], axis=1)
-        plt.plot(range(1,numRounds+1), line, label='Supergames %d-%d' % (tup[0]+1,tup[1]))
+        plt.plot(range(1,NUMROUNDS+1), line, label='Supergames %d-%d' % (tup[0]+1,tup[1]))
     plt.ylim((0, 1))
     plt.ylabel('Fraction of Cooperation')
     plt.xlabel('Round')
     plt.legend(loc='lower left')
-    plt.show()
+    plt.savefig(path + 'coop_vs_round.png')
 
 
 def plotCoopPerGame(matrix):
@@ -81,14 +88,14 @@ def plotCoopPerGame(matrix):
     plt.show()
 
 
-def plotEachRound(matrix):
+def plotEachRound(matrix, path):
     elems = matrix.shape[0]*matrix.shape[1]
     reshaped = np.reshape(matrix, (1,elems), 'F')
     plt.plot(reshaped[0])
     plt.ylabel('Fraction of Cooperation')
     plt.xlabel('Round')
     plt.ylim((0, 1))
-    plt.show()
+    plt.savefig(path + 'coop_vs_each_round.png')
 
 
 def removeAbandoned(instances):
@@ -128,3 +135,20 @@ def randomInst():
 
 def mean(l):
     return float(sum(l))/len(l)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        group = int(sys.argv[1])
+        path = '/home/lili/Desktop/group%d/' % group
+    else:
+        group = None
+        path = '/home/lili/Desktop/both/'
+    matrix = genMatrix(group)
+    plotRounds(matrix, path)
+    plt.clf()
+    plotCoopPerRound(matrix, path)
+    plt.clf()
+    plotEachRound(matrix, path)
+
+    
