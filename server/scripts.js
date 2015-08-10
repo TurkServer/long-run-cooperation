@@ -205,7 +205,7 @@ Meteor.methods({
 	    console.log(workerId + ': ' + qualMap[qual]);
 	});
     },
-    getWorkerGames: function() {
+    getWorkerGames: function(numAbsences) {
 	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
 	var batchMap = {};
 	Batches.find().forEach(function(batch) {
@@ -218,17 +218,17 @@ Meteor.methods({
 	    var assignments = Assignments.find({workerId: workerId,
 						batchId: {$ne: recruitingBatchId}},
 					       {sort: {acceptTime: 1}}).fetch();
-	    var absent = false;
+	    var absences = days - assignments.length;
 	    var workerGames = {};
 	    _.each(assignments, function(asst) {
 		var instances = asst.instances || [];
 		var instanceIds = _.map(instances, function(inst) {return inst.id});
 		var count = Games.direct.find({_groupId: {$in: instanceIds},
 				               state: 'finished'}).count()
-		if (count < 15) { absent = true; }
+		if (count < 5) { absences += 1; }
 		workerGames[asst.batchId] = count;
 	    });
-	    if ((assignments.length < days - 1)) {
+	    if (absences >= numAbsences) {
 		console.log(worker._id);
 		_.each(assignments, function(asst) {
 		    console.log(batchMap[asst.batchId] + ': ' + workerGames[asst.batchId]);
