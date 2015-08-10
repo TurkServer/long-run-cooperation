@@ -63,10 +63,7 @@ TurkServer.initialize(function() {
 
 TurkServer.Timers.onRoundEnd(function(reason) {
     if (reason === TurkServer.Timers.ROUND_END_TIMEOUT) {
-	var game = Games.findOne();
-	if (game.state == 'active') {
-	    endGame('abandoned');
-	}
+	endGame('abandoned');
     }
 });
 
@@ -192,11 +189,22 @@ function endRound(round) {
     // };
     sleep(100);
     if (round == numRounds) {
+	// ending round 10
+	// need to end round 10 before calling endGame, else
+	// you won't get paid for round 10
 	Rounds.update({index: round}, {$set: {results: results, ended: true}});
-	endGame('finished');
+	try {
+	    // if the round hasn't already been ended by an abandonment,
+	    // call endGame
+	    TurkServer.Timers.endCurrentRound();	    
+	    endGame('finished');
+	} catch (e) {
+	    console.log("Couldn't endCurrentRound() for " + Partitioner.group());
+	}
     } else {
+	// ending any other round
 	newRound(round+1);
-	startTimer();
+	startTimer(); // will call endCurrentRound()
 	Rounds.update({index: round}, {$set: {results: results, ended: true}});
     }
 }
@@ -208,6 +216,11 @@ function newRound(round) {
 }
 
 function endGame(state) {
+    var updated = Games.update({state: 'active'}, {$set: {state: state}});
+    if (updated == 0) { 
+	console.log("Skipping double endGame() for " + Partitioner.group());
+	return false; 
+    }
     var instance = TurkServer.Instance.currentInstance();
     var users = instance.users();
     var payoffs = {};
@@ -223,12 +236,13 @@ function endGame(state) {
 	var asst = TurkServer.Assignment.getCurrentUserAssignment(userId);
 	asst.addPayment(payoffs[userId]*conversion);
     }
-    if (state == 'abandoned') {
-	console.log("Instance " + instance.groupId + " was abandoned.");
+    if ((state == 'abandoned') || (state == 'torndown')) {
+	console.log("Instance " + instance.groupId + " was " + state + ".");
     }
-    Games.update({}, {$set: {state: state}});
     instance.teardown(false);
+    return true;
 }
 
 testingFuncs.chooseActionInternal = chooseActionInternal;
 testingFuncs.submitHITInternal = submitHITInternal;
+globalFuncs.endGame = endGame;
