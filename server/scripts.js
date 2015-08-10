@@ -228,7 +228,7 @@ Meteor.methods({
 		if (count < 15) { absent = true; }
 		workerGames[asst.batchId] = count;
 	    });
-	    if ((assignments.length < days) || absent) {
+	    if ((assignments.length < days - 1)) {
 		console.log(worker._id);
 		_.each(assignments, function(asst) {
 		    console.log(batchMap[asst.batchId] + ': ' + workerGames[asst.batchId]);
