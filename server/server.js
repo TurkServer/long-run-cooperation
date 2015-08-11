@@ -192,19 +192,21 @@ function endRound(round) {
 	// ending round 10
 	// need to end round 10 before calling endGame, else
 	// you won't get paid for round 10
-	Rounds.update({index: round}, {$set: {results: results, ended: true}});
 	try {
 	    // if the round hasn't already been ended by an abandonment,
 	    // call endGame
-	    TurkServer.Timers.endCurrentRound();	    
+	    TurkServer.Timers.endCurrentRound();
+	    // only update the results of the round if game wasn't already abandoned
+	    // otherwise will look like their bonus isn't high enough
+	    Rounds.update({index: round}, {$set: {results: results, ended: true}});
 	    endGame('finished');
 	} catch (e) {
-	    console.log("Couldn't endCurrentRound() for " + Partitioner.group());
+	    console.log("endRound: Couldn't endCurrentRound() for " + Partitioner.group());
 	}
     } else {
 	// ending any other round
 	newRound(round+1);
-	startTimer(); // will call endCurrentRound()
+	startTimer(); // will end the current round
 	Rounds.update({index: round}, {$set: {results: results, ended: true}});
     }
 }
@@ -218,7 +220,7 @@ function newRound(round) {
 function endGame(state) {
     var updated = Games.update({state: 'active'}, {$set: {state: state}});
     if (updated == 0) { 
-	console.log("Skipping double endGame() for " + Partitioner.group());
+	console.log("endGame(" + state + "): Skipping double endGame() for " + Partitioner.group());
 	return false; 
     }
     var instance = TurkServer.Instance.currentInstance();
