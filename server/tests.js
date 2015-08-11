@@ -31,6 +31,7 @@ Meteor.methods({
 	    added: function(doc) {
 		var number = LobbyStatus.find({'status': true}).count();
 		if (number >= numUsers - 2) {
+		    testingFuncs.endGamesFunc(batch.assigner);
 		    testingFuncs.assignFunc(batch.assigner);
 		    game();
 		}

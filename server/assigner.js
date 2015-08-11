@@ -149,3 +149,4 @@ function assignFunc(_this) {
 }
 
 testingFuncs.assignFunc = assignFunc;
+testingFuncs.endGamesFunc = endGamesFunc;
