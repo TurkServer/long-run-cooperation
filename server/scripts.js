@@ -169,7 +169,7 @@ Meteor.methods({
 	TurkServer.mturk('RevokeQualification', 
     			 {SubjectId: workerId,
     			  QualificationTypeId: qualId,
-			  Reason: "You have missed two sessions of the month-long research study, and will therefore not be able to participate any more."});
+			  Reason: "You have missed more than two sessions of the month-long research study, and will therefore not be able to participate any more."});
 	Workers.update({_id: workerId},
 		       {$pull: {quals: {id: qualId, value: 1}}});
 	console.log('Revoked qual ' + qualId + ' for ' + workerId);
