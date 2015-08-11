@@ -53,20 +53,48 @@ Meteor.methods({
 	});
 	addAssignments(batchId);
     },
-    analyze: function(batchName) {
+    analyze: function(batchName, showAbandoned) {
 	console.log('Running tests ...');
 	var batchId = Batches.findOne({name: batchName})._id;
 	var instances = Experiments.find({batchId: batchId}).fetch();
 	var assignments = Assignments.find({batchId: batchId}).fetch();
-	console.log('Testing ' + instances.length + ' instances.');
-	_.each(instances, function(instance) {
-	    testInstance(instance);
-	});
+	if (showAbandoned) {
+	    console.log('Testing ' + instances.length + ' instances.');
+	    _.each(instances, function(instance) {
+		testInstance(instance);
+	    });
+	}
 	console.log('Testing ' + assignments.length + ' assignments.');
 	_.each(assignments, function(asst) {
 	    testAsst(asst);
 	});
 	console.log('Done!');
+    },
+    testBonus: function(asstId) {
+	var asst = Assignments.findOne({_id: asstId});
+	var asstObj = TurkServer.Assignment.getAssignment(asstId);
+	var userId = asstObj.userId;
+	console.log('Testing bonus for ' + userId);
+	var bonus = asst.bonusPayment;
+	var points = 0;
+	_.each(asst.instances, function(instance) {
+	    instancePoints = 0;
+	    console.log('Instance ' + instance.id);
+	    Partitioner.directOperation(function() {
+		Rounds.find({_groupId: instance.id,
+			     ended: true},
+			    {sort: {index: 1}}).forEach(function(round) {
+				roundPoints = round.results[userId].payoff;
+				console.log('Round ' + round.index + ": " + roundPoints);
+				instancePoints += roundPoints;
+			     });
+	    });
+	    console.log("Instance points: " + instancePoints);
+	    points += instancePoints;
+	});
+	var newBonus = points*conversion;
+	console.log('Old bonus: ' + bonus);
+	console.log('New bonus: ' + newBonus);
     }
 });
 
