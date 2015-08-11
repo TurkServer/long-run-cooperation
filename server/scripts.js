@@ -194,6 +194,11 @@ Meteor.methods({
 	WorkerEmails.update({_id: emailId},
 			    {$set: {recipients: group}});
     },
+    emailWorker: function(workerId, subject, msg) {
+	WorkerEmails.insert({subject: subject,
+			     message: msg,
+			     recipients: [workerId]});
+    },
     batchDiffs: function(batch1, batch2) {
 	var batchId1 = Batches.findOne({name: batch1})._id;
 	var batchId2 = Batches.findOne({name: batch2})._id;	
