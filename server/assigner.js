@@ -33,43 +33,6 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 
       this.lobby.events.on("next-game", (function(_this) {
 	  return function() {
-	      // first force all users in unended instances to go to lobby
-	      var recentInstances = Experiments.find({batchId: _this.batch.batchId, 
-	      					      endTime: {$exists: false}});
-	      recentInstances.forEach(function(instance) {
-	      	  var instanceId = instance._id;
-		  var ended = Partitioner.bindGroup(instanceId, function() {
-		      try {
-			  TurkServer.Timers.endCurrentRound();	    
-			  return globalFuncs.endGame('finished');
-		      } catch (e) {
-			  console.log("Couldn't endCurrentRound() for " + Partitioner.group());
-			  return false;
-		      }
-		  });
-		  // check if game was ended by us or previously
-		  // if we ended it, send the users back to lobby
-		  if (!ended) {
-		      return;
-		  }
-	      	  var inst = TurkServer.Instance.getInstance(instanceId);
-	      	  var users = inst.users();
-	      	  _.each(users, function(userId) {
-	      	      var user = Meteor.users.findOne(userId);
-	      	      var isOnline = user && user.status && user.status.online;
-	      	      var userGroup = Partitioner.getUserGroup(userId);
-	      	      if (userGroup == instanceId && isOnline) {
-	      		  // user in ended instance
-	      		  inst.sendUserToLobby(userId);
-	      		  // next line *will* get called eventually in userJoined,
-	      		  // but not fast enough for the newly added people to be
-	      		  // assigned in this round; thus we do it manually here too
-	      		  // better solution?
-	      		  LobbyStatus.update({_id: userId}, {$set: {status: true}});
-	      	      }
-	      	  })
-	      });
-	      // then run assigner
 	      assignFunc(_this);
 	  };
       })(this));
@@ -100,6 +63,44 @@ TurkServer.Assigners.PairAssigner = (function(superClass) {
 })(TurkServer.Assigner);
 
 function assignFunc(_this) {
+    var recentInstances = Experiments.find({batchId: _this.batch.batchId, 
+	      				    endTime: {$exists: false}});
+    console.log(recentInstances.count() + " ongoing instances to end.");
+    recentInstances.forEach(function(instance) {
+	var instanceId = instance._id;
+	var ended = Partitioner.bindGroup(instanceId, function() {
+	    try {
+		TurkServer.Timers.endCurrentRound();	    
+		return globalFuncs.endGame('torndown');
+	    } catch (e) {
+		console.log("Assigner: Couldn't endCurrentRound() for " + Partitioner.group());
+		return false;
+	    }
+	});
+	// check if game was ended by us or previously
+	// if we ended it, send the users back to lobby
+	if (!ended) {
+	    console.log("We didn't end " + Partitioner.group() + " so wait for them to come back on their own.");
+	    return;
+	}
+	var inst = TurkServer.Instance.getInstance(instanceId);
+	var users = inst.users();
+	_.each(users, function(userId) {
+	    var user = Meteor.users.findOne(userId);
+	    var isOnline = user && user.status && user.status.online;
+	    var userGroup = Partitioner.getUserGroup(userId);
+	    if (userGroup == instanceId && isOnline) {
+	      	// user in ended instance
+	      	inst.sendUserToLobby(userId);
+	      	// next line *will* get called eventually in userJoined,
+	      	// but not fast enough for the newly added people to be
+	      	// assigned in this round; thus we do it manually here too
+	      	// better solution?
+	      	LobbyStatus.update({_id: userId}, {$set: {status: true}});
+	    }
+	});
+    });
+
     var started = new Date();
     var allLobbyAssts = _this.lobby.getAssignments();
     var lobbyAssts = _.filter(allLobbyAssts, function(asst) {
