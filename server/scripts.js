@@ -210,14 +210,19 @@ Meteor.methods({
 	    console.log(workerId + ': ' + qualMap[qual]);
 	});
     },
-    getWorkerGames: function(numAbsences) {
+    findAbsences: function(numAbsences, session) {
+	console.log('findAbsences');
 	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
 	var batchMap = {};
 	Batches.find().forEach(function(batch) {
 	    batchMap[batch._id] = batch.name;
 	});
 	var days = Object.keys(batchMap).length - 2;
-	var workers = getQualified(1).concat(getQualified(3));
+	if (!session) {
+	    var workers = getQualified(1).concat(getQualified(3));
+	} else {
+	    var workers = getQualified(session);
+	}
 	_.each(workers, function(worker) {
 	    var workerId = worker._id;
 	    var assignments = Assignments.find({workerId: workerId,
