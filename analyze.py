@@ -12,7 +12,8 @@ db = client.meteor
 
 NUMROUNDS = 10
 NUMGAMES = 20
-path = '/home/lili/Desktop/'
+ROOT = '/home/lili/Desktop/'
+#ROOT = '/Users/lilidworkin/Desktop/'
 
 batchMap = {batch['name']: batch['_id'] for batch in db.ts.batches.find() if 'Day' in batch['name']}
 batches = sorted(batchMap.keys())
@@ -140,10 +141,10 @@ def mean(l):
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         group = int(sys.argv[1])
-        path = '/home/lili/Desktop/group%d/' % group
+        path = ROOT + 'group%d/' % group
     else:
         group = None
-        path = '/home/lili/Desktop/both/'
+        path = ROOT + 'both/'
     matrix = genMatrix(group)
     plotRounds(matrix, path)
     plt.clf()
