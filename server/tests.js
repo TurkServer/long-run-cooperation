@@ -1,4 +1,4 @@
-var abandonProb = 0.01;
+var abandonProb = 0.00;
 
 Meteor.methods({
     'clearDB': function() {
@@ -30,7 +30,7 @@ Meteor.methods({
 	var lobbyHandle = LobbyStatus.find({'status': true}).observe({
 	    added: function(doc) {
 		var number = LobbyStatus.find({'status': true}).count();
-		if (number >= numUsers) {
+		if (number >= numUsers - 2) {
 		    testingFuncs.assignFunc(batch.assigner);
 		    game();
 		}
@@ -109,6 +109,12 @@ var game = function() {
 							   roundIndex: doc.index});
 			    user2Action = Actions.findOne({userId: user2,
 							   roundIndex: doc.index});
+			    if (doc.index == 10) {
+				var maxSleep = 6500;
+				var minSleep = 4500;
+				var sleepAmt = Math.floor(Math.random() * (maxSleep - minSleep)) + minSleep;
+				sleep(sleepAmt);
+			    }
 			    if (!user1Action) {
 				Meteor.defer(function() { clientFunc(user1); });
 			    }
