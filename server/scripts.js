@@ -1,4 +1,9 @@
 Meteor.methods({
+    endUnfinishedRounds: function() {
+	TurkServer.checkAdmin();
+	var result = Rounds.direct.update({actions: 2, ended: false}, {$set: {ended: true}}, {multi: true});
+	console.log('Ended ' + result + ' unfinished rounds.');
+    },
     forceGoToLobby: function(instanceId) {
 	TurkServer.checkAdmin();
 	var inst = TurkServer.Instance.getInstance(instanceId);
