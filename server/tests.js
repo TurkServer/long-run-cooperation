@@ -32,6 +32,7 @@ Meteor.methods({
 		var number = LobbyStatus.find({'status': true}).count();
 		if (number >= numUsers - 2) {
 		    testingFuncs.endGamesFunc(batch.assigner);
+		    sleep(500);
 		    testingFuncs.assignFunc(batch.assigner);
 		    game();
 		}
@@ -121,9 +122,8 @@ var game = function() {
 	    Meteor.defer(function() {
 		Meteor.defer(function() { clientFunc(user1); });
 		Meteor.defer(function() { clientFunc(user2); });
-		var abandonedHandle = Games.find({state: 'abandoned'}).observe({
+		var abandonedHandle = Games.find({state: {$in: ['torndown', 'abandoned']}}).observe({
 		    added: function(doc) {
-			console.log('Abandoned game.');
 			roundsStartHandle.stop();
 			roundsEndHandle.stop();
 			abandonedHandle.stop();
