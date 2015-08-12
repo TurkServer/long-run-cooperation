@@ -6,10 +6,10 @@ Template.stats.helpers({
 		     all: {games: 0,
 			   bonus: 0}};
 	var asst = Assignments.findOne();
-	var game = Games.findOne();
+	var game = Experiments.findOne();
 	if (!asst || !game) {return};
 	var num = asst.instances.length;
-	if (game.state != 'active') {
+	if (game.endReason) {
 	    stats.today.games = num;
 	} else {
 	    stats.today.games = num - 1;
@@ -18,7 +18,7 @@ Template.stats.helpers({
 	var bonus = asst.bonusPayment || 0;
 	// calculate bonus earned from this game
 	// but not if the game is over, because then it has already been added to asst
-	if (game.state == 'active') {
+	if (!game.endReason) {
 	    var payoff = 0;
 	    var rounds = Rounds.find({ended: true}).forEach(function(round){
 		payoff += round.results[userId].payoff;
