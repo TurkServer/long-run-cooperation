@@ -102,8 +102,8 @@ def plotEachRound(matrix, path):
 def removeAbandoned(instances):
     notAbandoned = []
     for instanceId in instances:
-        game = db.games.find_one({'_groupId': instanceId})
-        if game['state'] == 'finished':
+        game = db.ts.experiments.find_one({'_id': instanceId})
+        if game['endReason'] == 'finished':
             notAbandoned.append(instanceId)
     return notAbandoned
 

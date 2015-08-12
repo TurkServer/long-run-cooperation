@@ -238,8 +238,8 @@ Meteor.methods({
 	    _.each(assignments, function(asst) {
 		var instances = asst.instances || [];
 		var instanceIds = _.map(instances, function(inst) {return inst.id});
-		var count = Games.direct.find({_groupId: {$in: instanceIds},
-				               state: 'finished'}).count()
+		var count = Experiments.find({_id: {$in: instanceIds},
+				              endReason: 'finished'}).count()
 		if (count < 5) { absences += 1; }
 		workerGames[asst.batchId] = count;
 	    });
