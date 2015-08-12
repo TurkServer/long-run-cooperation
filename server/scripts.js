@@ -251,6 +251,15 @@ Meteor.methods({
 	    }
 	});
     },
+    migrateData: function() {
+	console.log('Starting migration.');
+	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
+	Experiments.find({batchId: {$ne: recruitingBatchId}}).forEach(function(exp) {
+	    var game = Games.direct.findOne({_groupId: exp._id});
+	    Experiments.update({_id: exp._id}, {$set: {endReason: game.state}});
+	});
+	console.log('Done.')
+    },
 });
 
 function getQualified(time) {
