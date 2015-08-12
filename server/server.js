@@ -217,7 +217,8 @@ function newRound(round) {
 }
 
 function endGame(endReason) {
-    var updated = Experiments.update({endReason: {$exists: false}}, {$set: {endReason: endReason}});
+    var updated = Experiments.update({_id: Partitioner.group(), endReason: {$exists: false}},
+				     {$set: {endReason: endReason}});
     if (updated == 0) { 
 	console.log("endGame(" + endReason + "): Skipping double endGame() for " + Partitioner.group());
 	return false; 
