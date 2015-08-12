@@ -12,15 +12,7 @@ Template.game.helpers({
     },
     gameNum: function() {
 	var asst = Assignments.findOne();
-	var game = Games.find();
-	if (!asst || !game) {return;}
-	var num = asst.instances.length;
-	if (game.state == 'finished')
-	    return num - 1;
-	else {
-	    return num;
-	}
-	return;
+	return asst && asst.instances.length;
     },
     round: function() {
 	return currentRound();
