@@ -16,11 +16,12 @@ NUMGAMES = 20
 batchMap = {batch['name']: batch['_id'] for batch in db.ts.batches.find() if 'Day' in batch['name']}
 batches = sorted(batchMap.keys())
 
-def investigate(batch='Day6'):
+defaultBatch = batches[-1]
+
+def investigate(batch=defaultBatch):
     batchId = batchMap[batch]
     for exp in db.ts.experiments.find({'batchId': batchId}):
-        game = db.games.find_one({'_groupId': exp['_id']});
-        if ((game['state'] == 'abandoned') or (game['state'] == 'torndown')):
+        if ((exp['endReason'] == 'abandoned') or (exp['endReason'] == 'torndown')):
             printGame(exp)
 
 
@@ -28,7 +29,7 @@ def findWorkerId(userId):
     user = db.users.find_one({'_id': userId})
     return user['workerId']
 
-def userGames(workerId, batch='Day6'):
+def userGames(workerId, batch=defaultBatch):
     batchId = batchMap[batch]
     asst = db.ts.assignments.find_one({'batchId': batchId, 'workerId': workerId})
     for expObj in asst['instances']:
@@ -42,17 +43,19 @@ def printGame(exp):
     print 'Game %s' % expId
     rounds = db.rounds.find({'_groupId': expId}).sort('index', 1);
     for round_ in rounds:
+        actions = list(db.actions.find({'_groupId': expId, 'roundIndex': round_['index']}))
         if round_['ended']:
+            times = [action['timestamp'] for action in actions]
+            delta = max(times) - min(times)
             printRound(round_['index'], users[0], round_['results'][users[0]]['action'],
-                       users[1], round_['results'][users[1]]['action'])
+                       users[1], round_['results'][users[1]]['action'], delta)
         else:
-            actions = list(db.actions.find({'_groupId': expId, 'roundIndex': round_['index']}))
             if len(actions) == 1:
                 action = actions[0]
                 print 'Round %d: %s - %d' % (round_['index'], action['userId'], action['action'])
 
-def printRound(index, user0, user0action, user1, user1action):
-    print 'Round %d: %s - %d, %s - %d' % (index, user0, user0action, user1, user1action)
+def printRound(index, user0, user0action, user1, user1action, delta):
+    print 'Round %d: %s - %d, %s - %d (%s s)' % (index, user0, user0action, user1, user1action, delta.seconds)
 
     
 if __name__ == '__main__':
