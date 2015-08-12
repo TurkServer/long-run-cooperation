@@ -23,7 +23,7 @@ Template.game.helpers({
     },
     gameAbandoned: function() {
 	var game = Experiments.findOne();
-	return game && game.endReason == 'abandoned';
+	return game && ((game.endReason == 'abandoned') || (game.endReason == 'torndown'));
     },
     choseAction: function() {
 	return Actions.findOne({userId: Meteor.userId(),
