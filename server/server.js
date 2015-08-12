@@ -1,6 +1,6 @@
 Meteor.publish('gameData', function() {
     return [Meteor.users.find({}, {fields: {numGames: 1, bonus: 1}}),
-	    Rounds.find(), Actions.find(), Games.find()];
+	    Rounds.find(), Actions.find()];
 });
 
 // Meteor.publish('recruiting', function() { return Recruiting.find(); });
@@ -124,7 +124,6 @@ Partitioner.directOperation(function() {
 });
 
 function initGame() {
-    Games.insert({state: 'active'});
     newRound(1);
     startTimer();
 }
@@ -217,10 +216,10 @@ function newRound(round) {
 		   ended: false});
 }
 
-function endGame(state) {
-    var updated = Games.update({state: 'active'}, {$set: {state: state}});
+function endGame(endReason) {
+    var updated = Experiments.update({endReason: {$exists: false}}, {$set: {endReason: endReason}});
     if (updated == 0) { 
-	console.log("endGame(" + state + "): Skipping double endGame() for " + Partitioner.group());
+	console.log("endGame(" + endReason + "): Skipping double endGame() for " + Partitioner.group());
 	return false; 
     }
     var instance = TurkServer.Instance.currentInstance();
@@ -238,8 +237,8 @@ function endGame(state) {
 	var asst = TurkServer.Assignment.getCurrentUserAssignment(userId);
 	asst.addPayment(payoffs[userId]*conversion);
     }
-    if ((state == 'abandoned') || (state == 'torndown')) {
-	console.log("Instance " + instance.groupId + " was " + state + ".");
+    if ((endReason == 'abandoned') || (endReason == 'torndown')) {
+	console.log("Instance " + instance.groupId + " was " + endReason + ".");
     }
     instance.teardown(false);
     return true;

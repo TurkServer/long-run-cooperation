@@ -18,12 +18,12 @@ Template.game.helpers({
 	return currentRound();
     },
     gameOver: function() {
-	var game = Games.findOne();
-	return game && game.state == 'finished';
+	var game = Experiments.findOne();
+	return game && game.endReason == 'finished';
     },
     gameAbandoned: function() {
-	var game = Games.findOne();
-	return game && game.state == 'abandoned';
+	var game = Experiments.findOne();
+	return game && game.endReason == 'abandoned';
     },
     choseAction: function() {
 	return Actions.findOne({userId: Meteor.userId(),

@@ -122,7 +122,7 @@ var game = function() {
 	    Meteor.defer(function() {
 		Meteor.defer(function() { clientFunc(user1); });
 		Meteor.defer(function() { clientFunc(user2); });
-		var abandonedHandle = Games.find({state: {$in: ['torndown', 'abandoned']}}).observe({
+		var abandonedHandle = Experiments.find({endReason: {$in: ['torndown', 'abandoned']}}).observe({
 		    added: function(doc) {
 			roundsStartHandle.stop();
 			roundsEndHandle.stop();
@@ -177,9 +177,9 @@ var game = function() {
 var testInstance = function(instance) {
     var groupId = instance._id;
     Partitioner.bindGroup(groupId, function() {
-	var game = Games.findOne();
-	warn(game.state == 'finished', 'Instance ' + groupId + ': ' + game.state);
-	if (game.state == 'abandoned') {
+	var game = Experiments.findOne();
+	warn(game.endReason == 'finished', 'Instance ' + groupId + ': ' + game.endReason);
+	if (game.endReason == 'abandoned') {
 	    console.log(instance.users);
 	}
 	var rounds = Rounds.find({ended: true}).fetch();
