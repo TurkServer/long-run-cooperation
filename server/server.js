@@ -217,13 +217,13 @@ function newRound(round) {
 }
 
 function endGame(endReason) {
-    var updated = Experiments.update({_id: Partitioner.group(), endReason: {$exists: false}},
+    var instance = TurkServer.Instance.currentInstance();
+    var updated = Experiments.update({_id: instance.groupId, endReason: {$exists: false}},
 				     {$set: {endReason: endReason}});
     if (updated == 0) { 
-	console.log("endGame(" + endReason + "): Skipping double endGame() for " + Partitioner.group());
+	console.log("endGame(" + endReason + "): Skipping double endGame() for " + instance.groupId);
 	return false; 
     }
-    var instance = TurkServer.Instance.currentInstance();
     var users = instance.users();
     var payoffs = {};
     payoffs[users[0]] = 0;

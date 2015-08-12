@@ -122,7 +122,7 @@ var game = function() {
 	    Meteor.defer(function() {
 		Meteor.defer(function() { clientFunc(user1); });
 		Meteor.defer(function() { clientFunc(user2); });
-		var abandonedHandle = Experiments.find({_id: Partitioner.group(),
+		var abandonedHandle = Experiments.find({_id: _groupId,
 							endReason: {$in: ['torndown', 'abandoned']}}).observe({
 		    added: function(doc) {
 			roundsStartHandle.stop();
