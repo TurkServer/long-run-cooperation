@@ -18,7 +18,9 @@ Meteor.publish("vizData", function(batchName) {
 
 Meteor.publish("expData", function(expId) {
   if ( !TurkServer.isAdmin(this.userId) ) return [];
+  var users = Experiments.findOne({_id: expId}).users;
   return [
+    Meteor.users.find({_id: {$in: users}}),
     Experiments.find({_id: expId}),
     Actions.direct.find({_groupId: expId}),
     Rounds.direct.find({_groupId: expId}),

@@ -10,6 +10,16 @@ Router.map(function() {
 
 Template.expAdmin.helpers({
     actions: function() {
-	return Actions.find();
+	return Actions.find({}, {sort: {roundIndex: 1,
+					userId: 1}});
+    },
+});
+
+Template.actionAdmin.helpers({
+    rowStyle: function() {
+	return this.action == 1 ? "success" : "danger";
+    },
+    workerId: function() {
+	return Meteor.users.findOne({_id: this.userId}).workerId;
     }
 });

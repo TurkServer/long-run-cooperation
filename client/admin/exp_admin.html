@@ -1,7 +1,35 @@
 <template name="expAdmin">
-    <div class="container-fluid">
-      {{#each actions}}
-      <li>{{userId}}</li>
-      {{/each}}
+  <div class="container">
+    <div class="row header">
+      <div class="col-md-12">
+	<h3 class="text-muted">Experiment Admin</h3>
+      </div>
     </div>
+    <div class="row">
+      <div class="col-md-12">
+      <table class="table table-condensed">
+	<thead>
+	  <th>Round</th>
+	  <th>Timestamp</th>
+	  <th>Worker</th>
+	  <th>Action</th>
+	</thead>
+	<tbody>
+	  {{#each actions}}
+	  {{> actionAdmin}}
+	  {{/each}}
+	</tbody>
+      </table>
+    </div>
+      </div>
+  </div>
+</template>
+
+<template name="actionAdmin">
+  <tr class={{rowStyle}}>
+    <td>{{roundIndex}}</td>
+    <td>{{_tsRenderTime timestamp}}</td>
+    <td>{{workerId}}</td>
+    <td>{{action}}</td>
+  </tr>
 </template>
