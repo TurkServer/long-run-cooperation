@@ -1,8 +1,8 @@
 Router.map(function() {
     this.route('expAdmin', {
-	path: 'exp/:expId',
+	path: 'exp/:groupId',
 	waitOn: function() {
-	    return Meteor.subscribe("expData", this.params.expId);
+	    return Meteor.subscribe("expData", this.params.groupId);
 	},
 	template: 'expAdmin',
     });
