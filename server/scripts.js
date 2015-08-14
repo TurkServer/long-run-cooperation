@@ -211,8 +211,13 @@ Meteor.methods({
 	qualMap[Meteor.settings.Qual1PM] = '1PM';
 	qualMap[Meteor.settings.Qual3PM] = '3PM';
 	_.each(missing, function(workerId) {
-	    var qual = Workers.findOne({_id: workerId}).quals[1].id;
-	    console.log(workerId + ': ' + qualMap[qual]);
+	    var quals = Workers.findOne({_id: workerId}).quals;
+	    if (quals.length == 1) {
+		console.log('Already revoked qual for: ' + workerId);
+	    } else {
+		var qualId = Workers.findOne({_id: workerId}).quals[1].id;
+		console.log(workerId + ': ' + qualMap[qualId]);
+	    }
 	});
     },
     findAbsences: function(numAbsences, session) {
