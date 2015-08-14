@@ -76,13 +76,7 @@ function endGamesFunc(_this) {
     recentInstances.forEach(function(instance) {
 	var instanceId = instance._id;
 	var ended = Partitioner.bindGroup(instanceId, function() {
-	    try {
-		TurkServer.Timers.endCurrentRound();	    
-		return globalFuncs.endGame('torndown');
-	    } catch (e) {
-		console.log("Assigner: Couldn't endCurrentRound() for " + Partitioner.group());
-		return false;
-	    }
+	    return globalFuncs.endGame('torndown');
 	});
 	// check if game was ended by us or previously
 	// if we ended it, send the users back to lobby

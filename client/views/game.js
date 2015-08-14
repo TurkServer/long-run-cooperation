@@ -7,6 +7,12 @@ gameResults = function() {
 }
 
 Template.game.helpers({
+    gameRemainingTime: function() {
+	var elapsedTime = TurkServer.Timers.elapsedTime();
+	var limit = 1.75*60000;
+	var diff = Math.max(0, limit - elapsedTime)
+	return TurkServer.Util.formatMillis(diff);
+    },
     loading: function() {
 	return !currentRound();
     },

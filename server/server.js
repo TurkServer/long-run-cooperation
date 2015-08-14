@@ -61,12 +61,6 @@ TurkServer.initialize(function() {
     }
 });
 
-TurkServer.Timers.onRoundEnd(function(reason) {
-    if (reason === TurkServer.Timers.ROUND_END_TIMEOUT) {
-	endGame('abandoned');
-    }
-});
-
 Meteor.methods({
     goToLobby: function() {
         var userId = Meteor.userId();
@@ -125,18 +119,11 @@ Partitioner.directOperation(function() {
 
 function initGame() {
     newRound(1);
-    startTimer();
 }
 
 function initRecruiting() {
     Recruiting.insert({state: 'consent',
 		       attempts: 0});
-}
-
-function startTimer() {
-    var start = new Date();
-    var end = new Date(start.getTime() + roundWait*60000);
-    TurkServer.Timers.startNewRound(start, end);
 }
 
 function chooseActionInternal(userId, action, round) {
@@ -186,26 +173,15 @@ function endRound(round) {
     // 	var asst = TurkServer.Assignment.getCurrentUserAssignment(userIds[i]);
     // 	asst.addPayment(payoffs[i]*conversion);
     // };
-    sleep(100);
     if (round == numRounds) {
 	// ending round 10
 	// need to end round 10 before calling endGame, else
 	// you won't get paid for round 10
-	try {
-	    // if the round hasn't already been ended by an abandonment,
-	    // call endGame
-	    TurkServer.Timers.endCurrentRound();
-	    // only update the results of the round if game wasn't already abandoned
-	    // otherwise will look like their bonus isn't high enough
-	    Rounds.update({index: round}, {$set: {results: results, ended: true}});
-	    endGame('finished');
-	} catch (e) {
-	    console.log("endRound: Couldn't endCurrentRound() for " + Partitioner.group());
-	}
+	Rounds.update({index: round}, {$set: {results: results, ended: true}});
+	endGame('finished');
     } else {
 	// ending any other round
 	newRound(round+1);
-	startTimer(); // will end the current round
 	Rounds.update({index: round}, {$set: {results: results, ended: true}});
     }
 }
