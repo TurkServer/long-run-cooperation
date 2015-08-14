@@ -2,9 +2,9 @@
 // Set up route for visualization
 Router.map( function() {
   this.route('viz', {
-    path: 'viz/:batchId',
+    path: 'viz/:batchName',
     waitOn: function() {
-      return Meteor.subscribe("vizData", this.params.batchId);
+      return Meteor.subscribe("vizData", this.params.batchName);
     }
   });
 });
@@ -56,7 +56,7 @@ Template.viz.onRendered(function() {
   // Generate list of links (who went from one game to another)
   const users = _.uniq( flatten(
     Experiments.find().map( (g) => { return g.users }) ) );
-  const rounds = GameGroups.find().count();
+  const supergames = GameGroups.find().count();
 
   const links = [];
 
@@ -77,13 +77,15 @@ Template.viz.onRendered(function() {
     }
   }
 
+  const layoutIterations = 5;
+
   const sankey = d3.sankey()
     .size([width, height])
-    .nodeWidth( (width * 0.5) / rounds )
+    .nodeWidth( (width * 0.5) / supergames )
     .nodePadding(10)
     .nodes(instances)
     .links(links)
-    .layout(32);
+    .layout(layoutIterations);
 
   const path = sankey.link();
 
@@ -107,6 +109,7 @@ Template.viz.onRendered(function() {
       transform: (d) => { return `translate(${d.x}, ${d.y})` }
     });
 
+  const rounds = 10;
   const nodeWidth = sankey.nodeWidth();
 
   games.append('rect')
@@ -115,21 +118,23 @@ Template.viz.onRendered(function() {
       width: nodeWidth
     });
 
+  const x = d3.scale.ordinal()
+      .domain([for (x of Array(rounds).keys()) x + 1])
+      .rangeBands([0, nodeWidth]);
+
+  const xBand = x.rangeBand();
+
   // Within games, draw actions
   games.each( function(d) {
     const actions = Actions.find(
       {_groupId: d._id},
       {sort: {roundIndex: 1}}).fetch();
 
-    const rounds = _.uniq(actions.map( (a) => { return a.roundIndex }), true);
-
-    const x = d3.scale.ordinal()
-      .domain(rounds)
-      .rangeBands([0, nodeWidth]);
-
     const y = d3.scale.ordinal()
       .domain(d.users)
       .rangeBands([0, d.dy]);
+
+    const yBand = y.rangeBand();
 
     // Draw all the actions mwahaha
     d3.select(this).selectAll('.action')
@@ -139,8 +144,8 @@ Template.viz.onRendered(function() {
         'class': (d) => { return `action a${d.action}`},
         x: (d) => { return x(d.roundIndex) },
         y: (d) => { return y(d.userId) },
-        width: x.rangeBand(),
-        height: y.rangeBand()
+        width: xBand,
+        height: yBand
       });
 
   });

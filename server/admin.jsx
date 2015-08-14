@@ -1,5 +1,9 @@
-Meteor.publish("vizData", function(batchId) {
+Meteor.publish("vizData", function(batchName) {
   if ( !TurkServer.isAdmin(this.userId) ) return [];
+
+  const batch = Batches.findOne({name: batchName});
+  if ( !batch ) return [];
+  const batchId = batch._id;
 
   // Get all the groups in this batch
   const instances = Experiments.find({batchId}).map(
