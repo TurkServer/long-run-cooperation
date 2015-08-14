@@ -11,3 +11,12 @@ Meteor.publish("vizData", function(batchId) {
     Actions.direct.find({_groupId: {$in: instances}})
   ];
 });
+
+Meteor.publish("expData", function(expId) {
+  if ( !TurkServer.isAdmin(this.userId) ) return [];
+  return [
+    Experiments.find({_id: expId}),
+    Actions.direct.find({_groupId: expId}),
+    Rounds.direct.find({_groupId: expId}),
+  ];
+});
