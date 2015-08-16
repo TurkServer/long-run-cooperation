@@ -24,5 +24,6 @@ Meteor.publish("expData", function(expId) {
     Experiments.find({_id: expId}),
     Actions.direct.find({_groupId: expId}),
     Rounds.direct.find({_groupId: expId}),
+    RoundTimers.direct.find({_groupId: expId})
   ];
 });
