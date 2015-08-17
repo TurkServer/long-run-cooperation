@@ -21,4 +21,10 @@ Router.map(function() {
 	layoutTemplate: 'wrapper',
 	template: 'survey'
     });
+    this.route('exitsurvey', {
+	path: '/exitsurvey',
+	layoutTemplate: 'wrapper',
+	template: 'exitsurvey'
+    });
+
 });

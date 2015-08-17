@@ -12,7 +12,11 @@ var helper = function(ttmt, recruiting, main) {
 Template.home.helpers({
     active: function() {
 	var ttmt = treatment();
-	return helper(ttmt, 'landingRecruiting', 'landingMain');
+	if (_.indexOf(ttmt, 'exitsurvey') >= 0) {
+	    return 'landingExitSurvey';
+	} else {
+	    return helper(ttmt, 'landingRecruiting', 'landingMain');
+	}
     }
 });
 

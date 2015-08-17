@@ -8,7 +8,12 @@ Meteor.startup(function() {
 	    } else if (TurkServer.inExperiment()) {
 		Router.go('/experiment');
 	    } else if (TurkServer.inExitSurvey()) {
-		Router.go('/survey');
+		var batch = TurkServer.batch();
+		if (batch && _.indexOf(batch.treatments, 'exitsurvey') >= 0) {
+		    Router.go('/exitsurvey');
+		} else {
+		    Router.go('/survey');
+		}
 	    }
 	});
     });

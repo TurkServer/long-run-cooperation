@@ -8,9 +8,11 @@ Meteor.publish('gameData', function() {
 Meteor.startup(function () {
     Batches.upsert({name: 'pilot'}, {name: 'pilot', active: true});
     Batches.upsert({name: 'recruiting'}, {name: 'recruiting', active: true});
+    Batches.upsert({name: 'exitsurvey'}, {name: 'exitsurvey', active: true});
 
     TurkServer.ensureTreatmentExists({name: 'main'});
     TurkServer.ensureTreatmentExists({name: 'recruiting'});
+    TurkServer.ensureTreatmentExists({name: 'exitsurvey'});
 
     var batchid = Batches.findOne({name: 'pilot'})._id;
     Batches.update({name: 'pilot'}, {$addToSet: {treatments: 'main'}});
@@ -19,7 +21,11 @@ Meteor.startup(function () {
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
     Batches.update({name: 'recruiting'}, {$addToSet: {treatments: 'recruiting'}});
 
-    Batches.find({name: {$ne: 'recruiting'}}).forEach(function(batch) {
+    var batchid = Batches.findOne({name: 'exitsurvey'})._id;
+    TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.ExitSurveyAssigner);
+    Batches.update({name: 'exitsurvey'}, {$addToSet: {treatments: 'exitsurvey'}});
+
+    Batches.find({name: {$nin: ['recruiting', 'exitsurvey']}}).forEach(function(batch) {
 	TurkServer.Batch.getBatch(batch._id).setAssigner(new TurkServer.Assigners.PairAssigner);
     });
 
