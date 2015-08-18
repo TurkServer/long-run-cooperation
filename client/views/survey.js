@@ -15,7 +15,8 @@ Template.exitsurvey.events({
 		   "strategies_time": form.strategies_time.value,
 		   "other_strategies": form.other_strategies.value,
 		   "other_strategies_time": form.other_strategies_time.value,
-		   "learn": form.learn.value,
+		   "learn_yourself": form.learn_yourself.value,
+		   "learn_others": form.learn_others.value,
 		   "continued": form.continued.value,
 		   "compensation": form.compensation.value,
 		   "future": form.future.value}
