@@ -229,6 +229,32 @@ Meteor.methods({
 	    }
 	});
     },
+    participationHist: function() {
+	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
+	var batchMap = {};
+	Batches.find().forEach(function(batch) {
+	    batchMap[batch._id] = batch.name;
+	});
+	var workers = getQualified(1).concat(getQualified(3));
+	var array = [];
+	_.each(workers, function(worker) {
+	    var workerId = worker._id;
+	    var assignments = Assignments.find({workerId: workerId,
+						batchId: {$ne: recruitingBatchId}},
+					       {sort: {acceptTime: 1}}).fetch();
+	    var totalGames = 0;
+	    _.each(assignments, function(asst) {
+		var instances = asst.instances || [];
+		var instanceIds = _.map(instances, function(inst) {return inst.id});
+		var count = Experiments.find({_id: {$in: instanceIds},
+				              endReason: 'finished'}).count()
+		totalGames += count;
+	    });
+	    array.push(totalGames);
+	});
+	console.log(array.length);
+	console.log(JSON.stringify(array));
+    },
     findAbsences: function(numAbsences, session) {
 	console.log('findAbsences');
 	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
@@ -249,6 +275,7 @@ Meteor.methods({
 					       {sort: {acceptTime: 1}}).fetch();
 	    var absences = days - assignments.length;
 	    var workerGames = {};
+	    var totalGames = 0;
 	    _.each(assignments, function(asst) {
 		var instances = asst.instances || [];
 		var instanceIds = _.map(instances, function(inst) {return inst.id});
@@ -256,12 +283,14 @@ Meteor.methods({
 				              endReason: 'finished'}).count()
 		if (count < 5) { absences += 1; }
 		workerGames[asst.batchId] = count;
+		totalGames += count;
 	    });
 	    if (absences >= numAbsences) {
 		console.log(worker._id);
 		_.each(assignments, function(asst) {
 		    console.log(batchMap[asst.batchId] + ': ' + workerGames[asst.batchId]);
 		});
+		console.log('Total: '+ totalGames);
 	    }
 	});
     },
