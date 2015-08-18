@@ -1,27 +1,15 @@
-Router.map(function() {
-    // authentication?
-    // see lobby_client.coffee in TurkServer
-    this.route('home', {
-	path: '/',
-	template: 'home'
-    });
-    this.route('lobby', {
-	path: '/lobby',
-	template: 'lobby'
-    });
-    this.route('experiment', {
-	path: '/experiment',
-	layoutTemplate: 'wrapper',
-	template: 'experiment'
-    });
-    this.route('survey', {
-	path: '/survey',
-	layoutTemplate: 'wrapper',
-	template: 'survey'
-    });
-    this.route('exitsurvey', {
-	path: '/exitsurvey',
-	template: 'exitsurvey'
-    });
+var routes  = [];
+for (var key in treatmentMap) {
+    var obj = treatmentMap[key];
+    routes.push(obj['lobbyRoute']);
+    routes.push(obj['experimentRoute']);
+    routes.push(obj['surveyRoute']);
+}
 
+_.each(_.uniq(routes), function(route) {
+    Router.route(route);
+});
+
+Router.route('/', {
+    template: 'home'
 });
