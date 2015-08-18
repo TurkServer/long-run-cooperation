@@ -35,9 +35,9 @@ Template.actionAdmin.helpers({
 
 Template.expAdmin.onRendered(function () {
     var margin = {top: 10, right: 10, bottom: 10, left: 10}
-    var barWidth = 8;
+    var barWidth = 1;
     var barHeight = 80;
-    var barSep = 30;
+    var barSep = 40;
     var leftPadding = 120;
     var topPadding = 10;
 
@@ -181,6 +181,33 @@ Template.expAdmin.onRendered(function () {
 	// update all
 	// shift second action a bit left to account for server delay
 	bars.attr("x", function(d) {
+	    if (d['secondAction']) {
+		return x(new Date(d['timestamp'].valueOf() - 500));
+	    } else {
+		return x(d['timestamp']);
+	    }
+	});
+
+	// draw action circles
+	var circles = svg.selectAll("circle")
+	    .data(actions, function(d) {
+		return d._id;
+	    });
+
+	// add new
+	circles.enter()
+	    .append("circle")
+	    .attr("cy", function(d) {
+		return userMap[d['userId']] == 0 ? topPadding : barHeight + barSep;
+	    })
+	    .attr("fill", function(d) {
+		return d['action'] == 1 ? "green" : "red"
+	    })
+	    .attr("r", 5)
+
+	// update all
+	// shift second action a bit left to account for server delay
+	circles.attr("cx", function(d) {
 	    if (d['secondAction']) {
 		return x(new Date(d['timestamp'].valueOf() - 500));
 	    } else {
