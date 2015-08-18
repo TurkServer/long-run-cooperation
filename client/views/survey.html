@@ -1,118 +1,122 @@
 <template name="exitsurvey">
-  <div class="col-md-12">
-    <form class="survey">
-      <p>Thanks for participating in the month-long research study! Please answer the following questions.</p>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+	<form class="survey">
+	  <p>Thanks for participating in the month-long research study! Please answer the following questions.</p>
 
-      <div class="form-group">
-	Age:
-	<input type="number" class="form-control" name="age" required>
+	  <div class="form-group">
+	    Age:
+	    <input type="number" class="form-control" name="age">
+	  </div>
+	  
+	  <div class="form-group">
+	    Gender:
+	    <label class="radio-inline">
+	      <input type="radio" name="GenderOptions" id="male" value="male"> Male
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="GenderOptions" id="female" value="female"> Female
+	    </label>
+	  </div>
+
+	  <div class="form-group">
+	    Occupation:
+	    <input class="form-control" name="occupation">
+	  </div>
+
+	  <div class="form-group">
+	    Location (zip code if US worker):
+	    <input class="form-control" name="location">
+	  </div>
+
+	  <div class="form-group">
+	    <p>The game you played in this study is known as "Prisoner's Dilemma". Before participating in this study, how many games of Prisoner's Dilemma had you played on Mechanical Turk?</p>
+	    <label class="radio-inline">
+	      <input type="radio" name="PD" id="inlineRadio1" value="option0"> 0
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PD" id="inlineRadio2" value="option1"> 1-5
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PD" id="inlineRadio3" value="option5"> 5-10
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PD" id="inlineRadio4" value="option10"> 10-50
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PD" id="inlineRadio5" value="option50"> 50-100
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PD" id="inlineRadio6" value="option100"> 100+
+	    </label>
+	  </div>
+
+	  <div class="form-group">
+	    <p>Another variant of this game is known as "public goods." In this game, players voluntarily contribute some fraction of their wealth to a common pool that is then shared equally among all participants. Before participating in this study, how many games of public goods had you played on Mechanical Turk?</p>
+	    <label class="radio-inline">
+	      <input type="radio" name="PG" id="inlineRadio7" value="option0"> 0
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PG" id="inlineRadio8" value="option1"> 1-5
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PG" id="inlineRadio9" value="option5"> 5-10
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PG" id="inlineRadio10" value="option10"> 10-50
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PG" id="inlineRadio11" value="option50"> 50-100
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="PG" id="inlineRadio12" value="option100"> 100+
+	    </label>
+	  </div>
+
+	  <div class="form-group">
+	    What strategies did you use to make your choices in each game?
+	    <textarea class="form-control" rows="3" name="strategies"></textarea>
+	  </div>
+
+	  <div class="form-group">
+	    Did your strategies change over time?
+	    <textarea class="form-control" rows="3" name="strategies_time"></textarea>
+	  </div>
+
+	  <div class="form-group">
+	    What strategies did you notice other players using?
+	    <textarea class="form-control" rows="3" name="other_strategies"></textarea>
+	  </div>
+
+	  <div class="form-group">
+	    Did the strategies that other players used change over time?
+	    <textarea class="form-control" rows="3" name="other_strategies_time"></textarea>
+	  </div>
+
+	  <div class="form-group">
+	    What did you learn during this study?
+	    <textarea class="form-control" rows="3" name="learn"></textarea>
+	  </div>
+
+	  <div class="form-group">
+	    What do you think would have happened if the games had continued?
+	    <textarea class="form-control" rows="3" name="continued"></textarea>
+	  </div>
+
+	  <div class="form-group">
+	    Do you think the compensation was fair?
+	    <textarea class="form-control" rows="3" name="compensation"></textarea>
+	  </div>
+
+	  <div class="form-group">
+	    Would you be interested in playing similar games on Mechanical Turk in the future?
+	    <textarea class="form-control" rows="3" name="future"></textarea>
+	  </div>
+
+	  <button type="submit" class="btn btn-primary">Submit the HIT</button>
+	</form>
       </div>
-      
-      <div class="form-group">
-	Gender:
-	<label class="radio-inline">
-	<input type="radio" name="GenderOptions" id="male" value="male"> Male
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="GenderOptions" id="female" value="female"> Female
-      </label>
-      </div>
-
-      <div class="form-group">
-	Occupation:
-	<input class="form-control" name="occupation" required>
-      </div>
-
-      <div class="form-group">
-	Location (zip code if US worker):
-	<input class="form-control" name="location" required>
-      </div>
-
-    <div class="form-group">
-      <p>The game you played in this study is known as "Prisoner's Dilemma". Before participating in this study, how many games of Prisoner's Dilemma had you played on Mechanical Turk?</p>
-      <label class="radio-inline">
-	<input type="radio" name="PD" id="inlineRadio1" value="option0"> 0
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PD" id="inlineRadio2" value="option1"> 1-5
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PD" id="inlineRadio3" value="option5"> 5-10
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PD" id="inlineRadio4" value="option10"> 10-50
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PD" id="inlineRadio5" value="option50"> 50-100
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PD" id="inlineRadio6" value="option100"> 100+
-      </label>
     </div>
-
-    <div class="form-group">
-      <p>Another variant of this game is known as "public goods." In this game, players voluntarily contribute some fraction of their wealth to a common pool that is then shared equally among all participants. Before participating in this study, how many games of public goods had you played on Mechanical Turk?</p>
-      <label class="radio-inline">
-	<input type="radio" name="PG" id="inlineRadio7" value="option0"> 0
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PG" id="inlineRadio8" value="option1"> 1-5
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PG" id="inlineRadio9" value="option5"> 5-10
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PG" id="inlineRadio10" value="option10"> 10-50
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PG" id="inlineRadio11" value="option50"> 50-100
-      </label>
-      <label class="radio-inline">
-	<input type="radio" name="PG" id="inlineRadio12" value="option100"> 100+
-      </label>
-    </div>
-
-    <div class="form-group">
-      What strategies did you use to make your choices in each game?
-      <textarea class="form-control" rows="5" name="strategies"></textarea>
-    </div>
-
-    <div class="form-group">
-      Did you strategies change over time?
-      <textarea class="form-control" rows="5" name="strategies_time"></textarea>
-    </div>
-
-    <div class="form-group">
-      What strategies did you notice other players using?
-      <textarea class="form-control" rows="5" name="other_strategies"></textarea>
-    </div>
-
-    <div class="form-group">
-      Did the strategies that other players used change over time?
-      <textarea class="form-control" rows="5" name="other_strategies_time"></textarea>
-    </div>
-
-    <div class="form-group">
-      What did you learn during this study?
-      <textarea class="form-control" rows="5" name="learn"></textarea>
-    </div>
-
-    <div class="form-group">
-      What do you think would have happened if the games had continued?
-      <textarea class="form-control" rows="5" name="continued"></textarea>
-    </div>
-
-    <div class="form-group">
-      Did you think the compensation was fair?
-      <textarea class="form-control" rows="5" name="compensation"></textarea>
-    </div>
-
-    <div class="form-group">
-      Would you be interested in playing similiar gamees on Mechanical Turk in the future?
-      <textarea class="form-control" rows="5" name="future"></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Submit the HIT</button>
-  </form>
-</div>
+  </div>
 </template>

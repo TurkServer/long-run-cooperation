@@ -10,18 +10,28 @@ var helper = function(ttmt, recruiting, main) {
 
 // before accepting
 Template.home.helpers({
+    ready: function() {
+	return treatment();
+    },
+    exitSurvey: function() {
+	var ttmt = treatment();
+	return _.indexOf(ttmt, 'exitsurvey') >= 0;
+    },
     active: function() {
 	var ttmt = treatment();
-	if (_.indexOf(ttmt, 'exitsurvey') >= 0) {
-	    return 'landingExitSurvey';
-	} else {
-	    return helper(ttmt, 'landingRecruiting', 'landingMain');
-	}
+	return helper(ttmt, 'landingRecruiting', 'landingMain');
     }
 });
 
 // lobby
 Template.lobby.helpers({
+    ready: function() {
+	return treatment();
+    },
+    exitSurvey: function() {
+	var ttmt = treatment();
+	return _.indexOf(ttmt, 'exitsurvey') == 0;
+    },
     active: function() {
 	var ttmt = treatment();
 	return helper(ttmt, 'blank', 'lobbyMain');
