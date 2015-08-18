@@ -174,6 +174,15 @@ Meteor.methods({
 		       {$pull: {quals: {id: qualId, value: 1}}});
 	console.log('Revoked qual ' + qualId + ' for ' + workerId);
     },
+    findRevoked: function() {
+	console.log('findRevoked');
+	var original = WorkerEmails.findOne({_id: "NtDREvs8gkLt5AKGQ"}).recipients;
+	var qualified = _.map(getQualified(1).concat(getQualified(3)), function(worker) {
+	    return worker._id;
+	});
+	var revoked = _.difference(original, qualified);
+	console.log(revoked);
+    },
     getQualifiedWorkers: function(time) {
 	var workers = getQualified(time);
 	console.log(workers.length + ' workers have that qualification.');
