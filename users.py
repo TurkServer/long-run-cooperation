@@ -14,7 +14,7 @@ NUMROUNDS = 10
 NUMGAMES = 20
 
 batchMap = {batch['name']: batch['_id'] for batch in db.ts.batches.find() if 'Day' in batch['name']}
-batches = sorted(batchMap.keys())
+batches = sorted(batchMap.keys(), key = lambda x: int(x.lstrip('Day')))
 
 defaultBatch = batches[-1]
 
