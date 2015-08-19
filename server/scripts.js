@@ -274,6 +274,25 @@ Meteor.methods({
 	console.log(array.length);
 	console.log(JSON.stringify(array));
     },
+    findSubmitFailure: function() {
+	var workers = getQualified(1).concat(getQualified(3));
+	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
+	_.each(workers, function(worker) {
+	    var workerId = worker._id;
+	    var assignments = Assignments.find({workerId: workerId,
+						batchId: {$ne: recruitingBatchId}}).fetch();
+	    var totalGames = 0;
+	    _.each(assignments, function(asst) {
+		var instances = asst.instances || [];
+		totalGames += instances.length;
+	    });
+	    var userGames = Meteor.users.findOne({workerId: workerId}).numGames;
+	    if (totalGames != userGames) {
+		console.log('Total Games: ' + totalGames);
+		console.log('User Games: ' + userGames);
+	    }
+	});
+    },
     findAbsences: function(numAbsences, session) {
 	console.log('findAbsences');
 	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
