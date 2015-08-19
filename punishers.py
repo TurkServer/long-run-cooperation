@@ -66,3 +66,5 @@ if __name__ == '__main__':
         investigate(sys.argv[2])
     if 'user' in sys.argv:
         userGames(findWorkerId(sys.argv[2]), sys.argv[3])
+    if 'worker' in sys.argv:
+        userGames(sys.argv[2], sys.argv[3])
