@@ -176,12 +176,25 @@ Meteor.methods({
     },
     findRevoked: function() {
 	console.log('findRevoked');
-	var original = WorkerEmails.findOne({_id: "NtDREvs8gkLt5AKGQ"}).recipients;
-	var qualified = _.map(getQualified(1).concat(getQualified(3)), function(worker) {
-	    return worker._id;
-	});
-	var revoked = _.difference(original, qualified);
+	var revoked = getRevoked();
 	console.log(revoked);
+    },
+    grantSurveyQuals: function(actuallyGrant) {
+	TurkServer.checkAdmin();
+	console.log('grantSurveyQuals');
+	var revoked = getRevoked();
+	console.log('Revoked: ' + revoked.length);
+	var qualified = getSurveyQualified();
+	console.log('Survey qualified: ' + qualified.length);
+	var grant = _.difference(revoked, qualified);
+	if (actuallyGrant) {
+	    _.each(grant, function(workerId) {
+		TurkServer.Util.assignQualification(workerId, Meteor.settings.QualSurvey, 1, false)
+	    });
+	    console.log('Granted quals to: ' + JSON.stringify(grant));
+	} else {
+	    console.log('Would grant quals to: ' + JSON.stringify(grant));
+	}
     },
     getQualifiedWorkers: function(time) {
 	var workers = getQualified(time);
@@ -311,4 +324,21 @@ function getQualified(time) {
     return Workers.find({
 	quals: {$elemMatch: {id: map[time], value: 1}}
     }).fetch();
+}
+
+function getRevoked() {
+    var original = WorkerEmails.findOne({_id: "NtDREvs8gkLt5AKGQ"}).recipients;
+    var qualified = _.map(getQualified(1).concat(getQualified(3)), function(worker) {
+	return worker._id;
+    });
+    return _.difference(original, qualified);
+}
+
+function getSurveyQualified() {
+    var workers =  Workers.find({
+	quals: {$elemMatch: {id: Meteor.settings.QualSurvey, value: 1}}
+    }).fetch();
+    return _.map(workers, function(worker) {
+	return worker._id;
+    });
 }
