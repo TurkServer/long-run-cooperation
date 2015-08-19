@@ -179,6 +179,12 @@ Meteor.methods({
 	var revoked = getRevoked();
 	console.log(revoked);
     },
+    grantQual: function(workerId, qualId) {
+	TurkServer.checkAdmin();
+	console.log('grantQual');
+	TurkServer.Util.assignQualification(workerId, qualId, 1, false)
+	console.log('Granted qual to: ' + workerId);
+    },
     grantSurveyQuals: function(actuallyGrant) {
 	TurkServer.checkAdmin();
 	console.log('grantSurveyQuals');
