@@ -1,201 +1,219 @@
 <template name="numberRadioButtons">
-    {{#each options}}
-        <label class="radio-inline">
-            <input type="radio" value="{{value}}" {{attributes}} required>
-            <b>{{caption}}</b>
-        </label>
-    {{/each}}
+  {{#each options}}
+  <label class="radio-inline">
+    <input type="radio" value="{{value}}" {{attributes}} required>
+    <b>{{caption}}</b>
+  </label>
+  {{/each}}
 </template>
 
 <template name="exitsurvey">
-    <div class="container well">
-        <form class="survey">
-            <legend>Thank you for participating in this research study!</legend>
+  <div class="container well">
+    <form class="survey">
+      <legend>Thank you for participating in this research study!</legend>
 
-            <div class="row">
-            <span class="help-block col-sm-8">We are interested in your
-                experience playing the game
-                over the past several  weeks. Please answer the following
-                questions to receive an additional bonus of <kbd>$5.00</kbd>.</span>
-            </div>
+      <div class="row col-sm-12">
+	<p>
+	  We are interested in your experience playing the game
+          over the past several  weeks. Please answer the following
+          questions to receive an additional bonus of <strong>$5.00</strong>.
+	</p>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-4">
-                    <label>What is your age?</label>
-                </div>
-                <div class="col-sm-2">
-                    <input type="number" class="form-control" name="age" min="1"
-                           max="100" step="1" required>
-                </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-4">
+          <label>What is your age?</label>
+        </div>
+        <div class="col-sm-2">
+          <input type="number" class="form-control" name="age" min="1"
+                 max="100" step="1" required>
+        </div>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-4">
-                    <label>What is your gender?</label>
-                </div>
-                <div class="col-sm-2">
-                    <select class="form-control" name="gender" required>
-                        <option selected disabled></option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-4">
+          <label>What is your gender?</label>
+        </div>
+        <div class="col-sm-2">
+          <select class="form-control" name="gender" required>
+            <option selected disabled>Select:</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-4">
-                    <label>What is your location (US ZIP code or Canadian
-                        postal code)?</label>
-                </div>
-                <div class="col-sm-2">
-                    <input class="form-control" name="location" required>
-                </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-4">
+          <label>What is your location (US ZIP code or Canadian
+            postal code)?</label>
+        </div>
+        <div class="col-sm-2">
+          <input class="form-control" name="location" required>
+        </div>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-4">
-                    <label>What is your occupation?</label>
-                </div>
-                <div class="col-sm-4">
-                    <input class="form-control" name="occupation" required>
-                </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-4">
+          <label>What is your occupation?</label>
+        </div>
+        <div class="col-sm-4">
+          <input class="form-control" name="occupation" required>
+        </div>
+      </div>
 
-            <hr>
+      <hr>
 
-            <div class="row form-group">
-                <div class="col-sm-8">
-                <label>The game you played in this study is also known as
-                <i>prisoner's dilemma</i>. <b>Prior to participating in this
-                study</b>, on how many previous occasions had you played a
-                similar game on Mechanical Turk?</label>
-                {{> numberRadioButtons name="PD"}}
-                </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>The game you played in this study is also known as
+            <i>prisoner's dilemma</i>. <b>Before participating in this
+            study</b>, on how many previous occasions had you played a
+            similar game on Mechanical Turk?</label>
+          {{> numberRadioButtons name="PD"}}
+        </div>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-8">
-                <label>Another variant of this game is known as a <i>public
-                goods game</i>. In this game, players voluntarily contribute
-                some fraction of their wealth to a common pool that is then
-                shared equally among all participants. <b>Before participating
-                in this study</b>, on how many previous occasions had you played
-                a public goods game on Mechanical Turk?</label>
-                {{> numberRadioButtons name="PG"}}
-                </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>In some experiments, such as this one, participants play
+	    many individual games of prisoner's dilemma. For instance, in this
+	    study, you played about 20 games each day. <b>Before participating
+	    in this study</b>, how many individual games of prisoner's dilemma
+	    had you played on Mechanical Turk?</label>
+          {{> numberRadioButtons name="PD_games"}}
+        </div>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-8">
-                <label>In choosing your actions in each game, what particular
-                plan or strategy did you settle on, if any? Please describe it
-                in your own words.</label>
-	    <textarea class="form-control" rows="4" name="strategies" required>
-        </textarea>
-                </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>Another variant of this game is known as a <i>public
+	    goods game</i>. In this game, players voluntarily contribute
+            some fraction of their wealth to a common pool that is then
+            shared equally among all participants. <b>Before participating
+              in this study</b>, on how many previous occasions had you played
+            a public goods game on Mechanical Turk?</label>
+          {{> numberRadioButtons name="PG"}}
+        </div>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-8">
-                <label>If you followed a strategy, did it change over the
-                course of the study? What were your previous strategies? When
-                and why did they change?</label>
-	    <textarea class="form-control" rows="3" name="strategies_time" required>
-        </textarea>
-                </div>
-            </div>
-
-            <div class="row form-group">
-                <div class="col-sm-8">
-                <label>What strategies, if any, did you notice other players
-                          using?</label>
-	    <textarea class="form-control" rows="3" name="other_strategies" required>
-        </textarea>
-                </div>
-            </div>
-
-            <div class="row form-group">
-                <div class="col-sm-8">
-                <label>Did the strategies of other players appear to change over
-                time?</label>
-	    <textarea class="form-control" rows="3" name="other_strategies_time" required>
-        </textarea>
-                </div>
-            </div>
-
-            <div class="row form-group">
-                <div class="col-sm-8">
-                <label>Did you learn anything about <b>yourself</b> during this
-                    study?</label>
-	    <textarea class="form-control" rows="3" name="learn_yourself" required>
-        </textarea>
-                </div>
-            </div>
-
-            <div class="row form-group">
-                <div class="col-sm-8">
-                    <label>
-                Did you learn anything about <b>other people</b> during
-                this study?</label>
-	    <textarea class="form-control" rows="3" name="learn_others" required>
-        </textarea>
-                    </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label><b>Before participating in this study</b>, how many individual
+	    games of public goods had you played on Mechanical Turk?</label><br/>
+          {{> numberRadioButtons name="PG_games"}}
+        </div>
+      </div>
 
 
-            <div class="row form-group">
-                <div class="col-sm-8">
-                <label>
-                <b>Imagine the study had continued for another 20 days.</b> What do you think would have changed, if anything?</label>
-	    <textarea class="form-control" rows="3" name="continued" required>
-        </textarea>
-                    </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>In choosing your actions in each game, what particular
+            plan or strategy did you settle on, if any? Please describe it
+            in your own words.</label>
+	  <textarea class="form-control" rows="4" name="strategies" required></textarea>
+        </div>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-8">
-                <label>Do you think the compensation was fair?</label>
-	    <textarea class="form-control" rows="3" name="compensation" required>
-        </textarea>
-                    </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>If you followed a strategy, did it change over the
+            course of the study? What were your previous strategies? When
+            and why did they change?</label>
+	  <textarea class="form-control" rows="4" name="strategies_time" required></textarea>
+        </div>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-8">
-                    <label>
-                Would you be interested in playing similar games on Mechanical Turk in the future?</label>
-	    <textarea class="form-control" rows="3" name="future" required>
-        </textarea>
-                    </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>What strategies, if any, did you notice other players
+            using?</label>
+	  <textarea class="form-control" rows="4" name="other_strategies" required></textarea>
+        </div>
+      </div>
 
-            <div class="row form-group">
-                <div class="col-sm-8">
-                    <label>
-                        Do you have any other comments or feedback for us
-                        regarding this study?
-                    </label>
-	    <textarea class="form-control" rows="3" name="misc">
-        </textarea>
-                </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>Did the strategies of other players appear to change over
+            time?</label>
+	  <textarea class="form-control" rows="4" name="other_strategies_time" required></textarea>
+        </div>
+      </div>
 
-            <div class="row">
-                <div class="col-sm-6">
-                <p><b>
-                    We try our utmost to pay workers fairly and provide prompt
-                    responses to issues and questions. Please leave us a review on
-                    <a
-                    href="https://turkopticon.ucsd.edu/reports?id=A3RXXNTGSUSTQ9"
-                    target="_blank">TurkOpticon</a> about your experience with this study.</b>
-                </p>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>Did you learn anything about <b>yourself</b> during this
+            study?</label>
+	  <textarea class="form-control" rows="4" name="learn_yourself" required></textarea>
+        </div>
+      </div>
 
-                <p>Your feedback will help us to produce quality HITs
-                    and recruit better workers in the future.</p>
-                </div>
-            </div>
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>
+            Did you learn anything about <b>other people</b> during
+            this study?</label>
+	  <textarea class="form-control" rows="4" name="learn_others" required></textarea>
+        </div>
+      </div>
 
-            <button type="submit" class="btn btn-primary">Submit the HIT</button>
-        </form>
-    </div>
+
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>
+            <b>Imagine the study had continued for another 20 days.</b> What do you think would have changed, if anything?</label>
+	  <textarea class="form-control" rows="4" name="continued" required></textarea>
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>Do you think the compensation was fair?</label>
+	  <textarea class="form-control" rows="4" name="compensation" required></textarea>
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>
+            Would you be interested in playing similar games on Mechanical Turk in the future?</label>
+	  <textarea class="form-control" rows="4" name="future" required></textarea>
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>
+            If you stopped participating in the study before the month was over, can you tell us why?</label>
+	  <textarea class="form-control" rows="4" name="stopped"></textarea>
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>
+            Do you have any other comments or feedback for us
+            regarding this study?
+          </label>
+	  <textarea class="form-control" rows="4" name="misc"></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-8">
+          <p><b>
+              We try our utmost to pay workers fairly and provide prompt
+              responses to issues and questions. Please leave us a review on
+              <a
+                 href="https://turkopticon.ucsd.edu/reports?id=A3RXXNTGSUSTQ9"
+                 target="_blank">TurkOpticon</a> about your experience with this study.</b>
+          </p>
+
+          <p>Thank you for filling out this survey. Your feedback will help us to produce better quality HITs in the future.</p>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit the HIT</button>
+    </form>
+  </div>
 </template>

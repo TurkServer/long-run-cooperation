@@ -37,15 +37,20 @@ Template.exitsurvey.events({
     "submit .survey": function(e, tmpl) {
 	e.preventDefault();
 	var form = e.target;
-	var gender = tmpl.find("select[name=gender]").value;
+	var gender = tmpl.find("select[name=gender]");
 	var pd = tmpl.find("input[name=PD]:checked");
 	var pg = tmpl.find("input[name=PG]:checked");
+	var pd_games = tmpl.find("input[name=PD_games]:checked");
+	var pg_games = tmpl.find("input[name=PG_games]:checked");
+	console.log(gender)
 	results = {"age": form.age.value,
 		   "gender": gender && gender.value,
 		   "occupation": form.occupation.value,
 		   "location": form.location.value,
 		   "pd": pd && pd.value,
 		   "pg": pg && pg.value,
+		   "pd_games": pd_games && pd_games.value,
+		   "pg_games": pg_games && pg_games.value,
 		   "strategies": form.strategies.value,
 		   "strategies_time": form.strategies_time.value,
 		   "other_strategies": form.other_strategies.value,
@@ -55,7 +60,8 @@ Template.exitsurvey.events({
 		   "continued": form.continued.value,
 		   "compensation": form.compensation.value,
 		   "future": form.future.value,
-		"misc": form.misc.value
+		   "stopped": form.stopped.value,
+		   "misc": form.misc.value
 	};
 	TurkServer.submitExitSurvey(results);
     }
