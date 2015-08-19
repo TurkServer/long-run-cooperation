@@ -281,7 +281,7 @@ Meteor.methods({
 	Batches.find().forEach(function(batch) {
 	    batchMap[batch._id] = batch.name;
 	});
-	var days = Object.keys(batchMap).length - 2;
+	var days = Batches.find({name: {$nin: ['pilot', 'recruiting', 'exitsurvey']}}).count();
 	if (!session) {
 	    var workers = getQualified(1).concat(getQualified(3));
 	} else {
