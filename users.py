@@ -91,11 +91,15 @@ def investigateRevoked(batchCoops):
     revoked = list(set(originallyQualified()) - set(getQualified()))
     for workerId in revoked:
         assts = sorted(db.ts.assignments.find({'workerId': workerId}), key = lambda x: x['acceptTime'])
+        workerCoops = []
+        commCoops = []
         for asst in filter(lambda asst: asst['batchId'] in reverseBatchMap, assts):
             batch = reverseBatchMap[asst['batchId']]
             coop = workerCoop(workerId, batch)
             if coop:
-                print '%s: %.2f (%.2f)' % (batch, coop, batchCoops[batch])
-        print
+                # print '%s: %.2f (%.2f)' % (batch, coop, batchCoops[batch])
+                workerCoops.append(coop)
+                commCoops.append(batchCoops[batch])
+        print '%.2f, %.2f' % (np.mean(workerCoops), np.mean(commCoops))
         
     
