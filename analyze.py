@@ -30,14 +30,15 @@ def getInstances(batchName, counter, group=None):
     return list(itertools.chain.from_iterable(instances))
 
 
-def genMatrix(group=None):
+def genMatrix(group=None, fillDefection=False):
     numSuperGames = len(batches) * 20;
     matrix = np.zeros((NUMROUNDS, numSuperGames))
     roundFracList = []
     for batchName in batches:
         for counter in range(1, NUMGAMES+1):
-            instances = removeAbandoned(getInstances(batchName, counter, group))
-            roundFracList.append([roundFracs(instance) for instance in instances])
+            instances = getInstances(batchName, counter, group)
+            roundFracList.append(filter(lambda x: x, [roundFracs(instance, fillDefection)
+                                                      for instance in instances]))
     for i, row in enumerate(roundFracList):
         matrix[:, i] = np.mean(row, axis=0)
     return matrix
@@ -108,16 +109,48 @@ def removeAbandoned(instances):
     return notAbandoned
 
 
-def roundFracs(instanceId):
+def roundFracs(instanceId, fillDefection):
+    game = db.ts.experiments.find_one({'_id': instanceId})
+    rounds = getRounds(instanceId)
+    if game['endReason'] == 'finished':
+        return roundFracsFinished(rounds)
+    if fillDefection and isPunishment(rounds):
+        return roundFracsFinished(fillPunishment(rounds))
+
+
+def getRounds(instanceId):
     roundObjs = sorted(db.actions.find({'_groupId': instanceId}), key=lambda x: x['roundIndex'])
-    rounds = [list(actions) for _, actions in itertools.groupby(roundObjs, key=lambda x: x['roundIndex'])]
+    rounds = [[action['action'] for action in actions]
+              for _, actions in itertools.groupby(roundObjs, key=lambda x: x['roundIndex'])]
+    return rounds
+
+
+def roundFracsFinished(rounds):
     roundFrac = []
-    for index, actions in enumerate(rounds):
-        coops = sum([action['action'] == 1 for action in actions])
+    for actions in rounds:
+        coops = sum([action == 1 for action in actions])
         roundFrac.append(float(coops)/2)
     return roundFrac
 
 
+def isPunishment(rounds):
+    if len(rounds) < 2:
+        return False
+    cond1 = set(rounds[-2]) == set([1,2])
+    cond2 = len(rounds[-1]) == 1 and rounds[-1][0] == 2
+    return cond1 and cond2
+
+
+def fillPunishment(rounds):
+    filledRounds = []
+    for i in range(10):
+        if i < len(rounds) - 1 and len(rounds[i]) == 2:
+            filledRounds.append(rounds[i])
+        else:
+            filledRounds.append([2,2])
+    return filledRounds
+
+    
 def firstDefect(instanceId):
     roundObjs = sorted(db.actions.find({'_groupId': instanceId}), key=lambda x: x['roundIndex'])
     rounds = [list(actions) for _, actions in itertools.groupby(roundObjs, key=lambda x: x['roundIndex'])]
@@ -139,17 +172,24 @@ def mean(l):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        group = int(sys.argv[1])
-        path = ROOT + 'group%d/' % group
-    else:
-        group = None
-        path = ROOT + 'both/'
-    matrix = genMatrix(group)
-    plotRounds(matrix, path)
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--group', default=None)
+    parser.add_argument('--fill-defect', dest='fill_defect', action='store_true')
+    args = parser.parse_args()
+    print 'Group: %s' % args.group
+    print 'Fill Defect: %s' % args.fill_defect
+    group = int(args.group) if args.group else None
+    pathA = 'both' if not args.group else args.group
+    pathB = 'filled' if args.fill_defect else 'unfilled'
+    path = ROOT + '%s-%s' % (pathA, pathB)
+    if not os.path.exists(path):
+        os.mkdir(path)
+    matrix = genMatrix(group, args.fill_defect)
+    plotRounds(matrix, path + '/')
     plt.clf()
-    plotCoopPerRound(matrix, path)
+    plotCoopPerRound(matrix, path + '/')
     plt.clf()
-    plotEachRound(matrix, path)
+    plotEachRound(matrix, path + '/')
 
     
