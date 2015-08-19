@@ -1,14 +1,16 @@
 Meteor.startup(function() {
     Meteor.defer(function() {
 	Tracker.autorun(function() {
+	    var ttmt = treatment();
+	    if (!ttmt) {return;}
 	    if (TurkServer.inLobby()) {
 		var batch = TurkServer.batch();
 		Meteor.subscribe('lobby', batch && batch._id);
-		Router.go('/lobby');
+		Router.go(treatmentMap[ttmt]['lobbyRoute']);
 	    } else if (TurkServer.inExperiment()) {
-		Router.go('/experiment');
+		Router.go(treatmentMap[ttmt]['experimentRoute']);
 	    } else if (TurkServer.inExitSurvey()) {
-		Router.go('/survey');
+		Router.go(treatmentMap[ttmt]['surveyRoute']);
 	    }
 	});
     });

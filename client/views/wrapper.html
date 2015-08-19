@@ -2,10 +2,27 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Decision-Making Experiment</title>
 </head>
 
-<template name="wrapper">
+<!-- before accepting the hit -->
+
+<template name="home">
+  {{#if ready}}
+  {{> UI.dynamic template=active}}
+  {{/if}}
+</template>
+
+<template name="landingExitSurvey">
+  <div class="container">
+    <div class="row">      
+      <div class="col-md-12">
+	<p>Please accept this HIT to fill out a survey about the month-long research study.</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="landingRecruiting">
   <div class="container">
     <div class="row header">
       <div class="col-md-12">
@@ -13,51 +30,103 @@
       </div>
     </div>
     <div class="row">
-      {{> yield}}
+      <div class="col-md-12">
+	{{> recruiting}}
+	<p> Accept this HIT to begin the qualification process.</p>
+      </div>
     </div>
   </div>
 </template>
 
-<!-- before accepting the hit -->
-
-<template name="home">
-  {{> UI.dynamic template=active}}
-</template>
-
-<template name ="landingRecruiting">
-  <div class="col-md-12">
-    {{> recruiting}}
-    <p> Accept this HIT to begin the qualification process.</p>
-  </div>
-</template>
-
 <template name="landingMain">
-  <div class="col-md-12">
-    {{> pilot}}
-    <p>Accept the hit to begin.</p>
+  <div class="container">
+    <div class="row header">
+      <div class="col-md-12">
+	<h3 class="text-muted">Decision-Making Experiment</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+	{{> pilot}}
+	<p>Accept the hit to begin.</p>
+      </div>
+    </div>
   </div>
 </template>
 
-<!-- lobby -->
+<!-- lobby for main treatment -->
 
 <template name="lobby">
-  {{> UI.dynamic template=active}}
+  <div class="container">
+    <div class="row header">
+      <div class="col-md-12">
+	<h3 class="text-muted">Decision-Making Experiment</h3>
+      </div>
+    </div>
+    <div class="row">
+      {{> lobbyMain}}
+    </div>
+  </div>
 </template>
 
-<!-- experiment -->
+<!-- experiment for main treatment -->
 
 <template name="experiment">
-  {{> UI.dynamic template=active}}
+  <div class="container">
+    <div class="row header">
+      <div class="col-md-12">
+	<h3 class="text-muted">Decision-Making Experiment</h3>
+      </div>
+    </div>
+    <div class="row">
+      {{> game}}
+    </div>
+  </div>
 </template>
 
-<template name="mainRecruiting">
-  {{> UI.dynamic template=active}}
-</template>
-
-<!-- survey -->
+<!-- survey for main treatment -->
 
 <template name="survey">
-  {{> UI.dynamic template=active}}
+  <div class="container">
+    <div class="row header">
+      <div class="col-md-12">
+	<h3 class="text-muted">Decision-Making Experiment</h3>
+      </div>
+    </div>
+    <div class="row">
+      {{> submit}}
+    </div>
+  </div>
+</template>
+
+<!-- experiment for recruiting treatment -->
+
+<template name="mainRecruiting">
+  <div class="container">
+    <div class="row header">
+      <div class="col-md-12">
+	<h3 class="text-muted">Decision-Making Experiment</h3>
+      </div>
+    </div>
+    <div class="row">
+      {{> UI.dynamic template=active}}
+    </div>
+  </div>
+</template>
+
+<!-- survey for recruiting treatment -->
+
+<template name="surveyRecruiting">
+  <div class="container">
+    <div class="row header">
+      <div class="col-md-12">
+	<h3 class="text-muted">Decision-Making Experiment</h3>
+      </div>
+    </div>
+    <div class="row">
+      {{> timepicker}}
+    </div>
+  </div>
 </template>
 
 <!-- misc -->
