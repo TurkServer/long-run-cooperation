@@ -202,6 +202,17 @@ Meteor.methods({
 	    console.log('Would grant quals to: ' + JSON.stringify(grant));
 	}
     },
+    surveyQualReminders: function() {
+	console.log('surveyQualReminders');
+	var batchId = Batches.findOne({name: 'exitsurvey'})._id;
+	var qualified = getSurveyQualified();
+	console.log('Survey qualified: ' + qualified.length);
+	var assts = Assignments.find({batchId: batchId}).fetch();
+	console.log('Survey completed: ' + assts.length);
+	var completed = _.map(assts, function(asst) {return asst.workerId});
+	var remind = _.difference(qualified, completed);
+	console.log(JSON.stringify(remind));
+    },
     getQualifiedWorkers: function(time) {
 	var workers = getQualified(time);
 	console.log(workers.length + ' workers have that qualification.');
