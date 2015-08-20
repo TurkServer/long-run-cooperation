@@ -335,6 +335,7 @@ Meteor.methods({
 	} else {
 	    var workers = getQualified(session);
 	}
+	var absentees = [];
 	_.each(workers, function(worker) {
 	    var workerId = worker._id;
 	    var assignments = Assignments.find({workerId: workerId,
@@ -358,8 +359,10 @@ Meteor.methods({
 		    console.log(batchMap[asst.batchId] + ': ' + workerGames[asst.batchId]);
 		});
 		console.log('Total: '+ totalGames);
+		absentees.push(worker._id);
 	    }
 	});
+	console.log(JSON.stringify(absentees));
     },
     migrateData: function() {
 	console.log('Starting migration.');
