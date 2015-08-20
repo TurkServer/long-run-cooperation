@@ -285,12 +285,13 @@ Meteor.methods({
 	console.log(array.length);
 	console.log(JSON.stringify(array));
     },
-    findSubmitFailure: function(actuallyFix) {
+    findSubmitFailure: function(exclude, actuallyFix) {
 	console.log('findSubmitFailure');
 	var workers = getQualified(1).concat(getQualified(3));
 	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
 	_.each(workers, function(worker) {
 	    var workerId = worker._id;
+	    if (_.indexOf(exclude, workerId) != -1) {return;}
 	    var assignments = Assignments.find({workerId: workerId,
 						batchId: {$ne: recruitingBatchId}}).fetch();
 	    var totalGames = 0;
