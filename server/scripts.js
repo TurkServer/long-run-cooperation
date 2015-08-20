@@ -274,7 +274,8 @@ Meteor.methods({
 	console.log(array.length);
 	console.log(JSON.stringify(array));
     },
-    findSubmitFailure: function() {
+    findSubmitFailure: function(actuallyFix) {
+	console.log('findSubmitFailure');
 	var workers = getQualified(1).concat(getQualified(3));
 	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
 	_.each(workers, function(worker) {
@@ -282,14 +283,30 @@ Meteor.methods({
 	    var assignments = Assignments.find({workerId: workerId,
 						batchId: {$ne: recruitingBatchId}}).fetch();
 	    var totalGames = 0;
+	    var gameLengths = [];
+	    var totalBonus = 0;
 	    _.each(assignments, function(asst) {
 		var instances = asst.instances || [];
 		totalGames += instances.length;
+		gameLengths.push(instances.length);
+		totalBonus += asst.bonusPayment;
 	    });
 	    var userGames = Meteor.users.findOne({workerId: workerId}).numGames;
+	    var userBonus = Meteor.users.findOne({workerId: workerId}).bonus;
+	    totalBonus = parseFloat(totalBonus.toFixed(2));
+	    userBonus = parseFloat(userBonus.toFixed(2));
 	    if (totalGames != userGames) {
+		console.log(workerId)
 		console.log('Total Games: ' + totalGames);
 		console.log('User Games: ' + userGames);
+		console.log('Total Bonus: ' + totalBonus);
+		console.log('User Bonus: ' + userBonus);
+		if (actuallyFix) {
+		    Meteor.users.update({workerId: workerId},
+					{$set: {numGames: totalGames,
+						bonus: totalBonus}});
+		    console.log('Fixed!')
+		}
 	    }
 	});
     },
