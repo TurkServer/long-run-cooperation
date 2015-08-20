@@ -23,7 +23,8 @@ Meteor.startup(function () {
 
     var batchid = Batches.findOne({name: 'exitsurvey'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.ExitSurveyAssigner);
-    Batches.update({name: 'exitsurvey'}, {$addToSet: {treatments: 'exitsurvey'}});
+    Batches.update({name: 'exitsurvey'}, {$addToSet: {treatments: 'exitsurvey'},
+					  $set: {allowReturns: true}});
 
     Batches.find({name: {$nin: ['recruiting', 'exitsurvey']}}).forEach(function(batch) {
 	TurkServer.Batch.getBatch(batch._id).setAssigner(new TurkServer.Assigners.PairAssigner);
