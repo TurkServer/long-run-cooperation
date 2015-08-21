@@ -322,19 +322,14 @@ Meteor.methods({
 	    }
 	});
     },
-    findAbsences: function(numAbsences, session) {
+    findAbsences: function(numAbsences, excused, session) {
 	console.log('findAbsences');
 	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
 	var batchMap = {};
-	Batches.find().forEach(function(batch) {
-	    batchMap[batch._id] = batch.name;
-	});
+	Batches.find().forEach(function(batch) { batchMap[batch._id] = batch.name; });
 	var days = Batches.find({name: {$nin: ['pilot', 'recruiting', 'exitsurvey']}}).count();
-	if (!session) {
-	    var workers = getQualified(1).concat(getQualified(3));
-	} else {
-	    var workers = getQualified(session);
-	}
+	if (!session) { var workers = getQualified(1).concat(getQualified(3));}
+	else { var workers = getQualified(session); }
 	var absentees = [];
 	_.each(workers, function(worker) {
 	    var workerId = worker._id;
@@ -353,6 +348,9 @@ Meteor.methods({
 		workerGames[asst.batchId] = count;
 		totalGames += count;
 	    });
+	    if (_.indexOf(excused, worker._id) != -1) {
+		absences -= 1;
+	    }
 	    if (absences >= numAbsences) {
 		console.log(worker._id);
 		_.each(assignments, function(asst) {
