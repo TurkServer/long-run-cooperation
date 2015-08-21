@@ -14,6 +14,7 @@ QUAL1PM = "3VVYNZTOMVBFMVVFQ9LIE0E25G0ADC"
 QUAL3PM = "3PHWYBUTF9AIGPJYVDU16PYGD2ZD59"
 
 batchMap = {batch['name']: batch['_id'] for batch in db.ts.batches.find() if 'Day' in batch['name']}
+reverseBatchMap = {v:k for k, v in batchMap.items()}
 batches = sorted(batchMap.keys(), key = lambda x: int(x.lstrip('Day')))
 defaultBatch = batches[-1]
 
@@ -33,8 +34,9 @@ def plotRounds(matrix, path):
 
 def plotCoopPerRound(matrix, path):
     numSuperGames = matrix.shape[1]
-    endpoints = range(0, numSuperGames, 20)
-    tuples = [(endpt, endpt+20) for endpt in endpoints]
+    groupSize = 40
+    endpoints = range(0, numSuperGames, groupSize)
+    tuples = [(endpt, endpt+groupSize) for endpt in endpoints]
     for tup in tuples:
         line = np.mean(matrix[:, tup[0]:tup[1]], axis=1)
         plt.plot(range(1,NUMROUNDS+1), line, label='Supergames %d-%d' % (tup[0]+1,tup[1]))
@@ -278,6 +280,8 @@ def getQualified():
 
 def investigateRevoked(batchCoops):
     revoked = list(set(originallyQualified()) - set(getQualified()))
+    allWorkerCoop = []
+    allCommCoop = []
     for workerId in revoked:
         assts = sorted(db.ts.assignments.find({'workerId': workerId}), key = lambda x: x['acceptTime'])
         workerCoops = []
@@ -289,7 +293,12 @@ def investigateRevoked(batchCoops):
                 # print '%s: %.2f (%.2f)' % (batch, coop, batchCoops[batch])
                 workerCoops.append(coop)
                 commCoops.append(batchCoops[batch])
-        print '%.2f, %.2f' % (np.mean(workerCoops), np.mean(commCoops))
+        meanWorkerCoop = np.mean(workerCoops)
+        meanCommCoop = np.mean(commCoops)
+        allWorkerCoop.append(meanWorkerCoop)
+        allCommCoop.append(meanCommCoop)
+        print '%.2f, %.2f' % (meanWorkerCoop, meanCommCoop)
+    print 'Overall: %.2f, %.2f' % (np.mean(allWorkerCoop), np.mean(allCommCoop))
 
 
 """ MISC """
