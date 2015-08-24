@@ -22,11 +22,12 @@ defaultBatch = batches[-1]
 
 def plotRounds(matrix, path):
     numSuperGames = matrix.shape[1]
-    rounds = np.array([1, 7, 8, 9, 10])-1
+    rounds = np.array([1, 5, 6, 7, 8, 9, 10])-1
     for i in rounds:
         line = matrix[i, :]
         plt.plot(range(1,numSuperGames+1), line, label='Round %d' % (i+1))
     plt.legend(loc='lower left')
+    plt.ylim((0, 1))
     plt.ylabel('Fraction of Cooperation')
     plt.xlabel('Supergame')
     plt.savefig(path + 'coop_vs_supergame.png')
