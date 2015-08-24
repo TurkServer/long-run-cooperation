@@ -322,8 +322,9 @@ Meteor.methods({
 	    }
 	});
     },
-    findAbsences: function(numAbsences, excused, session) {
+    findDisqualified: function(excuse, session) {
 	console.log('findAbsences');
+	var numAbsences = 3;
 	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
 	var batchMap = {};
 	Batches.find().forEach(function(batch) { batchMap[batch._id] = batch.name; });
@@ -331,36 +332,46 @@ Meteor.methods({
 	if (!session) { var workers = getQualified(1).concat(getQualified(3));}
 	else { var workers = getQualified(session); }
 	var absentees = [];
+	var excusedWorkers = excuse ? excused : [];
 	_.each(workers, function(worker) {
 	    var workerId = worker._id;
-	    var assignments = Assignments.find({workerId: workerId,
-						batchId: {$ne: recruitingBatchId}},
-					       {sort: {acceptTime: 1}}).fetch();
-	    var absences = days - assignments.length;
-	    var workerGames = {};
-	    var totalGames = 0;
-	    _.each(assignments, function(asst) {
-		var instances = asst.instances || [];
-		var instanceIds = _.map(instances, function(inst) {return inst.id});
-		var count = Experiments.find({_id: {$in: instanceIds},
-				              endReason: 'finished'}).count()
-		if (count < 5) { absences += 1; }
-		workerGames[asst.batchId] = count;
-		totalGames += count;
-	    });
-	    if (_.indexOf(excused, worker._id) != -1) {
-		absences -= 1;
-	    }
-	    if (absences >= numAbsences) {
-		console.log(worker._id);
-		_.each(assignments, function(asst) {
-		    console.log(batchMap[asst.batchId] + ': ' + workerGames[asst.batchId]);
-		});
-		console.log('Total: '+ totalGames);
+	    var absences = workerAbsences(workerId, numAbsences, days, batchMap, recruitingBatchId, excusedWorkers, 1)
+	    if (absences >= numAbsences ) {
 		absentees.push(worker._id);
 	    }
 	});
 	console.log(JSON.stringify(absentees));
+    },
+    workerAbsences: function(workerId, excuse) {
+	console.log('workerAbsences');
+	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
+	var batchMap = {};
+	Batches.find().forEach(function(batch) { batchMap[batch._id] = batch.name; });
+	var days = Batches.find({name: {$nin: ['pilot', 'recruiting', 'exitsurvey']}}).count();
+	var excusedWorkers = excuse ? excused : [];
+	workerAbsences(workerId, -1, days, batchMap, recruitingBatchId, excusedWorkers, 1)
+    },
+    twoAbsences: function(excuse, notify, session) {
+	console.log('twoAbsences');
+	var numAbsences = 2;
+	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
+	var batchMap = {};
+	Batches.find().forEach(function(batch) { batchMap[batch._id] = batch.name; });
+	var days = Batches.find({name: {$nin: ['pilot', 'recruiting', 'exitsurvey']}}).count();
+	if (!session) { var workers = getQualified(1).concat(getQualified(3));}
+	else { var workers = getQualified(session); }
+	var absentees = [];
+	var excusedWorkers = excuse ? excused : [];
+	_.each(workers, function(worker) {
+	    var workerId = worker._id;
+	    var absences = workerAbsences(workerId, numAbsences, days, batchMap, recruitingBatchId, excusedWorkers, 0)
+	    if (absences >= numAbsences ) {
+		absentees.push(worker._id);
+	    }
+	});
+	console.log('All: ' + JSON.stringify(absentees));
+	var unnotified = _.difference(absentees, notified);
+	console.log('Unnotified: ' + JSON.stringify(unnotified));
     },
     migrateData: function() {
 	console.log('Starting migration.');
@@ -396,4 +407,33 @@ function getSurveyQualified() {
     return _.map(workers, function(worker) {
 	return worker._id;
     });
+}
+
+function workerAbsences(workerId, numAbsences, days, batchMap, recruitingBatchId, excused, print) {
+    var assignments = Assignments.find({workerId: workerId,
+					batchId: {$ne: recruitingBatchId}},
+				       {sort: {acceptTime: 1}}).fetch();
+    var absences = days - assignments.length;
+    var workerGames = {};
+    var totalGames = 0;
+    _.each(assignments, function(asst) {
+	var instances = asst.instances || [];
+	var instanceIds = _.map(instances, function(inst) {return inst.id});
+	var count = Experiments.find({_id: {$in: instanceIds},
+				      endReason: 'finished'}).count()
+	if (count < 5) { absences += 1; }
+	workerGames[asst.batchId] = count;
+	totalGames += count;
+	
+    });
+    if (_.indexOf(excused, workerId) != -1) {
+	absences -= 1;
+    }
+    if (print && (absences >= numAbsences)) {
+	console.log(workerId + ': ' + absences);
+	_.each(assignments, function(asst) {
+	    console.log(batchMap[asst.batchId] + ': ' + workerGames[asst.batchId]);
+	});
+    }
+    return absences;
 }
