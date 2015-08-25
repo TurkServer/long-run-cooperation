@@ -66,3 +66,8 @@ Template.game.events({
 	Meteor.call('goToLobby');
     }, 1000, true)
 });
+
+Template.game.onCreated(function() {
+    var bell = new buzz.sound('/bell', {formats: ['ogg', 'mp3']});
+    bell.play();
+});
