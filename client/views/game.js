@@ -68,6 +68,7 @@ Template.game.events({
 });
 
 Template.game.onCreated(function() {
-    var bell = new buzz.sound('/bell', {formats: ['ogg', 'mp3']});
+    var bell = new buzz.sound('/bell', {formats: ['ogg', 'mp3'],
+				        volume: 40});
     bell.play();
 });
