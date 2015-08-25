@@ -351,7 +351,7 @@ Meteor.methods({
 	var excusedWorkers = excuse ? excused : [];
 	workerAbsences(workerId, -1, days, batchMap, recruitingBatchId, excusedWorkers, 1)
     },
-    twoAbsences: function(excuse, notify, session) {
+    twoAbsences: function(excuse, session) {
 	console.log('twoAbsences');
 	var numAbsences = 2;
 	var recruitingBatchId = Batches.findOne({name: 'recruiting'})._id;
