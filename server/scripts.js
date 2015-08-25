@@ -382,6 +382,29 @@ Meteor.methods({
 	});
 	console.log('Done.')
     },
+    ipAddress: function() {
+	console.log("ipAddress");
+	var original = WorkerEmails.findOne({_id: "NtDREvs8gkLt5AKGQ"}).recipients;
+	var ips = {};
+	_.each(original, function(workerId) {
+	    Assignments.find({workerId: workerId}).forEach(function(asst) {
+		_.each(asst.ipAddr, function(ip) {
+		    if (ip in ips) {
+			if (_.indexOf(ips[ip], workerId) == -1) {
+			    ips[ip].push(workerId);
+			}
+		    } else {
+			ips[ip] = [workerId];
+		    }
+		});
+	    });
+	});
+	for (var ip in ips) {
+	    if (ips[ip].length > 1) {
+		console.log(ip + ': ' + JSON.stringify(ips[ip]));
+	    }
+	}
+    }
 });
 
 function getQualified(time) {
