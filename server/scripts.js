@@ -185,7 +185,7 @@ Meteor.methods({
 	TurkServer.Util.assignQualification(workerId, qualId, 1, false)
 	console.log('Granted qual to: ' + workerId);
     },
-    grantSurveyQuals: function(actuallyGrant) {
+    grantSurveyQualsOld: function(actuallyGrant) {
 	TurkServer.checkAdmin();
 	console.log('grantSurveyQuals');
 	var revoked = getRevoked();
@@ -200,6 +200,54 @@ Meteor.methods({
 	    console.log('Granted quals to: ' + JSON.stringify(grant));
 	} else {
 	    console.log('Would grant quals to: ' + JSON.stringify(grant));
+	}
+    },
+    grantSurveyQuals: function(actuallyGrant) {
+	TurkServer.checkAdmin();
+	console.log('grantSurveyQuals');
+	var grant = _.map(getQualified(1).concat(getQualified(3)), function(worker) {
+	    return worker._id;
+	});
+	if (actuallyGrant) {
+	    _.each(grant, function(workerId) {
+		TurkServer.Util.assignQualification(workerId, Meteor.settings.QualSurvey, 1, false)
+	    });
+	    console.log('Granted quals to ' + grant.length + ' workers.');
+	} else {
+	    console.log('Would grant quals to ' + grant.length + ' workers.');
+	}
+    },
+    payEndBonus: function(actuallyPay) {
+	TurkServer.checkAdmin();
+	console.log('payEndBonus');
+	var amt = 20;
+	var pay = _.map(getQualified(1).concat(getQualified(3)), function(worker) {
+	    return worker._id;
+	});
+	var paid = 0;
+	_.each(pay, function(workerId) {
+	    var assignments = Assignments.find({workerId: workerId,
+						status: "completed"}, 
+					       {sort: {acceptTime: -1}}).fetch();
+	    var recentAsst = assignments[0];
+	    var data = {
+		WorkerId: workerId,
+		AssignmentId: recentAsst.assignmentId,
+		BonusAmount: {
+		    Amount: amt,
+		    CurrencyCode: "USD"
+		},
+		Reason: "End of study bonus for the month long research study. Thank you so much for participating!"
+	    };
+	    if (actuallyPay) {
+		TurkServer.mturk("GrantBonus", data);
+	    }
+	    paid += amt;
+	});
+	if (actuallyPay) {
+	    console.log('Paid a total of ' + paid);
+	} else{
+	    console.log('Would have paid a total of ' + paid);
 	}
     },
     surveyQualReminders: function() {
