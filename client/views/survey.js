@@ -42,6 +42,7 @@ Template.exitsurvey.events({
 	var pg = tmpl.find("input[name=PG]:checked");
 	var pd_games = tmpl.find("input[name=PD_games]:checked");
 	var pg_games = tmpl.find("input[name=PG_games]:checked");
+	var contact = tmpl.find("input[name=contact]:checked");
 	console.log(gender)
 	results = {"age": form.age.value,
 		   "gender": gender && gender.value,
@@ -60,7 +61,8 @@ Template.exitsurvey.events({
 		   "continued": form.continued.value,
 		   "compensation": form.compensation.value,
 		   "future": form.future.value,
-		   "stopped": form.stopped.value,
+		   "discuss": form.discuss.value,
+		   "contact": contact && contact.value,
 		   "misc": form.misc.value
 	};
 	TurkServer.submitExitSurvey(results);

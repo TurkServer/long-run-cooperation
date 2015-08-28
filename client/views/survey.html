@@ -9,16 +9,39 @@
 
 <template name="exitsurvey">
   <div class="container well">
-    <form class="survey">
-      <legend>Thank you for participating in this research study!</legend>
+      <form class="survey">
+	  <legend>Thank you for participating in this research study!</legend>
 
-      <div class="row col-sm-12">
-	<p>
-	  We are interested in your experience playing the game
-          over the past several  weeks. Please answer the following
-          questions to receive an additional bonus of <strong>$5.00</strong>.
-	</p>
-      </div>
+	  <div class="row col-sm-12">
+	      <p>
+		  We are interested in your experience playing the game over the past several weeks.
+		  Please read the study debrief below, and then answer the following questions to
+		  receive an additional bonus of <strong>$5.00</strong>.
+	      </p>
+
+	      <p>Note that the answers you provide below <strong>will not affect your
+		 payment</strong> for this study in any way, so please be honest.</p>
+
+	      <hr>
+
+	      <h4>Study Debrief</h4>
+
+	      <p>In this study you played a game known as <a href="https://en.wikipedia.org/wiki/Prisoner%27s_dilemma" target="_blank">Prisoner's Dilemma</a>, which is a classic two-player game often studied in economics and the social sciences. In this game, two players are each given a choice: either "cooperate" with your partner, or "defect". The two players are not allowed to communicate. Depending on what the players choose, they each receive some payoff.</p>
+
+	      <p>If the game is repeated for multiple rounds with the same partner (as in this study), it is called the Iterated Prisoner's Dilemma. So every day for the past month, you played twenty 10-round games of Iterated Prisoner's Dilemma.</p>
+
+	      <p>Interestingly, when playing this game, a purely "rational" player should always choose to defect. The reason is as follows: 1) if you think your partner is going to cooperate, then you should defect, because you'll earn more than if you cooperate, and 2) if you think your partner is going to defect, then you should also defect, because you'll again earn more than if you cooperate. So the "equilibrium" of this game is for both players to always choose defect, no matter what.</p>
+
+	      <p>However, in reality people play differently. Usually people will cooperate for the first several rounds, and defect in the last rounds. So this means that people do not play according to the rational, equilibrium strategy.</p>
+
+	      <p>Our hypothesis was that if you play the game over and over again for a very long period of time, you will eventually "learn" to play according to the rational strategy, and always choose to defect. This is why we recruited all of you to play the game every day for an entire month.</p>
+
+	      <p>We really appreciate your commitment to this study. Thank you so much for participating!</p>
+
+	      <hr>
+	  </div>
+
+      <h4>Survey</h4>
 
       <div class="row form-group">
         <div class="col-sm-4">
@@ -66,7 +89,7 @@
 
       <div class="row form-group">
         <div class="col-sm-12">
-          <label>The game you played in this study is also known as
+          <label>The game you played in this study is known as
             <i>prisoner's dilemma</i>. <b>Before participating in this
             study</b>, on how many previous occasions had you played a
             similar game on Mechanical Turk?</label>
@@ -184,8 +207,8 @@
       <div class="row form-group">
         <div class="col-sm-12">
           <label>
-            If you stopped participating in the study before the month was over, can you tell us why?</label>
-	  <textarea class="form-control" rows="4" name="stopped"></textarea>
+            Did you discuss this study with other workers (either in person, in forums, or in chat rooms) while playing? </label>
+	  <textarea class="form-control" rows="4" name="discuss" required></textarea>
         </div>
       </div>
 
@@ -197,6 +220,20 @@
           </label>
 	  <textarea class="form-control" rows="4" name="misc"></textarea>
         </div>
+      </div>
+
+      <div class="row form-group">
+        <div class="col-sm-12">
+          <label>Would you like to be contacted when the results of this study are published?</label>
+          <label class="radio-inline">
+	      <input name="contact" type="radio" value="Yes" required>
+	      <b>Yes</b>
+	  </label>
+	  <label class="radio-inline">
+	      <input name="contact" type="radio" value="No" required>
+	      <b>No</b>
+	  </label>
+	</div>
       </div>
 
       <div class="row">
