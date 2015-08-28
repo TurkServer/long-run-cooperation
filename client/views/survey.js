@@ -58,10 +58,11 @@ Template.exitsurvey.events({
 		   "other_strategies_time": form.other_strategies_time.value,
 		   "learn_yourself": form.learn_yourself.value,
 		   "learn_others": form.learn_others.value,
-		   "continued": form.continued.value,
+				"norms": form.norms.value,
+				"continued": form.continued.value,
+				"discuss": form.discuss.value,
 		   "compensation": form.compensation.value,
 		   "future": form.future.value,
-		   "discuss": form.discuss.value,
 		   "contact": contact && contact.value,
 		   "misc": form.misc.value
 	};
