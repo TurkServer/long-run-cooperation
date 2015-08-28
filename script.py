@@ -2,7 +2,7 @@ import os, sys, argparse
 import matplotlib.pyplot as plt
 import library
 
-ROOT = '/home/lili/Desktop/'
+ROOT = '/home/lili/Dropbox/plots/'
 #ROOT = '/Users/lilidworkin/Desktop/'
 
 def make_plots(args):
@@ -10,7 +10,7 @@ def make_plots(args):
     print 'Fill Defect: %s' % args.fill_defect
     group = int(args.group) if args.group else None
     pathA = 'both' if not args.group else args.group
-    pathB = 'filled' if args.fill_defect else 'unfilled'
+    pathB = 'filled' if args.fill_defect else ''
     path = ROOT + '%s-%s' % (pathA, pathB)
     if not os.path.exists(path):
         os.mkdir(path)

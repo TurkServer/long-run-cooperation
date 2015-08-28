@@ -195,8 +195,11 @@ def printGame(exp):
         if round_['ended']:
             times = [action['timestamp'] for action in actions]
             delta = max(times) - min(times)
-            printRound(round_['index'], users[0], round_['results'][users[0]]['action'],
-                       users[1], round_['results'][users[1]]['action'], delta)
+            try:
+                printRound(round_['index'], users[0], round_['results'][users[0]]['action'],
+                           users[1], round_['results'][users[1]]['action'], delta)
+            except:
+                print 'Unfinished round error'
         else:
             if len(actions) == 1:
                 action = actions[0]
