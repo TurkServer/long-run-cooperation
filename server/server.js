@@ -111,6 +111,10 @@ Meteor.methods({
         TurkServer.log({event: 'passedQuiz'});
         TurkServer.Instance.currentInstance().teardown();
     },
+    setSurveyBonus: function() {
+	var asst = TurkServer.Assignment.currentAssignment();
+	asst.setPayment(5);
+    },
 });
 
 Partitioner.directOperation(function() {

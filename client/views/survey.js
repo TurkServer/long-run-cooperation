@@ -65,6 +65,7 @@ Template.exitsurvey.events({
 		   "contact": contact && contact.value,
 		   "misc": form.misc.value
 	};
+	Meteor.call('setSurveyBonus');
 	TurkServer.submitExitSurvey(results);
     }
 });
