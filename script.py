@@ -14,27 +14,31 @@ def make_plots(args):
     path = ROOT + '%s-%s' % (pathA, pathB)
     if not os.path.exists(path):
         os.mkdir(path)
-    matrix = library.genMatrix(group, args.fill_defect)
-    library.plotRounds(matrix, path + '/')
-    plt.clf()
-    library.plotCoopPerRound(matrix, path + '/')
-    plt.clf()
-    library.plotEachRound(matrix, path + '/')
+    matrix_func = library.gen_matrix if not args.user_centric \
+      else library.gen_matrix_user_centric
+    matrix = matrix_func(group, args.fill_defect)
+    plot_funcs = [library.each_round_vs_supergame,
+                  library.ave_round_vs_supergame,
+                  library.grouped_supergames_vs_round,
+                  library.all_data]
+    for func in plot_funcs:
+        func(matrix, path + '/')
+        plt.clf()
     
 
 def player_games(args):
-    workerId = library.findWorkerId(args.user) if args.user else args.worker
-    library.printWorkerGames(workerId, args.batch)
+    workerId = library.find_workerId(args.user) if args.user else args.worker
+    library.print_worker_games(workerId, args.batch)
     
 
 def convert(args):
-    print library.findWorkerId(args.user)
+    print library.find_workerId(args.user)
 
 
 if __name__ == '__main__':
     func_map = {'plots': lambda: make_plots(args),
                 'player': lambda: player_games(args),
-                'unfinished': lambda: library.printUnfinishedGames(args.batch),
+                'unfinished': lambda: library.print_unfinished_games(args.batch),
                 'convert': lambda: convert(args)}
     parser = argparse.ArgumentParser()
     parser.add_argument('type', choices=func_map.keys())
@@ -43,5 +47,6 @@ if __name__ == '__main__':
     parser.add_argument('-u', '--user')
     parser.add_argument('-w', '--worker')
     parser.add_argument('--fill-defect', dest='fill_defect', action='store_true')
+    parser.add_argument('--user-centric', dest='user_centric', action='store_true')
     args = parser.parse_args()
     func_map[args.type]()
