@@ -4,7 +4,20 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-platform
+meteor-base
+mobile-experience
+mongo
+blaze-html-templates
+session
+jquery
+tracker
+logging
+reload
+random
+ejson
+spacebars
+check
+ecmascript
 accounts-ui
 accounts-password
 benjaminrh:event-hooks
@@ -20,6 +33,6 @@ mizzao:partitioner
 underscore
 twbs:bootstrap
 d3js:d3
-grigio:babel
 sacha:spin
 brentjanderson:buzz
+standard-minifiers

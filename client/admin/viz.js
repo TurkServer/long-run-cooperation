@@ -119,7 +119,7 @@ Template.viz.onRendered(function() {
     });
 
   const x = d3.scale.ordinal()
-      .domain([for (x of Array(rounds).keys()) x + 1])
+      .domain( Array.from(Array(10)).map( (e, i) => i+1 ) )
       .rangeBands([0, nodeWidth]);
 
   const xBand = x.rangeBand();
