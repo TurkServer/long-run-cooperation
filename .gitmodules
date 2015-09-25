@@ -1,3 +1,6 @@
 [submodule "packages/mizzao:turkserver"]
 	path = packages/mizzao:turkserver
 	url = ssh://git@github.com/HarvardEconCS/turkserver-meteor.git
+[submodule "packages/iron:location"]
+	path = packages/iron:location
+	url = https://github.com/mizzao/iron-location.git

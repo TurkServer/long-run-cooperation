@@ -32,17 +32,20 @@ function getColorScale(userIds) {
 }
 
 Template.viz.onRendered(function() {
-  let svg = d3.select(this.find("svg"));
-  let $svg = this.$("svg");
+  const svg = d3.select(this.find("svg"));
+  const $svg = this.$("svg");
+  const container = svg.select(".scaler");
 
-  let height = $svg.height();
-  let width = $svg.width();
+  const height = $svg.height();
+  const width = $svg.width();
 
   console.log(
     Experiments.find().count(),
     GameGroups.find().count(), // Only used to determine nodeWidth atm
     Actions.find().count()
   );
+
+  console.log("Data loaded at ", new Date);
 
   // Instructions according to https://github.com/soxofaan/d3-plugin-captain-sankey
 
@@ -77,7 +80,7 @@ Template.viz.onRendered(function() {
     }
   }
 
-  const layoutIterations = 5;
+  const layoutIterations = 10;
 
   const sankey = d3.sankey()
     .size([width, height])
@@ -87,13 +90,15 @@ Template.viz.onRendered(function() {
     .links(links)
     .layout(layoutIterations);
 
+  console.log("Layout done at ", new Date);
+
   const path = sankey.link();
 
   // Draw links
-  svg.selectAll('.link')
+  container.selectAll('.link')
     .data(links)
     .enter().append('path')
-    .attr('class', 'link')
+    .attr('class', d => `link u_${d.userId}`)
     .attr('d', path)
     .style({
       stroke: (d) => { return colorScale(d.userId) },
@@ -101,9 +106,14 @@ Template.viz.onRendered(function() {
     });
 
   // Draw nodes
-  let games = svg.selectAll('.node')
+  let games = container.selectAll('.node')
     .data(instances)
-  .enter().append('g')
+  .enter().append('a')
+    .attr({
+      target: '_blank',
+      'xlink:href': (d) => Router.path('expAdmin', {groupId: d._id})
+    })
+  .append('g')
     .attr({
       'class': 'node',
       transform: (d) => { return `translate(${d.x}, ${d.y})` }
@@ -112,8 +122,10 @@ Template.viz.onRendered(function() {
   const rounds = 10;
   const nodeWidth = sankey.nodeWidth();
 
+  games.append('title').text(d => d._id);
   games.append('rect')
     .attr({
+      class: "game",
       height: function (d) { return d.dy; },
       width: nodeWidth
     });
@@ -124,11 +136,15 @@ Template.viz.onRendered(function() {
 
   const xBand = x.rangeBand();
 
+  // Pre-group actions by _groupId and _roundIndex otherwise we are going to
+  // get owned trying to search for each one by group
+  const actionsByGroup = d3.nest()
+    .key( d => d._groupId )
+    .map(Actions.find().fetch(), d3.map);
+
   // Within games, draw actions
   games.each( function(d) {
-    const actions = Actions.find(
-      {_groupId: d._id},
-      {sort: {roundIndex: 1}}).fetch();
+    const actions = actionsByGroup.get(d._id);
 
     const y = d3.scale.ordinal()
       .domain(d.users)
@@ -150,4 +166,27 @@ Template.viz.onRendered(function() {
 
   });
 
+  console.log("Rendering finished at ", new Date);
+
+  // Set up zoom
+  const zoom = d3.behavior.zoom();
+  zoom.on("zoom", function() {
+    container.attr("transform",
+      `translate(${d3.event.translate})scale(${d3.event.scale})`);
+  });
+
+  svg.call(zoom);
+});
+
+Template.viz.events({
+  "mouseenter .link": function(e, t) {
+    const userId = d3.select(e.target).datum().userId;
+    d3.select(t.find("svg"))
+      .selectAll(`.link.u_${userId}`).classed("highlighted", true);
+  },
+  "mouseleave .link": function(e, t) {
+    const userId = d3.select(e.target).datum().userId;
+    d3.select(t.find("svg"))
+      .selectAll(`.link.u_${userId}`).classed("highlighted", false);
+  }
 });

@@ -3,10 +3,23 @@ path {
     opacity: 0.4;
 }
 
+path.highlighted {
+    stroke: #000000 !important;
+    opacity: 1;
+}
+
 .action.a1 {
     fill: green;
 }
 
 .action.a2 {
     fill: red;
+}
+
+.node {
+    pointer-events: all;
+}
+
+.node:hover .game {
+    filter: drop-shadow(0 0 2px #000);
 }

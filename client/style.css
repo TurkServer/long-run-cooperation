@@ -3,6 +3,13 @@ body {
   padding-bottom: 20px;
 }
 
+/*
+  Make body containers full height
+*/
+.container-fluid {
+    height: inherit;
+}
+
 .header {
   padding-bottom: 20px;
   margin-bottom: 30px;
