@@ -8,6 +8,11 @@ path.highlighted {
     opacity: 1;
 }
 
+.action {
+    stroke: #000000;
+    stroke-width: 0.01%;
+}
+
 .action.a1 {
     fill: green;
 }
