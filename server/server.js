@@ -7,8 +7,6 @@ Meteor.publish('gameData', function() {
 
 Meteor.startup(function () {
     Batches.upsert({name: 'pilot'}, {name: 'pilot', active: true});
-    Batches.upsert({name: 'recruiting'}, {name: 'recruiting', active: true});
-    Batches.upsert({name: 'exitsurvey'}, {name: 'exitsurvey', active: true});
 
     TurkServer.ensureTreatmentExists({name: 'main'});
     TurkServer.ensureTreatmentExists({name: 'recruiting'});
@@ -16,6 +14,19 @@ Meteor.startup(function () {
 
     var batchid = Batches.findOne({name: 'pilot'})._id;
     Batches.update({name: 'pilot'}, {$addToSet: {treatments: 'main'}});
+
+    Batches.find({name: {$nin: ['recruiting', 'exitsurvey']}}).forEach(function(batch) {
+      TurkServer.Batch.getBatch(batch._id).setAssigner(new TurkServer.Assigners.PairAssigner);
+    });
+
+    // Convenience for having a single batch during demos.
+    if (Meteor.settings.demo) {
+      Meteor._debug("Running in demo mode.");
+      return;
+    }
+
+    Batches.upsert({name: 'recruiting'}, {name: 'recruiting', active: true});
+    Batches.upsert({name: 'exitsurvey'}, {name: 'exitsurvey', active: true});
 
     var batchid = Batches.findOne({name: 'recruiting'})._id;
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.SimpleAssigner);
@@ -25,10 +36,6 @@ Meteor.startup(function () {
     TurkServer.Batch.getBatch(batchid).setAssigner(new TurkServer.Assigners.ExitSurveyAssigner);
     Batches.update({name: 'exitsurvey'}, {$addToSet: {treatments: 'exitsurvey'},
 					  $set: {allowReturns: true}});
-
-    Batches.find({name: {$nin: ['recruiting', 'exitsurvey']}}).forEach(function(batch) {
-	TurkServer.Batch.getBatch(batch._id).setAssigner(new TurkServer.Assigners.PairAssigner);
-    });
 
     var hit1pm = {Title: hitTypeTitle1pm,
 		  Description: "This HIT is for today's 1 PM ET session of the month-long research study for which you were granted a qualification.",

@@ -1,25 +1,27 @@
 {
-    "public": {
-	"turkserver": {
-	    "autoLobby": false
-	}
-    },
+  "public": {
     "turkserver": {
-	"adminPassword": "",
-	"hits": {
-	    "acceptUnknownHits": true
-	},
-	"experiment": {
-	    "limit": {
-		"batch": 1
-	    }
-	},
-	"mturk": {
-	    "sandbox": true,
-	    "accessKeyId": "",
-	    "secretAccessKey": "",
-	    "externalUrl": "",
-	    "frameHeight": 800
-	}
+      "dataRoute": "expAdmin",
+      "autoLobby": false
     }
+  },
+  "turkserver": {
+    "adminPassword": "something",
+    "hits": {
+      "acceptUnknownHits": true
+    },
+    "experiment": {
+      "limit": {
+        "batch": 1
+      }
+    },
+    "mturk": {
+      "sandbox": true,
+      "accessKeyId": "",
+      "secretAccessKey": "",
+      "externalUrl": "",
+      "frameHeight": 800
+    }
+  },
+  "demo": true
 }

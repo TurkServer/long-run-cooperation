@@ -82,9 +82,13 @@ Template.viz.onRendered(function() {
 
   const layoutIterations = 10;
 
+  // Scale appropriately, but limit display for very sparse data
+  const maxNodeWidth = 100;
+  const maxWidth = maxNodeWidth * 2 * supergames;
+
   const sankey = d3.sankey()
-    .size([width, height])
-    .nodeWidth( (width * 0.5) / supergames )
+    .size([ Math.min(width, maxWidth), height ])
+    .nodeWidth( Math.min( (width * 0.5) / supergames, maxNodeWidth) )
     .nodePadding(10)
     .nodes(instances)
     .links(links)
