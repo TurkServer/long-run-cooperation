@@ -8,5 +8,5 @@ Before diving into the code, you may want to check out [Meteor](https://www.mete
 # Get Startted:
 
 1. `git clone https://github.com/TurkServer/long-run-cooperation.git`
-2. `cd long-run-cooperation`, manually add turkserver and meteor-timesync or automatically add if you do `git clone --recursive` and `git submodule update --init`
+2. `cd long-run-cooperation`, manually add turkserver and meteor-timesync or automatically add both if you do `git clone --recursive` and `git submodule update --init`
 3. `meteor --settings settings-template.json`
