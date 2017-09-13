@@ -35,4 +35,5 @@ twbs:bootstrap
 d3js:d3
 sacha:spin
 brentjanderson:buzz
-standard-minifiers
+standard-minifier-css
+standard-minifier-js
