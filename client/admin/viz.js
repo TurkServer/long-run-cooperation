@@ -51,16 +51,17 @@ Template.viz.onRendered(function() {
 
   // Generate list of nodes (instances), mapped to indices
   const instances = Experiments.find().fetch();
-  const instanceMap = {};
+  const instanceMap = {}; // {id: instance}
   for( let [i, inst] of instances.entries() ) {
     instanceMap[inst._id] = i;
   }
 
-  // Generate list of links (who went from one game to another)
+  // Generate list of unique userIds (who went from one game to another)
   const users = _.uniq( flatten(
     Experiments.find().map( (g) => { return g.users }) ) );
-  const supergames = GameGroups.find().count();
+  const supergames = GameGroups.find().count(); // number of IPDs played
 
+  // [ {userId, source, target, value: 1} ] -- all links same width
   const links = [];
 
   const colorScale = getColorScale(users);
